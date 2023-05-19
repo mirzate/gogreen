@@ -1,0 +1,37 @@
+version: '3'
+services:
+
+  gogreen-sql-db:
+    image: mcr.microsoft.com/mssql/server
+    volumes:
+      - ./data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password1$
+      - MSSQL_PID=Developer
+    ports:
+      - 1433:1433
+    expose:
+      - 1433
+    networks:
+      - gogreen-vlan
+
+  gogreen-api:
+    restart: unless-stopped
+    build:
+      context: ./GoGreen
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings:DefaultConnection=Server=gogreen-sql-db,1433;Database=gogreen;User=sa;Password=Password1$;ConnectRetryCount=0; TrustServerCertificate=True
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 8085:8085
+    networks:
+      - gogreen-vlan
+    depends_on:
+      - gogreen-sql-db
+      
+networks:
+  gogreen-vlan:
+    driver: bridge      
