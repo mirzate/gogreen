@@ -32,6 +32,17 @@ namespace GoGreen
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+
+            // Add automatic database migration
+            using (var serviceProvider = services.BuildServiceProvider())
+            {
+                using (var scope = serviceProvider.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    dbContext.Database.Migrate();
+                }
+            }
+
         }
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {
@@ -40,7 +51,10 @@ namespace GoGreen
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GoGreen");
+                });
             }
 
             app.UseHttpsRedirection();
