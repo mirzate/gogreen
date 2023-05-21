@@ -1,5 +1,6 @@
 ﻿using GoGreen.Data;
 using GoGreen.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -8,7 +9,7 @@ namespace GoGreen.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
 
     public class SimpleTableController : ControllerBase
     {
@@ -21,6 +22,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/SimpleTable
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SimpleTable>>> GetSimpleTable()
         {
@@ -32,6 +34,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/SimpleTable/2
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<SimpleTable>> GetSimpleTable(int id)
         {
