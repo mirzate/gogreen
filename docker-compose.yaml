@@ -2,6 +2,7 @@ version: '3'
 services:
 
   gogreen-sql-db:
+    container_name: gogreen-sql-db
     image: mcr.microsoft.com/mssql/server
     volumes:
       - ./data:/var/lib/mysql
@@ -18,6 +19,7 @@ services:
       - gogreen-vlan
 
   gogreen-api:
+    container_name: gogreen-api
     restart: unless-stopped
     build:
       context: ./GoGreen
@@ -26,7 +28,7 @@ services:
       - ConnectionStrings:DefaultConnection=Server=gogreen-sql-db,1433;Database=gogreen;User=sa;Password=Password1$;ConnectRetryCount=0; TrustServerCertificate=True
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - 8085:8085
+      - "8080:80"
     networks:
       - gogreen-vlan
     depends_on:
