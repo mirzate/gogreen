@@ -1,6 +1,7 @@
+using GoGreen;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication1.Controllers
+namespace GoGreen.Controllers
 {
     [ApiController]
     [Route("[controller]")]

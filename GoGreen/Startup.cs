@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using RabbitMQ.Service;
 
 namespace GoGreen
 {
@@ -28,6 +29,7 @@ namespace GoGreen
         }
         public void ConfigureServices(IServiceCollection services)
         {
+
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
                 .Build();
@@ -41,6 +43,7 @@ namespace GoGreen
 
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<RabbitMQService>();
 
             services.AddAuthentication(options =>
             {
