@@ -14,7 +14,7 @@ mnesia/
 rabbitmq/mnesia/
 mnesia/*
 rabbitmq/*
-
+*.wal
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
