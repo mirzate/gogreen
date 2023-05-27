@@ -2,6 +2,7 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Threading.Channels;
 
 namespace RabbitMQ.Service
 {
@@ -28,6 +29,7 @@ namespace RabbitMQ.Service
             // Create the connection and channel
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
+            _channel.QueueDeclare(queue: _config["RabbitMQ:DefaultQueue"], durable: false, exclusive: false, autoDelete: false, arguments: null);
         }
 
         // Add methods for publishing and consuming messages, handling queues, etc.

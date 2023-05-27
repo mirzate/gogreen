@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RabbitMQ.Service;
+using System.Threading.Channels;
 
 namespace GoGreen
 {
@@ -31,7 +32,7 @@ namespace GoGreen
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
-                .Build();
+            .Build();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
