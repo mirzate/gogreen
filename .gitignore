@@ -10,7 +10,7 @@
 *.userosscache
 *.sln.docstates
 # Ignore mnesia folder
-#rabbitmq/
+rabbitmq/
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
