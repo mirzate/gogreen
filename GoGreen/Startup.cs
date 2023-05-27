@@ -29,7 +29,6 @@ namespace GoGreen
         }
         public void ConfigureServices(IServiceCollection services)
         {
-
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
                 .Build();
