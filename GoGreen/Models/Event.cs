@@ -11,11 +11,11 @@ namespace GoGreen.Models
         public DateTime DateTo { get; set; }
 
         [ForeignKey("EventType")]
-        public string TypeId { get; set; }
+        public int TypeId { get; set; }
         public EventType EventType { get; set; }
 
         [ForeignKey("Municipality")]
-        public string MunicipalityId { get; set; }
+        public int MunicipalityId { get; set; }
         public Municipality Municipality { get; set; }
 
         [ForeignKey("User")]

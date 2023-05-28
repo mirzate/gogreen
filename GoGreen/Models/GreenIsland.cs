@@ -9,7 +9,7 @@ namespace GoGreen.Models
         public string Description { get; set; }
         
         [ForeignKey("Municipality")]
-        public string MunicipalityId { get; set; }
+        public int MunicipalityId { get; set; }
         public Municipality Municipality { get; set; }
 
         public bool Active { get; set; }

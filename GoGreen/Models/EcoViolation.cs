@@ -12,7 +12,7 @@ namespace GoGreen.Models
         public bool Published { get; set; }
 
         [ForeignKey("EcoViolationStatus")]
-        public string EcoViolationStatusId { get; set; }
+        public int EcoViolationStatusId { get; set; }
         public EcoViolationStatus EcoViolationStatus { get; set; }
 
         public EcoViolationStatusEnum EcoViolationStatusEnum { get; set; }
