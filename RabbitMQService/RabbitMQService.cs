@@ -17,19 +17,27 @@ namespace RabbitMQ.Service
 
             _config  = config;
 
+            var hostName = _config["RabbitMQConfig:HostName"];
+            var port = int.Parse(_config["RabbitMQConfig:Port"]);
+            var userName = _config["RabbitMQConfig:UserName"];
+            var password = _config["RabbitMQConfig:Password"];
+            var defaultQueue = _config["RabbitMQConfig:DefaultQueue"];
+
             // Create the connection factory
             var factory = new ConnectionFactory
             {
-                HostName = _config["RabbitMQ:HostName"],
-                Port = int.Parse(_config["RabbitMQ:Port"]),
-                UserName = _config["RabbitMQ:UserName"],
-                Password = _config["RabbitMQ:Password"]
+                HostName = hostName,
+                Port = port,
+                UserName = userName,
+                Password = password
+
             };
 
             // Create the connection and channel
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: _config["RabbitMQ:DefaultQueue"], durable: false, exclusive: false, autoDelete: false, arguments: null);
+            _channel.QueueDeclare(queue: defaultQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+
         }
 
         // Add methods for publishing and consuming messages, handling queues, etc.

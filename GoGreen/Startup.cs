@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RabbitMQ.Service;
 using System.Threading.Channels;
+using Microsoft.Extensions.Options;
 
 namespace GoGreen
 {
@@ -33,10 +34,14 @@ namespace GoGreen
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
             .Build();
-
+            /*
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
-          
+            */
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -105,8 +110,8 @@ namespace GoGreen
                 });
                 
             });
-
-
+            
+            
             // Add automatic database migration
             using (var serviceProvider = services.BuildServiceProvider())
             {
@@ -116,6 +121,7 @@ namespace GoGreen
                     dbContext.Database.Migrate();
                 }
             }
+            
 
         }
 
