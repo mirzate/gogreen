@@ -22,9 +22,7 @@ namespace GoGreen.Models
         public string UserId { get; set; }
         public User User { get; set; }
 
-
         public bool Active { get; set; }
-        public string File { get; set; }
 
         public ICollection<Image> Images { get; set; }
 
