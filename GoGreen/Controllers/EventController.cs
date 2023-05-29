@@ -7,6 +7,8 @@ using GoGreen.Requests;
 using System.Security.Claims;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using GoGreen.Services;
+using AutoMapper;
 
 namespace GoGreen.Controllers
 {
@@ -16,17 +18,35 @@ namespace GoGreen.Controllers
     public class EventController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEventService _eventService;
+        private readonly IMapper _mapper;
 
-        public EventController(ApplicationDbContext context)
+        public EventController(ApplicationDbContext context, IEventService eventService, IMapper mapper)
         {
             _context = context;
+            _eventService = eventService;
+            _mapper = mapper;
         }
 
         // GET: api/Event
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents()
+        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10)
         {
+
+            var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize);
+
+            return Ok(events);
+
+            var result = new EventPaginationResponse<EventResponse>
+            {
+                Items = (List<EventResponse>)events,
+                PageNumber = pageIndex,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+            return Ok(result);
+            /*
             var events = await _context.Events.ToListAsync();
             var eventResponses = events.Select(e => new EventResponse
             {
@@ -42,6 +62,7 @@ namespace GoGreen.Controllers
             }).ToList();
 
             return eventResponses;
+            */
         }
 
         // GET: api/Event/5

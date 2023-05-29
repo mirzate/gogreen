@@ -1,5 +1,4 @@
-﻿
-using GoGreen.Models;
+﻿using GoGreen.Models;
 
 namespace GoGreen.Responses
 {
