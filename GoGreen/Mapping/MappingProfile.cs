@@ -10,7 +10,8 @@ namespace GoGreen.Mappings
         public MappingProfile()
         {
 
-            CreateMap<Event, EventResponse>();
+            CreateMap<Event, EventResponse>().ReverseMap();
+            CreateMap<EventRequest, Event>().ReverseMap();
 
         }
     }

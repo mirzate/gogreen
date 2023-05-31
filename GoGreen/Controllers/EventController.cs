@@ -46,23 +46,7 @@ namespace GoGreen.Controllers
                 TotalCount = totalCount
             };
             return Ok(result);
-            /*
-            var events = await _context.Events.ToListAsync();
-            var eventResponses = events.Select(e => new EventResponse
-            {
-                Id = e.Id,
-                Title = e.Title,
-                Description = e.Description,
-                DateFrom = e.DateFrom,
-                DateTo = e.DateTo,
-                Active = e.Active,
-                EventType = e.EventType,
-                Municipality = e.Municipality,
-                Images = e.Images
-            }).ToList();
 
-            return eventResponses;
-            */
         }
 
         // GET: api/Event/5
@@ -70,34 +54,18 @@ namespace GoGreen.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EventResponse>> GetEvent(int id)
         {
-            if (_context.Events == null)
+
+            var eevent = await _eventService.GetById(id);
+
+            if (eevent == null)
             {
                 return NotFound();
             }
 
-            var data = await _context.Events
-                            .Include(a => a.EventType)
-                            .Include(a => a.Municipality)
-                            .Include(a => a.Images)
-                            .FirstOrDefaultAsync(a => a.Id == id);
+            var eventResponse = _mapper.Map<EventResponse>(eevent);
 
-            if (data == null)
-            {
-                return NotFound();
-            }
+            return Ok(eventResponse);
 
-            return Ok(new EventResponse
-            {
-                Id = data.Id,
-                Title =data.Title,
-                Description = data.Description,
-                DateFrom = data.DateFrom,
-                DateTo = data.DateTo,
-                Active = data.Active,
-                EventType = data.EventType,
-                Municipality = data.Municipality,
-                Images = data.Images
-            });
         }
 
         // POST: api/Event
@@ -118,6 +86,20 @@ namespace GoGreen.Controllers
                 return BadRequest("Type not found");
             }
 
+
+            var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
+            if (municipality == null)
+            {
+                return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
+            }
+
+            var eevent = _mapper.Map<EventRequest>(request);
+
+            var createdEvent = await _eventService.Create(eevent);
+
+            return _mapper.Map<EventResponse>(createdEvent);
+
+            /*
             var @event = new Event
             {
                 Title = request.Title,
@@ -133,6 +115,7 @@ namespace GoGreen.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEvent), new { id = @event.Id }, @event);
+            */
         }
 
         // PUT: api/Event/5

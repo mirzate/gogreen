@@ -39,24 +39,31 @@ namespace GoGreen.Services
         }
         public async Task<EventResponse> GetById(int id)
         {
-            var eevent = await _context.Events.Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == id);
-            if (eevent == null)
+
+            var data = await _context.Events
+                .Include(a => a.EventType)
+                .Include(a => a.Municipality)
+                .Include(a => a.Images)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (data == null)
             {
                 return null;
             }
-            var eventDto = _mapper.Map<EventResponse>(eevent);
-            return eventDto;
+            var eventResponse = _mapper.Map<EventResponse>(data);
+            return eventResponse;
         }
 
-        public async Task<Event> Create(EventRequest eventDto)
+        public async Task<Event> Create(EventRequest eventRequest)
         {
-            var eevent = _mapper.Map<Event>(eventDto);
-            eevent.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _context.Events.Add(eevent);
+            
+            var data = _mapper.Map<Event>(eventRequest);
+
+            data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _context.Events.Add(data);
             await _context.SaveChangesAsync();
-            var createdEventDto = _mapper.Map<Event>(eevent);
-            return createdEventDto;
+            var createdEvent = _mapper.Map<Event>(data);
+            return createdEvent;
         }
 
     }
