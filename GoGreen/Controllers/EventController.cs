@@ -129,55 +129,23 @@ namespace GoGreen.Controllers
                 return BadRequest("The user ID claim is missing");
             }
 
-            var type = await _context.EventTypes.FindAsync(request.TypeId);
+            var updatedEvent = await _eventService.Update(id, request);
 
-            if (type == null)
-            {
-                return BadRequest("Type not found");
-            }
 
-            var @event = await _context.Events
-            .Where(e => e.Id == id && e.UserId == userId)
-            .SingleOrDefaultAsync();
-
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            @event.Title = request.Title;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return _mapper.Map<EventResponse>(updatedEvent);
         }
 
         // DELETE: api/Event/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
-            if (@event == null)
+
+            var isDeleted = await _eventService.Delete(id);
+
+            if (!isDeleted)
             {
                 return NotFound();
             }
-
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

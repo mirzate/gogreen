@@ -117,8 +117,8 @@ namespace GoGreen
                 });
                 
             });
-            
-            
+
+
             // Add automatic database migration
             using (var serviceProvider = services.BuildServiceProvider())
             {

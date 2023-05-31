@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GoGreen.Services
 {
@@ -65,6 +66,74 @@ namespace GoGreen.Services
             var createdEvent = _mapper.Map<Event>(data);
             return createdEvent;
         }
+
+        public async Task<EventResponse> Update(int id, EventRequest request)
+        {
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return null;
+            }
+
+            var existingEvent = await _context.Events
+            .Where(e => e.Id == id && e.UserId == userId)
+            .SingleOrDefaultAsync();
+
+            if (existingEvent == null)
+            {
+                return null;
+            }
+
+            // Update only the properties provided in the request
+            if (request.Title != null)
+            {
+                existingEvent.Title = request.Title;
+            }
+
+            if (request.Description != null)
+            {
+                existingEvent.Description = request.Description;
+            }
+
+            // Update other properties as needed
+
+            _context.Events.Update(existingEvent);
+            await _context.SaveChangesAsync();
+
+            var updatedEventResponse = _mapper.Map<EventResponse>(existingEvent);
+
+            return updatedEventResponse;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+
+            var eventToDelete = await _context.Events
+            .Where(e => e.Id == id && e.UserId == userId)
+            .SingleOrDefaultAsync();
+
+            if (eventToDelete == null)
+            {
+                return false; // Event not found
+            }
+
+            _context.Events.Remove(eventToDelete);
+
+            await _context.SaveChangesAsync();
+
+            return true; // Event successfully deleted
+        }
+
+
 
     }
 
