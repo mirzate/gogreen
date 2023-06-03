@@ -88,6 +88,7 @@ namespace GoGreen.Controllers
 
 
             var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
+
             if (municipality == null)
             {
                 return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");

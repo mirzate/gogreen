@@ -18,4 +18,6 @@ namespace GoGreen.Responses
         public ICollection<Image> Images { get; set; }
 
     }
+
+
 }

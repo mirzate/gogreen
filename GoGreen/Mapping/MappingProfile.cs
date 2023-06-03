@@ -13,6 +13,12 @@ namespace GoGreen.Mappings
             CreateMap<Event, EventResponse>().ReverseMap();
             CreateMap<EventRequest, Event>().ReverseMap();
 
+            CreateMap<EcoViolation, EcoViolationResponse>().ReverseMap();
+            CreateMap<EcoViolationRequest, EcoViolation>().ReverseMap();
+
+            CreateMap<GreenIsland, GreenIslandResponse>().ReverseMap();
+            CreateMap<GreenIslandRequest, GreenIsland>().ReverseMap();
+
         }
     }
 }

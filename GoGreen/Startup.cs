@@ -56,6 +56,8 @@ namespace GoGreen
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
             services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IEcoViolationService, EcoViolationService>();
+            services.AddScoped<IGreenIslandService, GreenIslandService>();
 
             services.AddAuthentication(options =>
             {
