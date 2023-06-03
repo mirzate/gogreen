@@ -4,6 +4,7 @@ using GoGreen.Models;
 using GoGreen.Data;
 using GoGreen.Requests;
 using System.Net;
+using Azure.Core;
 
 namespace GoGreen.Controllers
 {
@@ -58,15 +59,26 @@ namespace GoGreen.Controllers
 
         // PUT: api/EventType/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEventType(int id, EventType eventType)
+        public async Task<IActionResult> PutEventType(int id, [FromBody] EventTypeRequest request)
         {
+
+            var existingData = await _context.EventTypes.FindAsync(id);
+
+            if (existingData == null)
+            {
+                return NotFound();
+            }
+
+            existingData.Name = request.Name;
+
+            /*
             if (id != eventType.Id)
             {
                 return BadRequest();
             }
 
             _context.Entry(eventType).State = EntityState.Modified;
-
+            */
             try
             {
                 await _context.SaveChangesAsync();
