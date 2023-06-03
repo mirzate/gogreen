@@ -18,6 +18,8 @@ using System.Text;
 using RabbitMQ.Service;
 using System.Threading.Channels;
 using Microsoft.Extensions.Options;
+using GoGreen.Mappings;
+using AutoMapper;
 
 namespace GoGreen
 {
@@ -34,6 +36,10 @@ namespace GoGreen
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
             .Build();
+
+            // Add AutoMapper
+            services.AddAutoMapper(typeof(MappingProfile));
+
             /*
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
@@ -49,6 +55,9 @@ namespace GoGreen
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IEcoViolationService, EcoViolationService>();
+            services.AddScoped<IGreenIslandService, GreenIslandService>();
 
             services.AddAuthentication(options =>
             {
@@ -110,8 +119,8 @@ namespace GoGreen
                 });
                 
             });
-            
-            
+
+
             // Add automatic database migration
             using (var serviceProvider = services.BuildServiceProvider())
             {

@@ -4,6 +4,7 @@ using GoGreen.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoGreen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230528183757_Init-GoGreen-Models")]
+    partial class InitGoGreenModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,6 +106,10 @@ namespace GoGreen.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("File")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -211,11 +218,16 @@ namespace GoGreen.Migrations
                     b.Property<int?>("GreenIslandId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MunicipalityId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
                     b.HasIndex("GreenIslandId");
+
+                    b.HasIndex("MunicipalityId");
 
                     b.ToTable("Images");
                 });
@@ -232,6 +244,10 @@ namespace GoGreen.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Logo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -483,13 +499,13 @@ namespace GoGreen.Migrations
             modelBuilder.Entity("GoGreen.Models.Event", b =>
                 {
                     b.HasOne("GoGreen.Models.Municipality", "Municipality")
-                        .WithMany()
+                        .WithMany("Events")
                         .HasForeignKey("MunicipalityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GoGreen.Models.EventType", "EventType")
-                        .WithMany()
+                        .WithMany("Events")
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -510,7 +526,7 @@ namespace GoGreen.Migrations
             modelBuilder.Entity("GoGreen.Models.GreenIsland", b =>
                 {
                     b.HasOne("GoGreen.Models.Municipality", "Municipality")
-                        .WithMany()
+                        .WithMany("GreenIslands")
                         .HasForeignKey("MunicipalityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -535,6 +551,10 @@ namespace GoGreen.Migrations
                     b.HasOne("GoGreen.Models.GreenIsland", null)
                         .WithMany("Images")
                         .HasForeignKey("GreenIslandId");
+
+                    b.HasOne("GoGreen.Models.Municipality", null)
+                        .WithMany("Images")
+                        .HasForeignKey("MunicipalityId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -598,8 +618,22 @@ namespace GoGreen.Migrations
                     b.Navigation("Images");
                 });
 
+            modelBuilder.Entity("GoGreen.Models.EventType", b =>
+                {
+                    b.Navigation("Events");
+                });
+
             modelBuilder.Entity("GoGreen.Models.GreenIsland", b =>
                 {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("GoGreen.Models.Municipality", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("GreenIslands");
+
                     b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
