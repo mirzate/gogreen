@@ -20,11 +20,15 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Options;
 using GoGreen.Mappings;
 using AutoMapper;
+using System.Linq;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GoGreen
 {
     public class Startup
     {
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -58,6 +62,7 @@ namespace GoGreen
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEcoViolationService, EcoViolationService>();
             services.AddScoped<IGreenIslandService, GreenIslandService>();
+            services.AddScoped<IImageService, ImageService>();
 
             services.AddAuthentication(options =>
             {
@@ -117,7 +122,7 @@ namespace GoGreen
                         new List<string>()
                     }
                 });
-                
+                c.OperationFilter<FileUploadOperationFilter>();
             });
 
 
@@ -134,7 +139,7 @@ namespace GoGreen
 
         }
 
-        public void Configure(WebApplication app, IWebHostEnvironment env)
+        public void Configure(WebApplication app)
         {
 
             // Configure the HTTP request pipeline.
@@ -146,6 +151,7 @@ namespace GoGreen
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GoGreen");
                 });
             }
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
@@ -159,6 +165,28 @@ namespace GoGreen
 
         }
 
+
+        public class FileUploadOperationFilter : IOperationFilter
+        {
+            public void Apply(OpenApiOperation operation, OperationFilterContext context)
+            {
+                    if (context.ApiDescription.ParameterDescriptions != null && context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
+                    {
+                        operation.Parameters.Add(new OpenApiParameter
+                    {
+                        Name = "imageFile",
+                        In = ParameterLocation.Header, // Change ParameterLocation to "Header" or any other suitable location for your case
+                        Description = "Image file",
+                        Required = true,
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "file",
+                            Format = "binary"
+                        }
+                    });
+                }
+            }
+        }
 
     }
 

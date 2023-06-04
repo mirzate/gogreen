@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GoGreen.Models;
+using System.Net;
+using Azure;
+using Microsoft.Extensions.Hosting;
 
 namespace GoGreen.Data
 {
@@ -22,11 +25,27 @@ namespace GoGreen.Data
         public DbSet<EcoViolation> EcoViolations { get; set; }
         public DbSet<GreenIsland> GreenIslands { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<EventImage> EventImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<EventImage>()
+                .HasKey(ei => new { ei.EventId, ei.ImageId });
+
+          
+            modelBuilder.Entity<EventImage>()
+                .HasOne(ei => ei.Event)
+                .WithMany(e => e.EventImages)
+                .HasForeignKey(ei => ei.EventId);
+
+            modelBuilder.Entity<EventImage>()
+                .HasOne(ei => ei.Image)
+                .WithMany(i => i.EventImages)
+                .HasForeignKey(ei => ei.ImageId);
+
+
+            base.OnModelCreating(modelBuilder);
         }
 
     }

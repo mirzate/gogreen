@@ -9,6 +9,8 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using GoGreen.Services;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
+using NuGet.Packaging;
 
 namespace GoGreen.Controllers
 {
@@ -20,12 +22,13 @@ namespace GoGreen.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEventService _eventService;
         private readonly IMapper _mapper;
-
-        public EventController(ApplicationDbContext context, IEventService eventService, IMapper mapper)
+        private readonly IImageService _imageService;
+        public EventController(ApplicationDbContext context, IEventService eventService, IMapper mapper, IImageService imageService)
         {
             _context = context;
             _eventService = eventService;
             _mapper = mapper;
+            _imageService=imageService;
         }
 
         // GET: api/Event
@@ -62,6 +65,7 @@ namespace GoGreen.Controllers
                 return NotFound();
             }
 
+
             var eventResponse = _mapper.Map<EventResponse>(eevent);
 
             return Ok(eventResponse);
@@ -70,7 +74,8 @@ namespace GoGreen.Controllers
 
         // POST: api/Event
         [HttpPost]
-        public async Task<ActionResult<EventResponse>> PostEvent([FromBody] EventRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile imageFile)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -94,29 +99,32 @@ namespace GoGreen.Controllers
                 return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
             }
 
-            var eevent = _mapper.Map<EventRequest>(request);
 
-            var createdEvent = await _eventService.Create(eevent);
+            var createdEvent = await _eventService.Create(request);
+           
+            if (imageFile != null)
+            {
+                var image = await _imageService.SaveImage(imageFile);
+
+                if (image != null)
+                {
+                    var eventImage = new EventImage
+                    {
+                        EventId = createdEvent.Id,
+                        ImageId = image.Id
+                    };
+
+                    _context.Add(eventImage);
+
+                    await _context.SaveChangesAsync();
+
+                    createdEvent.EventImages.Add(eventImage); // Add created EventImage to created Event in step before
+
+                }
+            }
 
             return _mapper.Map<EventResponse>(createdEvent);
 
-            /*
-            var @event = new Event
-            {
-                Title = request.Title,
-                Description = request.Description,
-                DateFrom = request.DateFrom,
-                DateTo= request.DateTo,
-                TypeId = request.TypeId,
-                MunicipalityId = request.MunicipalityId,
-                UserId = userId,
-            };
-
-            _context.Add(@event);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetEvent), new { id = @event.Id }, @event);
-            */
         }
 
         // PUT: api/Event/5
@@ -151,9 +159,95 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
-        private bool EventExists(int id)
+        [HttpPut("{eventId}/Image")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<EventResponse>> AddEventImage(int eventId, IFormFile imageFile)
+
         {
-            return _context.Events.Any(e => e.Id == id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("The user ID claim is missing");
+            }
+
+            var @event = await _context.Events
+                .Where(e => e.Id == eventId && e.UserId == userId)
+                .Include(a => a.EventImages)
+                    .ThenInclude(ei => ei.Image)
+                .FirstOrDefaultAsync();
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            if (imageFile != null)
+            {
+                var image = await _imageService.SaveImage(imageFile);
+
+                if (image != null)
+                {
+                    var eventImage = new EventImage
+                    {
+                        EventId = @event.Id,
+                        ImageId = image.Id
+                    };
+
+                    _context.Add(eventImage);
+
+                    await _context.SaveChangesAsync();
+
+                    @event.EventImages.Add(eventImage); // Add created EventImage to created Event in step before
+
+                }
+            }
+
+            return _mapper.Map<EventResponse>(@event);
+
+
         }
+
+
+        // DELETE: api/Event/5/Image/2
+        [HttpDelete("{eventId}/Image/{imageId}")]
+        public async Task<IActionResult> DeleteEventImage(int eventId, int imageId )
+        {
+            
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("The user ID claim is missing");
+            }
+
+            var @event = await _context.Events
+                .Where(e => e.Id == eventId && e.UserId == userId)
+                .Include(e => e.EventImages)
+                    .ThenInclude(ei => ei.Image)
+                .FirstOrDefaultAsync();
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            var eventImage = @event.EventImages.FirstOrDefault(ei => ei.ImageId == imageId);
+
+            if (eventImage == null)
+            {
+                return NotFound();
+            }
+
+            @event.EventImages.Remove(eventImage);
+            await _context.SaveChangesAsync();
+
+            _imageService.DeleteImage(eventImage.Image.FileName);
+
+
+            return NoContent();
+        }
+
+
     }
 }

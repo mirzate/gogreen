@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Azure;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoGreen.Models
 {
@@ -24,8 +25,7 @@ namespace GoGreen.Models
 
         public bool Active { get; set; }
 
-        public ICollection<Image> Images { get; set; }
-
+        public ICollection<EventImage> EventImages { get; set; }
 
     }
 

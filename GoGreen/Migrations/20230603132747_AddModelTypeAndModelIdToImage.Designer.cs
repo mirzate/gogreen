@@ -4,6 +4,7 @@ using GoGreen.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoGreen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230603132747_AddModelTypeAndModelIdToImage")]
+    partial class AddModelTypeAndModelIdToImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,21 +134,6 @@ namespace GoGreen.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("GoGreen.Models.EventImage", b =>
-                {
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EventId", "ImageId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("EventImages");
-                });
-
             modelBuilder.Entity("GoGreen.Models.EventType", b =>
                 {
                     b.Property<int>("Id")
@@ -212,6 +200,9 @@ namespace GoGreen.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -223,7 +214,16 @@ namespace GoGreen.Migrations
                     b.Property<int?>("GreenIslandId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModelType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
 
                     b.HasIndex("GreenIslandId");
 
@@ -517,25 +517,6 @@ namespace GoGreen.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GoGreen.Models.EventImage", b =>
-                {
-                    b.HasOne("GoGreen.Models.Event", "Event")
-                        .WithMany("EventImages")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GoGreen.Models.Image", "Image")
-                        .WithMany("EventImages")
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Image");
-                });
-
             modelBuilder.Entity("GoGreen.Models.GreenIsland", b =>
                 {
                     b.HasOne("GoGreen.Models.Municipality", "Municipality")
@@ -557,6 +538,10 @@ namespace GoGreen.Migrations
 
             modelBuilder.Entity("GoGreen.Models.Image", b =>
                 {
+                    b.HasOne("GoGreen.Models.Event", null)
+                        .WithMany("Images")
+                        .HasForeignKey("EventId");
+
                     b.HasOne("GoGreen.Models.GreenIsland", null)
                         .WithMany("Images")
                         .HasForeignKey("GreenIslandId");
@@ -620,17 +605,12 @@ namespace GoGreen.Migrations
 
             modelBuilder.Entity("GoGreen.Models.Event", b =>
                 {
-                    b.Navigation("EventImages");
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("GoGreen.Models.GreenIsland", b =>
                 {
                     b.Navigation("Images");
-                });
-
-            modelBuilder.Entity("GoGreen.Models.Image", b =>
-                {
-                    b.Navigation("EventImages");
                 });
 #pragma warning restore 612, 618
         }

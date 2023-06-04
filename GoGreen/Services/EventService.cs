@@ -8,6 +8,7 @@ using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 
 namespace GoGreen.Services
 {
@@ -26,11 +27,15 @@ namespace GoGreen.Services
 
         public async Task<(IEnumerable<EventResponse> Events, int TotalCount)> GetAllAsync(int pageIndex = 1, int pageSize = 10)
         {
-            var query = _context.Events;
+
+
+            var query = _context.Events.Include(e => e.EventImages);
 
             var totalCount = await query.CountAsync();
 
             var events = await query.Skip((pageIndex - 1) * pageSize)
+                        .Include(e => e.EventImages)
+                            .ThenInclude(ei => ei.Image)
                         .Take(pageSize)
                         .ToListAsync();
             
@@ -44,13 +49,15 @@ namespace GoGreen.Services
             var data = await _context.Events
                 .Include(a => a.EventType)
                 .Include(a => a.Municipality)
-                .Include(a => a.Images)
+                .Include(a => a.EventImages)
+                    .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
             {
                 return null;
             }
+
             var eventResponse = _mapper.Map<EventResponse>(data);
             return eventResponse;
         }

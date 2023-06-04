@@ -11,6 +11,14 @@ namespace GoGreen.Mappings
         {
 
             CreateMap<Event, EventResponse>().ReverseMap();
+
+            CreateMap<Event, EventResponse>()
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.EventImages.Select(ei => ei.Image)));
+
+            CreateMap<Image, ImageResponse>();
+
+
+
             CreateMap<EventRequest, Event>().ReverseMap();
 
             CreateMap<EcoViolation, EcoViolationResponse>().ReverseMap();
