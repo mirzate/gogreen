@@ -20,12 +20,14 @@ namespace GoGreen.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEcoViolationService _ecoViolationService;
         private readonly IMapper _mapper;
+        private readonly IImageService _imageService;
 
-        public EcoViolationController(ApplicationDbContext context, IEcoViolationService ecoViolationService, IMapper mapper)
+        public EcoViolationController(ApplicationDbContext context, IEcoViolationService ecoViolationService, IMapper mapper, IImageService imageService)
         {
             _context = context;
             _ecoViolationService = ecoViolationService;
             _mapper = mapper;
+            _imageService=imageService;
         }
 
         // GET: api/EcoViolation
@@ -35,8 +37,6 @@ namespace GoGreen.Controllers
         {
 
             var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize);
-
-            return Ok(datas);
 
             var result = new EcoViolationPaginationResponse<EcoViolationResponse>
             {
@@ -69,20 +69,36 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/EcoViolation
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<EcoViolationResponse>> Post([FromBody] EcoViolationRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, IFormFile imageFile)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("The user ID claim is missing");
-            }
-
 
             var data = _mapper.Map<EcoViolationRequest>(request);
 
             var createdData = await _ecoViolationService.Store(data);
+
+            if (imageFile != null)
+            {
+                var image = await _imageService.SaveImage(imageFile);
+
+                if (image != null)
+                {
+                    var nImage = new EcoViolationImage
+                    {
+                        EcoViolationId = createdData.Id,
+                        ImageId = image.Id
+                    };
+
+                    _context.Add(nImage);
+
+                    await _context.SaveChangesAsync();
+
+                    createdData.EcoViolationImages.Add(nImage); 
+
+                }
+            }
 
             return _mapper.Map<EcoViolationResponse>(createdData);
 
@@ -119,6 +135,8 @@ namespace GoGreen.Controllers
 
             return NoContent();
         }
+
+
 
     }
 }

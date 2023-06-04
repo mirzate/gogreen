@@ -14,6 +14,8 @@ namespace GoGreen.Responses
         //public EcoViolationStatus? EcoViolationStatus { get; set; }
         public EcoViolationStatusResponse EcoViolationStatus { get; set; }
 
+        public List<ImageResponse> Images { get; set; }
+
     }
 
     public class EcoViolationStatusResponse

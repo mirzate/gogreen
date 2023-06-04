@@ -37,8 +37,6 @@ namespace GoGreen.Controllers
 
             var (datas, totalCount) = await _greenIslandService.Index(pageIndex, pageSize);
 
-            return Ok(datas);
-
             var result = new GreenIslandPaginationResponse<GreenIslandResponse>
             {
                 Items = (List<GreenIslandResponse>)datas,

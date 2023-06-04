@@ -11,6 +11,7 @@ namespace GoGreen.Models
 
         public ICollection<EventImage> EventImages { get; set; }
         public ICollection<GreenIslandImage> GreenIslandImages { get; set; }
+        public ICollection<EcoViolationImage> EcoViolationImages { get; set; }
 
     }
 

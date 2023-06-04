@@ -39,7 +39,7 @@ namespace GoGreen.Controllers
 
             var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize);
 
-            return Ok(events);
+            //return Ok(events);
 
             var result = new EventPaginationResponse<EventResponse>
             {
