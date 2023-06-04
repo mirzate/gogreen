@@ -29,7 +29,7 @@ namespace GoGreen.Services
         {
 
 
-            var query = _context.Events.Include(e => e.EventImages);
+            var query = _context.Events;
 
             var totalCount = await query.CountAsync();
 

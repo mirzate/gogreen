@@ -26,14 +26,17 @@ namespace GoGreen.Data
         public DbSet<GreenIsland> GreenIslands { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<EventImage> EventImages { get; set; }
+        public DbSet<GreenIslandImage> GreenIslandImages { get; set; }
+        
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            // Event Model Image
             modelBuilder.Entity<EventImage>()
                 .HasKey(ei => new { ei.EventId, ei.ImageId });
 
-          
             modelBuilder.Entity<EventImage>()
                 .HasOne(ei => ei.Event)
                 .WithMany(e => e.EventImages)
@@ -42,6 +45,21 @@ namespace GoGreen.Data
             modelBuilder.Entity<EventImage>()
                 .HasOne(ei => ei.Image)
                 .WithMany(i => i.EventImages)
+                .HasForeignKey(ei => ei.ImageId);
+
+
+            // GreenIsland Model Image
+            modelBuilder.Entity<GreenIslandImage>()
+                .HasKey(ei => new { ei.GreenIslandId, ei.ImageId });
+
+            modelBuilder.Entity<GreenIslandImage>()
+                .HasOne(ei => ei.GreenIsland)
+                .WithMany(e => e.GreenIslandImages)
+                .HasForeignKey(ei => ei.GreenIslandId);
+
+            modelBuilder.Entity<GreenIslandImage>()
+                .HasOne(ei => ei.Image)
+                .WithMany(i => i.GreenIslandImages)
                 .HasForeignKey(ei => ei.ImageId);
 
 

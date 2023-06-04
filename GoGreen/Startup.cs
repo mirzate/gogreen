@@ -23,6 +23,8 @@ using AutoMapper;
 using System.Linq;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using GoGreen.Controllers;
 
 namespace GoGreen
 {
@@ -168,6 +170,7 @@ namespace GoGreen
 
         public class FileUploadOperationFilter : IOperationFilter
         {
+            /*
             public void Apply(OpenApiOperation operation, OperationFilterContext context)
             {
                     if (context.ApiDescription.ParameterDescriptions != null && context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
@@ -186,6 +189,33 @@ namespace GoGreen
                     });
                 }
             }
+            */
+            public void Apply(OpenApiOperation operation, OperationFilterContext context)
+            {
+                var apiDescription = context.ApiDescription;
+
+                if (apiDescription.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+                {
+               
+                        if (apiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
+                        {
+                            operation.Parameters.Add(new OpenApiParameter
+                            {
+                                Name = "imageFile",
+                                In = ParameterLocation.Header,
+                                Description = "Image file",
+                                Required = true,
+                                Schema = new OpenApiSchema
+                                {
+                                    Type = "file",
+                                    Format = "binary"
+                                }
+                            });
+                        }
+                    
+                }
+            }
+
         }
 
     }

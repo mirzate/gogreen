@@ -10,7 +10,7 @@ namespace GoGreen.Models
         public string FilePath { get; set; }
 
         public ICollection<EventImage> EventImages { get; set; }
-
+        public ICollection<GreenIslandImage> GreenIslandImages { get; set; }
 
     }
 

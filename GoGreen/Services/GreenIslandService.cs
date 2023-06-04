@@ -31,6 +31,8 @@ namespace GoGreen.Services
             var totalCount = await query.CountAsync();
 
             var datas = await query.Skip((pageIndex - 1) * pageSize)
+                        .Include(a => a.GreenIslandImages)
+                            .ThenInclude(ei => ei.Image)
                         .Take(pageSize)
                         .ToListAsync();
             
@@ -42,6 +44,8 @@ namespace GoGreen.Services
         {
 
             var data = await _context.GreenIslands
+                .Include(a => a.GreenIslandImages)
+                            .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
@@ -107,28 +111,28 @@ namespace GoGreen.Services
 
         public async Task<bool> Delete(int id)
         {
-            /*
+            
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return false;
             }
-            */
+            
             var dataToDelete = await _context.GreenIslands
-            .Where(e => e.Id == id)
+            .Where(e => e.Id == id && e.UserId == userId)
             .SingleOrDefaultAsync();
 
             if (dataToDelete == null)
             {
-                return false; // Event not found
+                return false; 
             }
 
             _context.GreenIslands.Remove(dataToDelete);
 
             await _context.SaveChangesAsync();
 
-            return true; // Event successfully deleted
+            return true; 
         }
 
 
