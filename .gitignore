@@ -15,6 +15,8 @@ rabbitmq/mnesia
 rabbitmq/mnesia/rabbit@8c2f52de455e/quorum/rabbit@8c2f52de455e/00000001.wal
 00000001.wal
 
+uploads/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
