@@ -23,8 +23,10 @@ dotnet ef database update 20230604153803_UpdateEcoViolationModel-Add-Municipalit
 
 
 docker build -t gg-01-gogreen-api:latest .
-docker build -t gg-01-gogreen-api:latest -f GoGreen/Dockerfile .
-docker run -d -p 5672:5672 -p 1572:15672 zec:0.3
 docker-compose up -d
+
+#docker build -t gg-01-gogreen-api:latest -f GoGreen/Dockerfile .
+#docker run -d -p 5672:5672 -p 1572:15672 zec:0.3
+
 
 
