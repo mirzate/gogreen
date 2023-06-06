@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:gogreen/providers/event_provider.dart';
+import 'package:gogreen/utils/util.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/event_list_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => EventProvider())
+    ],
+    child: const MyApp()
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -147,11 +156,15 @@ class LoginPage extends StatelessWidget {
 
   TextEditingController _usernameController = new TextEditingController();
   TextEditingController _passwordController = new TextEditingController();
-  
+  late EventProvider _eventProvider;
+
   @override
   Widget build(BuildContext context) {
-  _usernameController.text = "test";
-  _passwordController.text = 'Password1\$';
+  
+    _usernameController.text = "test";
+    _passwordController.text = 'Password1\$';
+    _eventProvider = context.read<EventProvider>();
+    
     return Scaffold(
       appBar: AppBar(title: Text("Login"), backgroundColor: Theme.of(context).primaryColor,),
       body: Center(
@@ -184,15 +197,32 @@ class LoginPage extends StatelessWidget {
                   ),
                   SizedBox(height: 10,),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       var username = _usernameController.text;
                       var password = _passwordController.text;
                       
-                      Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const EventListScreen(),
-                          ),
-                      );
+                      Authorization.username = username;
+                      Authorization.password = password;
+
+                      try {
+                        await _eventProvider.get();
+                        
+                        Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const EventListScreen(),
+                            ),
+                        );
+                      } on Exception catch (e) {
+                        showDialog(
+                          context: context, 
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text("Error"),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Ok"))
+                            ],
+                        ));
+                      }
                     },
                     child: Text("Login"),
                     style: ButtonStyle(
