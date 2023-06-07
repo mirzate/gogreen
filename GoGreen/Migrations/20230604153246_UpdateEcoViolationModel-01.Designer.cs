@@ -4,6 +4,7 @@ using GoGreen.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoGreen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604153246_UpdateEcoViolationModel-01")]
+    partial class UpdateEcoViolationModel01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,11 +43,7 @@ namespace GoGreen.Migrations
                     b.Property<int>("EcoViolationStatusEnum")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EcoViolationStatusId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<int>("MunicipalityId")
+                    b.Property<int>("EcoViolationStatusId")
                         .HasColumnType("int");
 
                     b.Property<bool?>("Published")
@@ -58,13 +57,14 @@ namespace GoGreen.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EcoViolationStatusId");
 
-                    b.HasIndex("MunicipalityId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("EcoViolations");
                 });
@@ -505,15 +505,15 @@ namespace GoGreen.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GoGreen.Models.Municipality", "Municipality")
+                    b.HasOne("GoGreen.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("MunicipalityId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("EcoViolationStatus");
 
-                    b.Navigation("Municipality");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GoGreen.Models.EcoViolationImage", b =>

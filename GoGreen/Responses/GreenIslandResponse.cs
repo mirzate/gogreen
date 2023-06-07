@@ -11,7 +11,7 @@ namespace GoGreen.Responses
         public decimal Latitude { get; set; }
         public Municipality? Municipality { get; set; }
         public bool Active { get; set; }
-
+        public List<ImageResponse> Images { get; set; }
     }
 
 }

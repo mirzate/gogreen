@@ -31,18 +31,23 @@ namespace GoGreen.Services
             var totalCount = await query.CountAsync();
 
             var datas = await query.Skip((pageIndex - 1) * pageSize)
+                        .Include(e => e.EcoViolationImages)
+                            .ThenInclude(ei => ei.Image)
                         .Take(pageSize)
                         .ToListAsync();
-            
+
             var dataResponses = _mapper.Map<IEnumerable<EcoViolationResponse>>(datas);
 
             return (dataResponses, totalCount);
+
         }
         public async Task<EcoViolationResponse> View(int id)
         {
 
             var data = await _context.EcoViolations
                 .Include(a => a.EcoViolationStatus)
+                .Include(e => e.EcoViolationImages)
+                            .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
@@ -93,11 +98,6 @@ namespace GoGreen.Services
                 existingData.Contact = request.Contact;
             }
 
-            if (request.Response != null)
-            {
-                existingData.Response = request.Response;
-                existingData.UserId = userId;
-            }
 
             // Update other properties as needed
 

@@ -9,11 +9,10 @@ namespace GoGreen.Requests
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
-        
-        public string Contact { get; set; }
+        [Required]
+        public int MunicipalityId { get; set; }
 
-        public string Response { get; set; }
-
+        public string? Contact { get; set; } = null;
     }
 
 }

@@ -4,6 +4,7 @@ using GoGreen.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoGreen.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604143012_UpdateGreenIslandImageModel")]
+    partial class UpdateGreenIslandImageModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +34,7 @@ namespace GoGreen.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Contact")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
@@ -40,17 +44,14 @@ namespace GoGreen.Migrations
                     b.Property<int>("EcoViolationStatusEnum")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EcoViolationStatusId")
-                        .IsRequired()
+                    b.Property<int>("EcoViolationStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MunicipalityId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("Published")
+                    b.Property<bool>("Published")
                         .HasColumnType("bit");
 
                     b.Property<string>("Response")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -58,30 +59,16 @@ namespace GoGreen.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EcoViolationStatusId");
 
-                    b.HasIndex("MunicipalityId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("EcoViolations");
-                });
-
-            modelBuilder.Entity("GoGreen.Models.EcoViolationImage", b =>
-                {
-                    b.Property<int>("EcoViolationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EcoViolationId", "ImageId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("EcoViolationImages");
                 });
 
             modelBuilder.Entity("GoGreen.Models.EcoViolationStatus", b =>
@@ -505,34 +492,15 @@ namespace GoGreen.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GoGreen.Models.Municipality", "Municipality")
+                    b.HasOne("GoGreen.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("MunicipalityId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("EcoViolationStatus");
 
-                    b.Navigation("Municipality");
-                });
-
-            modelBuilder.Entity("GoGreen.Models.EcoViolationImage", b =>
-                {
-                    b.HasOne("GoGreen.Models.EcoViolation", "EcoViolation")
-                        .WithMany("EcoViolationImages")
-                        .HasForeignKey("EcoViolationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GoGreen.Models.Image", "Image")
-                        .WithMany("EcoViolationImages")
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EcoViolation");
-
-                    b.Navigation("Image");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GoGreen.Models.Event", b =>
@@ -670,11 +638,6 @@ namespace GoGreen.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GoGreen.Models.EcoViolation", b =>
-                {
-                    b.Navigation("EcoViolationImages");
-                });
-
             modelBuilder.Entity("GoGreen.Models.EcoViolationStatus", b =>
                 {
                     b.Navigation("EcoViolations");
@@ -692,8 +655,6 @@ namespace GoGreen.Migrations
 
             modelBuilder.Entity("GoGreen.Models.Image", b =>
                 {
-                    b.Navigation("EcoViolationImages");
-
                     b.Navigation("EventImages");
 
                     b.Navigation("GreenIslandImages");

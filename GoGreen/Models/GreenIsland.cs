@@ -21,7 +21,7 @@ namespace GoGreen.Models
         public string UserId { get; set; }
         public User User { get; set; }
 
-        public ICollection<Image> Images { get; set; }
+        public ICollection<GreenIslandImage> GreenIslandImages { get; set; }
 
     }
 

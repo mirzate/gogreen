@@ -11,6 +11,6 @@ startup.ConfigureServices(builder.Services); // calling ConfigureServices method
 
 var app = builder.Build();
 
-startup.Configure(app, builder.Environment);
+startup.Configure(app);
 
 
