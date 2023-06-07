@@ -19,3 +19,8 @@ samples, guidance on mobile development, and a full API reference.
 ###
 
 flutter clean
+
+## https://docs.flutter.dev/data-and-backend/json
+## Serializing JSON using code generation libraries
+
+flutter pub run build_runner build --delete-conflicting-outputs
