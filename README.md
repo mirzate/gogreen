@@ -1,6 +1,9 @@
 # gogreen
 FIT
 
+##http://localhost:8080/swagger/index.html
+##http://localhost:8080/api/Event
+
 Add-Migration <MigrationName>
 Update-Database
 
