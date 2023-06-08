@@ -30,3 +30,22 @@ docker-compose up -d
 
 
 
+ToDO:
+
+Note! XXX - Zamjeniti sa kljucem
+
+1. Kreirati .env file kraj docker-composer i setup vales:
+
+AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net
+
+// Kako bi docker composer mogao setup values for Cloud Image Service
+
+2. Kreirati u GoGreen file: appsettings.Production.json i setup values:
+
+  "AzureStorage": {
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
+  }
+
+  // Kako bi docker composer pokrece env kao Production i ako bi app mogla da ucita values for Cloud Image Service
+
+3. Ako se app pokrece u Development modu na win, na Win System Var setup varijablu sa imenom "AzureStorage__ConnectionString" i values "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
