@@ -89,10 +89,25 @@ namespace GoGreen.Services
         public void DeleteImage(string fileName)
         {
 
-            //WebRootPath
-            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads", fileName);
+            // Cloud Azure Object Storage
+            var connectionString = _config["AzureStorage:ConnectionString"];
+            var containerName = "rs2containergogreen";
+
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            var blobClient = containerClient.GetBlobClient(fileName);
+
+            blobClient.DeleteIfExists();
+
+            
+            // Local 
+            var uploadsFolderPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
+            var filePath = Path.Combine(uploadsFolderPath, fileName);
+
             if (File.Exists(filePath))
                 File.Delete(filePath);
+
+
         }
 
     }
