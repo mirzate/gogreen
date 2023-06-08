@@ -25,6 +25,8 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using GoGreen.Controllers;
+using System;
+using Microsoft.Extensions.Hosting;
 
 namespace GoGreen
 {
@@ -32,17 +34,34 @@ namespace GoGreen
     {
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }    
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            Configuration  = configuration;
+            //Configuration  = configuration;
+
+
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+            .Build();
+
+            Environment = environment;
+
+            Console.WriteLine($"AzureStorage__ConnectionString: {Configuration["AzureStorage:ConnectionString"]}");
+
+
         }
         public void ConfigureServices(IServiceCollection services)
         {
+            /*
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
             .Build();
 
+            */
             // Add AutoMapper
             services.AddAutoMapper(typeof(MappingProfile));
 
@@ -58,13 +77,14 @@ namespace GoGreen
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-
+            services.AddScoped<DataSeeder>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEcoViolationService, EcoViolationService>();
             services.AddScoped<IGreenIslandService, GreenIslandService>();
             services.AddScoped<IImageService, ImageService>();
+            
 
             services.AddAuthentication(options =>
             {
@@ -75,10 +95,10 @@ namespace GoGreen
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(config["Jwt:Key"])),
+                    (Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = false,
@@ -88,6 +108,15 @@ namespace GoGreen
 
             services.AddAuthorization();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Disable password requirements for seeding
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 1; // Set the minimum required password length to 1 or any desired value
+            });
 
             services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -135,8 +164,16 @@ namespace GoGreen
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     dbContext.Database.Migrate();
+
+                   
+                    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+                    dataSeeder.SeedData().Wait();
+
+
+
                 }
             }
+
             
 
         }
@@ -165,31 +202,12 @@ namespace GoGreen
 
             app.Run();
 
+
         }
 
 
         public class FileUploadOperationFilter : IOperationFilter
         {
-            /*
-            public void Apply(OpenApiOperation operation, OperationFilterContext context)
-            {
-                    if (context.ApiDescription.ParameterDescriptions != null && context.ApiDescription.ParameterDescriptions.Any(x => x.ModelMetadata != null && x.ModelMetadata.ContainerType == typeof(IFormFile)))
-                    {
-                        operation.Parameters.Add(new OpenApiParameter
-                    {
-                        Name = "imageFile",
-                        In = ParameterLocation.Header, // Change ParameterLocation to "Header" or any other suitable location for your case
-                        Description = "Image file",
-                        Required = true,
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "file",
-                            Format = "binary"
-                        }
-                    });
-                }
-            }
-            */
             public void Apply(OpenApiOperation operation, OperationFilterContext context)
             {
                 var apiDescription = context.ApiDescription;
@@ -218,6 +236,6 @@ namespace GoGreen
 
         }
 
-    }
+        }
 
 }
