@@ -36,7 +36,7 @@ class _EventListScreenState extends State<EventListScreen> {
   Future<void> fetchData() async {
     try {
 
-      _fullTextSearchController.clear();
+      //_fullTextSearchController.clear(); // Da je potrebno obrisati
 
       var data = await _eventProvider.get(
         params: {
@@ -87,6 +87,9 @@ class _EventListScreenState extends State<EventListScreen> {
                         prefixIcon: Icon(Icons.search)
                       ),
                       controller: _fullTextSearchController,
+                      onSubmitted: (String value) {
+                        fetchData();
+                      },
                     ),
               ),
               SizedBox(height: 10,),
@@ -104,6 +107,7 @@ class _EventListScreenState extends State<EventListScreen> {
               ),
               */
               SizedBox(height: 10,),
+              /*
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -119,6 +123,7 @@ class _EventListScreenState extends State<EventListScreen> {
                   ),
               ),),
               SizedBox(height: 10,),
+              */
               /*
               ElevatedButton(
                 onPressed: () async {
@@ -142,6 +147,7 @@ class _EventListScreenState extends State<EventListScreen> {
       ],),
     );
   }
+  
   Expanded _buildDataListView() {
     return Expanded(child: 
             SingleChildScrollView(child: 
@@ -238,8 +244,6 @@ class _EventListScreenState extends State<EventListScreen> {
             )
           );
   }
-
-
 
 
 }

@@ -25,20 +25,26 @@ namespace GoGreen.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<(IEnumerable<EventResponse> Events, int TotalCount)> GetAllAsync(int pageIndex = 1, int pageSize = 10)
+        public async Task<(IEnumerable<EventResponse> Events, int TotalCount)> GetAllAsync(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
 
-            var query = _context.Events;
+            var query = _context.Events.AsQueryable();
 
-            var totalCount = await query.CountAsync();
+            
+            if (!string.IsNullOrEmpty(fullTextSearch))
+            {
+                query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
+            }
 
             var events = await query.Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EventImages)
                             .ThenInclude(ei => ei.Image)
                         .Take(pageSize)
                         .ToListAsync();
-            
+
+            var totalCount = await query.CountAsync();
+
             //var eventResponses = _mapper.Map<IEnumerable<EventResponse>>(events);
 
             var eventResponses = events.Select(e =>
