@@ -11,6 +11,7 @@ import '../models/event.dart';
 import '../providers/event_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 
+
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});
 
@@ -193,30 +194,32 @@ class _EventListScreenState extends State<EventListScreen> {
                       ),
                       ),
                     ], 
-                    rows: result?.result.map((Event e) => DataRow(onSelectChanged: (value) => {
-                      if(value == true){
-                        Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const EventDetailScreen(),
-                            ),
-                        )
-                      }
-                    },
-                      cells: [
-                        DataCell(Text(e.id?.toString() ?? "")),
-                        DataCell(Text(e.title?.toString() ?? "")),
-                        DataCell(Text(e.active?.toString() ?? "")),
-                        DataCell(Container(
-                          width: 80,
-                          height: 80,
-                          child: Flutter.Image.network(
-                                e.firstImage?.filePath.toString() ?? "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png",
-                                //width: 200, // Set the desired width of the image
-                                //height: 200, // Set the desired height of the image
-                              )
-                        )),
-                      ]
-                    )
+                    rows: result?.result.map((Event e) => 
+                      DataRow(
+                        onSelectChanged: (value) => {
+                          if(value == true){
+                            Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => EventDetailScreen(event: e),
+                                ),
+                            )
+                          }
+                        },
+                        cells: [
+                          DataCell(Text(e.id?.toString() ?? "")),
+                          DataCell(Text(e.title?.toString() ?? "")),
+                          DataCell(Text(e.active?.toString() ?? "")),
+                          DataCell(Container(
+                            width: 80,
+                            height: 80,
+                            child: Flutter.Image.network(
+                                  e.firstImage?.filePath.toString() ?? "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png",
+                                  //width: 200, // Set the desired width of the image
+                                  //height: 200, // Set the desired height of the image
+                                )
+                          )),
+                        ]
+                      )
                     ).toList() ?? []
                   ),
                   Row(

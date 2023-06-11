@@ -19,10 +19,9 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event()
   ..eventType = json['eventType'] == null
       ? null
       : EventType.fromJson(json['eventType'] as Map<String, dynamic>)
-  ..municipalityType = json['municipalityType'] == null
+  ..municipality = json['municipality'] == null
       ? null
-      : MunicipalityType.fromJson(
-          json['municipalityType'] as Map<String, dynamic>)
+      : Municipality.fromJson(json['municipality'] as Map<String, dynamic>)
   ..image = json['image'] == null
       ? null
       : Image.fromJson(json['image'] as Map<String, dynamic>)
@@ -38,7 +37,7 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'dateTo': instance.dateTo?.toIso8601String(),
       'active': instance.active,
       'eventType': instance.eventType,
-      'municipalityType': instance.municipalityType,
+      'municipality': instance.municipality,
       'image': instance.image,
       'firstImage': instance.firstImage,
     };
@@ -52,14 +51,13 @@ Map<String, dynamic> _$EventTypeToJson(EventType instance) => <String, dynamic>{
       'name': instance.name,
     };
 
-MunicipalityType _$MunicipalityTypeFromJson(Map<String, dynamic> json) =>
-    MunicipalityType()
-      ..id = json['id'] as int?
-      ..title = json['title'] as String?
-      ..description = json['description'] as String?
-      ..active = json['active'] as bool?;
+Municipality _$MunicipalityFromJson(Map<String, dynamic> json) => Municipality()
+  ..id = json['id'] as int?
+  ..title = json['title'] as String?
+  ..description = json['description'] as String?
+  ..active = json['active'] as bool?;
 
-Map<String, dynamic> _$MunicipalityTypeToJson(MunicipalityType instance) =>
+Map<String, dynamic> _$MunicipalityToJson(Municipality instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

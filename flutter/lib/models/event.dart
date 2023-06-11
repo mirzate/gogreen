@@ -16,7 +16,7 @@ class Event{
   DateTime? dateTo;
   bool? active;
   EventType? eventType; // Property for the nested EventType
-  MunicipalityType? municipalityType;
+  Municipality? municipality;
   Image? image;
   Image? firstImage;
 
@@ -47,16 +47,16 @@ class EventType {
 
 
 @JsonSerializable()
-class MunicipalityType {
+class Municipality {
   int? id;
   String? title;
   String? description;
   bool? active;
 
-  MunicipalityType();
+  Municipality();
 
-  factory MunicipalityType.fromJson(Map<String, dynamic> json) => _$MunicipalityTypeFromJson(json);
-  Map<String, dynamic> toJson() => _$MunicipalityTypeToJson(this);
+  factory Municipality.fromJson(Map<String, dynamic> json) => _$MunicipalityFromJson(json);
+  Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
 
 @JsonSerializable()

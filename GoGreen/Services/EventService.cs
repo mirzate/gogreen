@@ -40,6 +40,8 @@ namespace GoGreen.Services
             var events = await query.Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EventImages)
                             .ThenInclude(ei => ei.Image)
+                        .Include(e => e.Municipality)
+                        .Include(e => e.EventType)
                         .Take(pageSize)
                         .ToListAsync();
 
@@ -64,6 +66,8 @@ namespace GoGreen.Services
                 .Include(a => a.Municipality)
                 .Include(a => a.EventImages)
                     .ThenInclude(ei => ei.Image)
+                .Include(e => e.Municipality)
+                .Include(e => e.EventType)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
