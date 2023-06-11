@@ -207,13 +207,12 @@ class _EventListScreenState extends State<EventListScreen> {
                         DataCell(Text(e.title?.toString() ?? "")),
                         DataCell(Text(e.active?.toString() ?? "")),
                         DataCell(Container(
-                          width: 100,
-                          height: 100,
-                          //child: imageFromBase64String(e.base64Data),
+                          width: 80,
+                          height: 80,
                           child: Flutter.Image.network(
                                 e.firstImage?.filePath.toString() ?? "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png",
-                                width: 200, // Set the desired width of the image
-                                height: 200, // Set the desired height of the image
+                                //width: 200, // Set the desired width of the image
+                                //height: 200, // Set the desired height of the image
                               )
                         )),
                       ]

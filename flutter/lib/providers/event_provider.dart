@@ -27,7 +27,6 @@ class EventProvider with ChangeNotifier{
     //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
   
     if(params != null){
-      // TODO implement filter on BE
       var queryString = getQueryString(params);
       url = "$url?$queryString";
     }
@@ -62,7 +61,7 @@ class EventProvider with ChangeNotifier{
       
       return result;
     }else{
-      throw Exception("Something bad happend!");
+      throw Exception("Oops, something bad happened!");
     }
 
   }

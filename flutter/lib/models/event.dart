@@ -1,4 +1,4 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -19,8 +19,6 @@ class Event{
   MunicipalityType? municipalityType;
   Image? image;
   Image? firstImage;
-
-  //String? base64Data = 'SGVsbG8gV29ybGQh'; // Replace with your base64-encoded data
 
   Event();
 
@@ -76,30 +74,25 @@ class Image {
 
 /*
 "items": [
-            {
-                "id": 0,
-                "title": "string",
-                "description": "string",
-                "dateFrom": "2023-06-06T19:51:36.537Z",
-                "dateTo": "2023-06-06T19:51:36.537Z",
-                "active": true,
-                "eventType": {
-                  "id": 0,
-                  "name": "string"
-                },
-                "municipality": {
-                  "id": 0,
-                  "title": "string",
-                  "description": "string",
-                  "active": true
-                },
-                "images": [
-                  {
-                    "id": 0,
-                    "fileName": "string",
-                    "filePath": "string"
-                  }
-                ]
-              }
+{
+  "id": 6,
+  "title": "ert",
+  "description": "ert",
+  "dateFrom": "2023-01-01T00:00:00",
+  "dateTo": "2023-01-01T00:00:00",
+  "active": true,
+  "eventType": {
+    "id": 2,
+    "name": "Akcija čišćenja"
+  },
+  "municipality": {
+    "id": 2,
+    "title": "xxx",
+    "description": "testtest",
+    "active": true
+  },
+  "images": [],
+  "firstImage": null
+}
   ]
 */
