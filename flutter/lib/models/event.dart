@@ -1,4 +1,4 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -18,9 +18,9 @@ class Event{
   EventType? eventType; // Property for the nested EventType
   MunicipalityType? municipalityType;
   Image? image;
-  //String? base64Data = 'SGVsbG8gV29ybGQh'; // Replace with your base64-encoded data
+  Image? firstImage;
 
-  Event(this.id, this.title, this.description, this.dateFrom);
+  Event();
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
@@ -74,30 +74,25 @@ class Image {
 
 /*
 "items": [
-            {
-                "id": 0,
-                "title": "string",
-                "description": "string",
-                "dateFrom": "2023-06-06T19:51:36.537Z",
-                "dateTo": "2023-06-06T19:51:36.537Z",
-                "active": true,
-                "eventType": {
-                  "id": 0,
-                  "name": "string"
-                },
-                "municipality": {
-                  "id": 0,
-                  "title": "string",
-                  "description": "string",
-                  "active": true
-                },
-                "images": [
-                  {
-                    "id": 0,
-                    "fileName": "string",
-                    "filePath": "string"
-                  }
-                ]
-              }
+{
+  "id": 6,
+  "title": "ert",
+  "description": "ert",
+  "dateFrom": "2023-01-01T00:00:00",
+  "dateTo": "2023-01-01T00:00:00",
+  "active": true,
+  "eventType": {
+    "id": 2,
+    "name": "Akcija čišćenja"
+  },
+  "municipality": {
+    "id": 2,
+    "title": "xxx",
+    "description": "testtest",
+    "active": true
+  },
+  "images": [],
+  "firstImage": null
+}
   ]
 */

@@ -34,19 +34,20 @@ namespace GoGreen.Controllers
         // GET: api/Event
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize);
+            var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize, fullTextSearch);
 
             //return Ok(events);
-
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var result = new EventPaginationResponse<EventResponse>
             {
-                Items = (List<EventResponse>)events,
+                Items = (List<EventResponse>)events.ToList(),
                 PageNumber = pageIndex,
                 PageSize = pageSize,
-                TotalCount = totalCount
+                TotalCount = totalCount,
+                TotalPages = totalPages
             };
             return Ok(result);
 

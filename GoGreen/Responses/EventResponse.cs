@@ -16,7 +16,8 @@ namespace GoGreen.Responses
         public Municipality? Municipality { get; set; }
 
         public List<ImageResponse> Images { get; set; }
-        
+
+        public ImageResponse FirstImage { get; set; }
 
     }
 

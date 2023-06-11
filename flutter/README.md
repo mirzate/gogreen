@@ -24,3 +24,7 @@ flutter clean
 ## Serializing JSON using code generation libraries
 
 flutter pub run build_runner build --delete-conflicting-outputs
+
+flutter pub run build_runner watch --delete-conflicting-outputs
+
+flutter run -d windows --dart-define=baseURL=https://localhost:7125/api/
