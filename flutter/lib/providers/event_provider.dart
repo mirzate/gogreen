@@ -57,7 +57,7 @@ class EventProvider with ChangeNotifier{
       
       return result;
     }else{
-      throw new Exception("Something bad happend!");
+      throw Exception("Something bad happend!");
     }
 
   }

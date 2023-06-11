@@ -59,6 +59,7 @@ class _EventListScreenState extends State<EventListScreen> {
                     ),
               ),
               SizedBox(height: 10,),
+              /*
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -70,6 +71,7 @@ class _EventListScreenState extends State<EventListScreen> {
                     ),
                 ),
               ),
+              */
               SizedBox(height: 10,),
               ElevatedButton(
                 onPressed: () {
@@ -95,6 +97,8 @@ class _EventListScreenState extends State<EventListScreen> {
                     result = data;
                   });
                   print(data.result[0].title);
+                  print(result);
+                  
                 },
                 child: Text("Get Data from EP"),
                 style: ButtonStyle(
@@ -139,20 +143,25 @@ class _EventListScreenState extends State<EventListScreen> {
                   ),
                   ),
                 ], 
-                rows: result?.result.map((Event e) => DataRow(cells: [
-                  DataCell(Text(e.id?.toString() ?? "")),
-                  DataCell(Text(e.title?.toString() ?? "")),
-                  DataCell(Text(e.active?.toString() ?? "")),
-                  DataCell(Container(
-                    width: 100,
-                    height: 100,
-                    //child: imageFromBase64String(e.base64Data),
-                    child: Flutter.Image.network(
-                          "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png", // Replace with the URL of your image
-                          width: 200, // Set the desired width of the image
-                          height: 200, // Set the desired height of the image
-                        )
-                  )),
+                rows: result?.result.map((Event e) => DataRow(onSelectChanged: (value) => {
+                  if(value == true){
+                    
+                  }
+                },
+                  cells: [
+                    DataCell(Text(e.id?.toString() ?? "")),
+                    DataCell(Text(e.title?.toString() ?? "")),
+                    DataCell(Text(e.active?.toString() ?? "")),
+                    DataCell(Container(
+                      width: 100,
+                      height: 100,
+                      //child: imageFromBase64String(e.base64Data),
+                      child: Flutter.Image.network(
+                             e.firstImage?.filePath.toString() ?? "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png",
+                            width: 200, // Set the desired width of the image
+                            height: 200, // Set the desired height of the image
+                          )
+                    )),
                   ]
                 )
             ).toList() ?? []

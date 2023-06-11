@@ -18,9 +18,11 @@ class Event{
   EventType? eventType; // Property for the nested EventType
   MunicipalityType? municipalityType;
   Image? image;
+  Image? firstImage;
+  
   //String? base64Data = 'SGVsbG8gV29ybGQh'; // Replace with your base64-encoded data
 
-  Event(this.id, this.title, this.description, this.dateFrom);
+  Event();
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

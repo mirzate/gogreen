@@ -39,7 +39,14 @@ namespace GoGreen.Services
                         .Take(pageSize)
                         .ToListAsync();
             
-            var eventResponses = _mapper.Map<IEnumerable<EventResponse>>(events);
+            //var eventResponses = _mapper.Map<IEnumerable<EventResponse>>(events);
+
+            var eventResponses = events.Select(e =>
+            {
+                var eventResponse = _mapper.Map<EventResponse>(e);
+                eventResponse.FirstImage = _mapper.Map<ImageResponse>(e.EventImages.FirstOrDefault()?.Image);
+                return eventResponse;
+            });
 
             return (eventResponses, totalCount);
         }
