@@ -22,7 +22,7 @@ class EventProvider with ChangeNotifier{
   Future<SearchResult<Event>> get({dynamic params}) async {
 
     //int pageIndex = 1, int pageSize = 10, 
-    
+
     var url = "$_baseURL$_endpoint";
     //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
   
@@ -45,7 +45,7 @@ class EventProvider with ChangeNotifier{
       result.totalCount = data['totalCount'];
       result.pageIndex = data['pageNumber'];
       result.pageSize = data['pageSize'];
-
+      result.totalPages = data['totalPages'];
       var items = data['items'];
 
       if (items is List) { // Check if the 'items' field is a list

@@ -19,7 +19,7 @@ class Event{
   MunicipalityType? municipalityType;
   Image? image;
   Image? firstImage;
-  
+
   //String? base64Data = 'SGVsbG8gV29ybGQh'; // Replace with your base64-encoded data
 
   Event();

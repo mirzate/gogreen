@@ -223,28 +223,33 @@ class _EventListScreenState extends State<EventListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton (
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () async {
-                          setState(() {
-                            if (currentPage > 1) {
-                              currentPage--;
-                            }
-                          });
-                        await fetchData();
-                        //print(currentPage);
-                        },
-                      ),
-                      Text('Page $currentPage'),
-                      IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: () async {
-                          setState(() {
-                            currentPage++;
-                          });
+                      Visibility(
+                        visible: (result?.pageIndex ?? 0) != 1,
+                        child: IconButton (
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () async {
+                            setState(() {
+                              if (currentPage > 1) {
+                                currentPage--;
+                              }
+                            });
                           await fetchData();
                           //print(currentPage);
-                        },
+                          },
+                        ),
+                      ),
+                      Text('Page $currentPage'),
+                      Visibility(
+                        visible: currentPage < (result?.totalPages ?? 0),
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                            onPressed: () async {
+                              setState(() {
+                                currentPage++;
+                              });
+                              await fetchData();
+                            },
+                        ),
                       ),
                     ],
                   )
