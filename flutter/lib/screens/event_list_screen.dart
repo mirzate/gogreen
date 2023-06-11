@@ -84,7 +84,16 @@ class _EventListScreenState extends State<EventListScreen> {
                 child: TextField(
                       decoration: InputDecoration(
                         labelText: "Search",
-                        prefixIcon: Icon(Icons.search)
+                        prefixIcon: Icon(Icons.search),
+                        suffixIcon: _fullTextSearchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                _fullTextSearchController.clear();
+                                fetchData();
+                              },
+                            )
+                          : null,
                       ),
                       controller: _fullTextSearchController,
                       onSubmitted: (String value) {
