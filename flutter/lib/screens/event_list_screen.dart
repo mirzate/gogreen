@@ -98,6 +98,7 @@ class _EventListScreenState extends State<EventListScreen> {
                       ),
                       controller: _fullTextSearchController,
                       onSubmitted: (String value) {
+                        currentPage = 1;
                         fetchData();
                       },
                     ),
@@ -164,6 +165,7 @@ class _EventListScreenState extends State<EventListScreen> {
               Column(
                 children: [
                   DataTable(
+                    showCheckboxColumn: false,
                     columns: [
                         const DataColumn(label: const Expanded(
                           child: const Text(
