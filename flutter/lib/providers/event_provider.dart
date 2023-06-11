@@ -21,8 +21,11 @@ class EventProvider with ChangeNotifier{
   // Task
   Future<SearchResult<Event>> get({dynamic params}) async {
 
-    var url = "$_baseURL$_endpoint";
+    //int pageIndex = 1, int pageSize = 10, 
     
+    var url = "$_baseURL$_endpoint";
+    //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
+  
     if(params != null){
       // TODO implement filter on BE
       var queryString = getQueryString(params);
@@ -39,8 +42,10 @@ class EventProvider with ChangeNotifier{
       var data = jsonDecode(response.body);
 
       var result = SearchResult<Event>();
-      result.count = data['totalCount'];
-      
+      result.totalCount = data['totalCount'];
+      result.pageIndex = data['pageNumber'];
+      result.pageSize = data['pageSize'];
+
       var items = data['items'];
 
       if (items is List) { // Check if the 'items' field is a list

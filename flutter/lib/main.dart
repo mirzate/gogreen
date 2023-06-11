@@ -109,7 +109,9 @@ class LoginPage extends StatelessWidget {
                       Authorization.password = password;
 
                       try {
-                        await _eventProvider.get();
+                        //await _eventProvider.get();
+                        //await _eventProvider.get(pageIndex: 1, pageSize: 10);
+                        // Loading data moved on init of event list with pagination
                         
                         Navigator.of(context).push(
                             MaterialPageRoute(
