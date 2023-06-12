@@ -174,7 +174,18 @@ namespace GoGreen
                 }
             }
 
-            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
+
 
         }
 
@@ -199,6 +210,8 @@ namespace GoGreen
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseCors("AllowAll");
 
             app.Run();
 
