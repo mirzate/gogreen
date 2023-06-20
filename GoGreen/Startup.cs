@@ -174,7 +174,18 @@ namespace GoGreen
                 }
             }
 
-            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
+
+
 
         }
 
@@ -182,7 +193,7 @@ namespace GoGreen
         {
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Production")
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
@@ -199,6 +210,8 @@ namespace GoGreen
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseCors("AllowAll");
 
             app.Run();
 
