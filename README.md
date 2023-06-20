@@ -37,7 +37,7 @@ ToDO:
 
 Note! XXX - Zamjeniti sa kljucem
 
-1. Kreirati .env file kraj docker-composer i setup vales:
+1. Kreirati .env file kraj docker-compose i setup vales:
 
 AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net
 
