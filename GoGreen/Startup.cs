@@ -193,7 +193,7 @@ namespace GoGreen
         {
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Production")
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
