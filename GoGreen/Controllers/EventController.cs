@@ -34,9 +34,11 @@ namespace GoGreen.Controllers
         // GET: api/Event
         [AllowAnonymous]
         [HttpGet]
+        [ServiceFilter(typeof(CustomExceptionHandler))]
         public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
+            //throw new NotImplementedException("This code is not implemented, test...");
             var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize, fullTextSearch);
 
             //return Ok(events);

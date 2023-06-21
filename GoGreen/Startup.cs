@@ -84,7 +84,8 @@ namespace GoGreen
             services.AddScoped<IEcoViolationService, EcoViolationService>();
             services.AddScoped<IGreenIslandService, GreenIslandService>();
             services.AddScoped<IImageService, ImageService>();
-            
+            services.AddScoped<CustomExceptionHandler>();
+
 
             services.AddAuthentication(options =>
             {
@@ -118,7 +119,14 @@ namespace GoGreen
                 options.Password.RequiredLength = 1; // Set the minimum required password length to 1 or any desired value
             });
 
+            /* 
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<CustomExceptionHandler>(); // Add globally
+            });
+            */
             services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
 
