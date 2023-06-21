@@ -2,7 +2,7 @@
 import 'package:gogreen/models/search_result.dart';
 import 'package:gogreen/screens/event_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
-import 'package:gogreen/widgets/master_screen.dart';
+import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -64,7 +64,7 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   Widget build(BuildContext context) {
-    return MasterScreenWidget(
+    return NavbarScreenWidget(
       title: "Event List",
       child: Container(
         child: Column(
@@ -168,33 +168,33 @@ class _EventListScreenState extends State<EventListScreen> {
                     showCheckboxColumn: false,
                     columns: [
                         const DataColumn(label: const Expanded(
-                          child: const Text(
-                            'ID',
-                            style: TextStyle(fontStyle: FontStyle.italic),
+                            child: const Text(
+                              'ID',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
                           ),
                         ),
+                        const DataColumn(label: const Expanded(
+                            child: const Text(
+                              'Title',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
                         ),
                         const DataColumn(label: const Expanded(
                           child: const Text(
-                            'Title',
+                            'Active',
                             style: TextStyle(fontStyle: FontStyle.italic),
                           ),
+                          ),
                         ),
+                        const DataColumn(label: const Expanded(
+                            child: const Text(
+                              'Image',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
                         ),
-                          const DataColumn(label: const Expanded(
-                        child: const Text(
-                          'Active',
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ),
-                      ),
-                      const DataColumn(label: const Expanded(
-                        child: const Text(
-                          'Image',
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ),
-                      ),
                     ], 
                     rows: result?.result.map((Event e) => 
                       DataRow(

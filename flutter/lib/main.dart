@@ -11,7 +11,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => EventProvider())
     ],
-    child: const MyApp()
+    child: const GoGreenApp()
   ));
 }
 
