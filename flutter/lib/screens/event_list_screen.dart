@@ -11,6 +11,8 @@ import '../models/event.dart';
 import '../providers/event_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 
+import '../providers/token_provider.dart';
+
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});

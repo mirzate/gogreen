@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gogreen/providers/event_provider.dart';
+import 'package:gogreen/providers/login_provider.dart';
+import 'package:gogreen/providers/token_provider.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:provider/provider.dart';
 
@@ -9,35 +11,12 @@ void main() {
   //runApp(const MyApp());
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => EventProvider())
+      ChangeNotifierProvider(create: (_) => EventProvider()),
+      ChangeNotifierProvider(create: (_) => LoginProvider()),
+      ChangeNotifierProvider(create: (_) => TokenProvider())
     ],
     child: const GoGreenApp()
   ));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'GoGreen',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: GoGreenApp(), //const MyHomePage(title: 'Flutter Demo Home Page MT 1'),
-    );
-  }
 }
 
 class GoGreenApp extends StatelessWidget {
@@ -61,12 +40,13 @@ class LoginPage extends StatelessWidget {
   TextEditingController _usernameController = new TextEditingController();
   TextEditingController _passwordController = new TextEditingController();
   late EventProvider _eventProvider;
+  final loginProvider = LoginProvider();
 
   @override
   Widget build(BuildContext context) {
   
-    _usernameController.text = "test";
-    _passwordController.text = 'Password1\$';
+    _usernameController.text = '';
+    _passwordController.text = '';
     _eventProvider = context.read<EventProvider>();
     
     return Scaffold(
@@ -107,28 +87,47 @@ class LoginPage extends StatelessWidget {
                       
                       Authorization.username = username;
                       Authorization.password = password;
+                      var token = await loginButtonPressed();
+                      Authorization.token = token as String?;
+                      
+                      // Set token in TokenProvider to have option to access via provider to. (var token = tokenProvider.token;)
+                      final tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+                      tokenProvider.setToken(token as String?);
 
-                      try {
-                        //await _eventProvider.get();
-                        //await _eventProvider.get(pageIndex: 1, pageSize: 10);
-                        // Loading data moved on init of event list with pagination
-                        
-                        Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const EventListScreen(),
-                            ),
-                        );
-                      } on Exception catch (e) {
-                        showDialog(
-                          context: context, 
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text("Error"),
-                            content: Text(e.toString()),
-                            actions: [
-                              TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Ok"))
-                            ],
-                        ));
+                      if(token != null){
+                        try {
+                          //await _eventProvider.get();
+                          //await _eventProvider.get(pageIndex: 1, pageSize: 10);
+                          // Loading data moved on init of event list with pagination
+                          
+                          Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const EventListScreen(),
+                              ),
+                          );
+                        } on Exception catch (e) {
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("Error"),
+                              content: Text(e.toString()),
+                              actions: [
+                                TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Ok"))
+                              ],
+                          ));
+                        }
+                      }else{
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text("Login Failed!"),
+                              content: Text("Wrong username or password..."),
+                              actions: [
+                                TextButton(onPressed: ()=> Navigator.pop(context), child: Text("Ok"))
+                              ],
+                          ));
                       }
+
                     },
                     child: Text("Login"),
                     style: ButtonStyle(
@@ -144,5 +143,25 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
+  Future<String?> loginButtonPressed() async {
+
+      final username = Authorization.username ?? "";
+      final password = Authorization.password ?? "";
+      
+      final token = await loginProvider.login(username, password);
+
+      if (token != null) {
+
+        return token;
+
+      } else {
+
+        print("Login failed");
+        return null;
+        
+      }
+  }
+
 }
 
