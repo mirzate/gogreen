@@ -1,4 +1,4 @@
-import 'package:gogreen/widgets/master_screen.dart';
+import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -42,7 +42,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ],
           ),
         ),
-      ),
+      )
     );
   }
 }
