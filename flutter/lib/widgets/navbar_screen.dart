@@ -4,18 +4,18 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../screens/event_list_screen.dart';
 
-class MasterScreenWidget extends StatefulWidget {
+class NavbarScreenWidget extends StatefulWidget {
 
   Widget? child;
   String? title;
   
-  MasterScreenWidget({this.child, this.title,super.key});
+  NavbarScreenWidget({this.child, this.title,super.key});
 
   @override
-  State<MasterScreenWidget> createState() => _MasterScreenWidgetState();
+  State<NavbarScreenWidget> createState() => _NavbarScreenWidgetState();
 }
 
-class _MasterScreenWidgetState extends State<MasterScreenWidget> {
+class _NavbarScreenWidgetState extends State<NavbarScreenWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

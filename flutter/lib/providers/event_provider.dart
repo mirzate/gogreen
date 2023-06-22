@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:gogreen/models/event.dart';
 import 'package:gogreen/models/search_result.dart';
+import 'package:gogreen/providers/token_provider.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EventProvider with ChangeNotifier{
 
@@ -32,7 +34,8 @@ class EventProvider with ChangeNotifier{
     }
     
     var uri = Uri.parse(url);
-    var headers = getAndCreateHeaders();
+    var headers = getAndCreateHeaders(Authorization.token!);
+
     print(uri);
     var response = await http.get(uri, headers: headers);
 
@@ -77,13 +80,15 @@ class EventProvider with ChangeNotifier{
       }
   }
 
-  Map<String, String> getAndCreateHeaders(){
+  Map<String, String> getAndCreateHeaders(String token){
+    /*
     String username = Authorization.username ?? "";
     String password = Authorization.password ?? "";
     String basicAuthentication = "Basic ${base64Encode(utf8.encode('$username:$password'))}";
+    */
     var headers = {
       "Content-Type": "application/json",
-      "Authorization": basicAuthentication
+      "Authorization": "Bearer ${token}"
     };
 
     return headers;
