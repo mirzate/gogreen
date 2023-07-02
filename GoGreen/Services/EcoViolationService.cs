@@ -24,9 +24,16 @@ namespace GoGreen.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
-            var query = _context.EcoViolations;
+     
+            var query = _context.EcoViolations.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(fullTextSearch))
+            {
+                query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
+            }
 
             var totalCount = await query.CountAsync();
 
@@ -36,7 +43,14 @@ namespace GoGreen.Services
                         .Take(pageSize)
                         .ToListAsync();
 
-            var dataResponses = _mapper.Map<IEnumerable<EcoViolationResponse>>(datas);
+            //var dataResponses = _mapper.Map<IEnumerable<EcoViolationResponse>>(datas);
+
+            var dataResponses = datas.Select(e =>
+            {
+                var dataResponses = _mapper.Map<EcoViolationResponse>(e);
+                dataResponses.FirstImage = _mapper.Map<ImageResponse>(e.EcoViolationImages.FirstOrDefault()?.Image);
+                return dataResponses;
+            });
 
             return (dataResponses, totalCount);
 
