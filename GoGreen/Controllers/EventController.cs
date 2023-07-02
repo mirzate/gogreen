@@ -32,8 +32,8 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/Event
-        //[AllowAnonymous]
-        [Authorize]
+        [AllowAnonymous]
+        //[Authorize]
         [HttpGet]
         [ServiceFilter(typeof(CustomExceptionHandler))]
         public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")

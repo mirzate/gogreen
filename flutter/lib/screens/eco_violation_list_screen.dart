@@ -1,38 +1,38 @@
 
 import 'package:gogreen/models/search_result.dart';
-import 'package:gogreen/screens/event_detail_screen.dart';
+import 'package:gogreen/screens/eco_violation_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
-import '../models/event.dart';
-import '../providers/event_provider.dart';
+import '../models/eco_violation.dart';
+import '../providers/eco_violation_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 
 import '../providers/token_provider.dart';
 
 
-class EventListScreen extends StatefulWidget {
-  const EventListScreen({super.key});
+class EcoViolationListScreen extends StatefulWidget {
+  const EcoViolationListScreen({super.key});
 
   @override
-  State<EventListScreen> createState() => _EventListScreenState();
+  State<EcoViolationListScreen> createState() => _EcoViolationListScreenState();
 }
 
-class _EventListScreenState extends State<EventListScreen> {
+class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
 
   TextEditingController _fullTextSearchController = new TextEditingController();
-  late EventProvider _eventProvider;
-  SearchResult<Event>? result;
+  late EcoViolationProvider _EcoViolationProvider;
+  SearchResult<Ecoviolation>? result;
   int currentPage = 1;
   int pageSize = 6;
 
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
-    _eventProvider = context.read<EventProvider>();
+    _EcoViolationProvider = context.read<EcoViolationProvider>();
     fetchData();
   }
 
@@ -46,12 +46,11 @@ class _EventListScreenState extends State<EventListScreen> {
               "pageIndex": currentPage,
               "pageSize": pageSize,
             };
-      print(params);
-      var data = await _eventProvider.get(
+      var data = await _EcoViolationProvider.get(
         params: params
       );
       setState(() {
-        result = data;
+        result = data as SearchResult<Ecoviolation>?;
       });
     } catch (error) {
       showDialog(
@@ -69,7 +68,7 @@ class _EventListScreenState extends State<EventListScreen> {
 
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
-      title: "Event List",
+      title: "EcoViolation List",
       child: Container(
         child: Column(
           children: [
@@ -108,57 +107,6 @@ class _EventListScreenState extends State<EventListScreen> {
                     ),
               ),
               SizedBox(height: 10,),
-              /*
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Back"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                    ),
-                ),
-              ),
-              */
-              SizedBox(height: 10,),
-              /*
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EventDetailScreen(),
-                      ),
-                  );
-                },
-                child: Text("Details"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),),
-              SizedBox(height: 10,),
-              */
-              /*
-              ElevatedButton(
-                onPressed: () async {
-                  var data = await _eventProvider.get(params: {
-                    "fullTextSearch": _fullTextSearchController.text
-                  });
-                  setState(() {
-                    result = data;
-                  });
-                  print(data.result[0].title);
-                  print(result);
-                  
-                },
-                child: Text("Get Data from EP"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),)
-              */
       ],),
     );
   }
@@ -200,15 +148,17 @@ class _EventListScreenState extends State<EventListScreen> {
                           ),
                         ),
                     ], 
-                    rows: result?.result.map((Event e) => 
+                    rows: result?.result.map((Ecoviolation e) => 
                       DataRow(
                         onSelectChanged: (value) => {
                           if(value == true){
+                            
                             Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => EventDetailScreen(event: e),
+                                  builder: (context) => EcoViolationDetailScreen(Ecoviolation: e),
                                 ),
                             )
+                            
                           }
                         },
                         cells: [
