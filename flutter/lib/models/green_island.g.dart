@@ -1,24 +1,17 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'event.dart';
+part of 'green_island.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Event _$EventFromJson(Map<String, dynamic> json) => Event()
+GreenIsland _$GreenIslandFromJson(Map<String, dynamic> json) => GreenIsland()
   ..id = json['id'] as int?
   ..title = json['title'] as String?
   ..description = json['description'] as String?
-  ..dateFrom = json['dateFrom'] == null
-      ? null
-      : DateTime.parse(json['dateFrom'] as String)
-  ..dateTo =
-      json['dateTo'] == null ? null : DateTime.parse(json['dateTo'] as String)
-  ..active = json['active'] as bool?
-  ..eventType = json['eventType'] == null
-      ? null
-      : EventType.fromJson(json['eventType'] as Map<String, dynamic>)
+  ..longitude = (json['longitude'] as num?)?.toDouble()
+  ..latitude = (json['latitude'] as num?)?.toDouble()
   ..municipality = json['municipality'] == null
       ? null
       : Municipality.fromJson(json['municipality'] as Map<String, dynamic>)
@@ -29,40 +22,28 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event()
       ? null
       : Image.fromJson(json['firstImage'] as Map<String, dynamic>);
 
-Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
+Map<String, dynamic> _$GreenIslandToJson(GreenIsland instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'dateFrom': instance.dateFrom?.toIso8601String(),
-      'dateTo': instance.dateTo?.toIso8601String(),
-      'active': instance.active,
-      'eventType': instance.eventType,
+      'longitude': instance.longitude,
+      'latitude': instance.latitude,
       'municipality': instance.municipality,
       'images': instance.images,
       'firstImage': instance.firstImage,
     };
 
-EventType _$EventTypeFromJson(Map<String, dynamic> json) => EventType()
-  ..id = json['id'] as int?
-  ..name = json['name'] as String?;
-
-Map<String, dynamic> _$EventTypeToJson(EventType instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-    };
-
 Municipality _$MunicipalityFromJson(Map<String, dynamic> json) => Municipality()
   ..id = json['id'] as int?
   ..title = json['title'] as String?
-  ..description = json['description'] as String?
-  ..active = json['active'] as bool?;
+  ..description = json['description'] as String?;
 
 Map<String, dynamic> _$MunicipalityToJson(Municipality instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'active': instance.active,
     };
 
 Image _$ImageFromJson(Map<String, dynamic> json) => Image()

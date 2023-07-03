@@ -62,7 +62,7 @@ namespace GoGreen.Data
                 .WithMany(i => i.EcoViolationImages)
                 .HasForeignKey(ei => ei.ImageId);
 
-
+     
 
             // GreenIsland Model Image
             modelBuilder.Entity<GreenIslandImage>()

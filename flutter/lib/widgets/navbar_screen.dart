@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:gogreen/screens/eco_violation_list_screen.dart';
-
+import 'package:gogreen/screens/green_island_list_screen.dart';
+import '../screens/green_island_list_screen.dart';
 import '../screens/event_list_screen.dart';
 import '../main.dart';
 import '../utils/util.dart';
@@ -92,7 +93,17 @@ class _NavbarScreenWidgetState extends State<NavbarScreenWidget> {
                           ),
                       );
               }, 
-            ),            
+            ),
+            ListTile(
+              title: Text("Green Islands Map"),
+              onTap: () {
+                Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const GreenIslandListScreen(),
+                          ),
+                      );
+              }, 
+            ),                         
           ],
         )
       ),

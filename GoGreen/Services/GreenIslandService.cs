@@ -24,19 +24,34 @@ namespace GoGreen.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
-            var query = _context.GreenIslands;
+      
+            var query = _context.GreenIslands.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(fullTextSearch))
+            {
+                query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
+            }
 
             var totalCount = await query.CountAsync();
 
             var datas = await query.Skip((pageIndex - 1) * pageSize)
                         .Include(a => a.GreenIslandImages)
                             .ThenInclude(ei => ei.Image)
+                        .Include(e => e.Municipality)
                         .Take(pageSize)
                         .ToListAsync();
             
-            var dataResponses = _mapper.Map<IEnumerable<GreenIslandResponse>>(datas);
+            //var dataResponses = _mapper.Map<IEnumerable<GreenIslandResponse>>(datas);
+
+            var dataResponses = datas.Select(e =>
+            {
+                var dataResponses = _mapper.Map<GreenIslandResponse>(e);
+                dataResponses.FirstImage = _mapper.Map<ImageResponse>(e.GreenIslandImages.FirstOrDefault()?.Image);
+                return dataResponses;
+            });
 
             return (dataResponses, totalCount);
         }

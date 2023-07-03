@@ -11,12 +11,12 @@ class Ecoviolation{
   int? id;
   String? title;
   String? description;
-  DateTime? dateFrom;
-  DateTime? dateTo;
-  bool? active;
+  String? contact;
+  String? response;
+
   //EcoviolationType? EcoviolationType; // Property for the nested EcoViolationType
-  //Municipality? municipality;
-  Image? image;
+  Municipality? municipality;
+  List<Image>? images;
   Image? firstImage;
 
   Ecoviolation();
@@ -45,20 +45,19 @@ class EcoviolationType {
   Map<String, dynamic> toJson() => _$EcoviolationTypeToJson(this);
 }
 */
-/*
+
 @JsonSerializable()
 class Municipality {
   int? id;
   String? title;
   String? description;
-  bool? active;
 
   Municipality();
 
   factory Municipality.fromJson(Map<String, dynamic> json) => _$MunicipalityFromJson(json);
   Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
-*/
+
 
 @JsonSerializable()
 class Image {

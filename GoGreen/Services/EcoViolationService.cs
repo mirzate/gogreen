@@ -40,6 +40,7 @@ namespace GoGreen.Services
             var datas = await query.Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
+                        .Include(e => e.Municipality)
                         .Take(pageSize)
                         .ToListAsync();
 

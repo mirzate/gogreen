@@ -7,32 +7,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
-import '../models/eco_violation.dart';
-import '../providers/eco_violation_provider.dart';
+import '../models/green_island.dart';
+import '../providers/green_island_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 
 import '../providers/token_provider.dart';
 
 
-class EcoViolationListScreen extends StatefulWidget {
-  const EcoViolationListScreen({super.key});
+class GreenIslandListScreen extends StatefulWidget {
+  const GreenIslandListScreen({super.key});
 
   @override
-  State<EcoViolationListScreen> createState() => _EcoViolationListScreenState();
+  State<GreenIslandListScreen> createState() => _GreenIslandListScreenState();
 }
 
-class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
+class _GreenIslandListScreenState extends State<GreenIslandListScreen> {
 
   TextEditingController _fullTextSearchController = new TextEditingController();
-  late EcoViolationProvider _EcoViolationProvider;
-  SearchResult<Ecoviolation>? result;
+  late GreenIslandProvider _GreenIslandProvider;
+  SearchResult<GreenIsland>? result;
   int currentPage = 1;
   int pageSize = 6;
 
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
-    _EcoViolationProvider = context.read<EcoViolationProvider>();
+    _GreenIslandProvider = context.read<GreenIslandProvider>();
     fetchData();
   }
 
@@ -46,11 +46,11 @@ class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
               "pageIndex": currentPage,
               "pageSize": pageSize,
             };
-      var data = await _EcoViolationProvider.get(
+      var data = await _GreenIslandProvider.get(
         params: params
       );
       setState(() {
-        result = data as SearchResult<Ecoviolation>?;
+        result = data as SearchResult<GreenIsland>?;
       });
     } catch (error) {
       showDialog(
@@ -68,7 +68,7 @@ class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
 
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
-      title: "EcoViolation List",
+      title: "GreenIsland List",
       child: Container(
         child: Column(
           children: [
@@ -148,16 +148,10 @@ class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
                           ),
                         ),
                     ], 
-                    rows: result?.result.map((Ecoviolation e) => 
+                    rows: result?.result.map((GreenIsland e) => 
                       DataRow(
                         onSelectChanged: (value) => {
                           if(value == true){
-                            
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => EcoViolationDetailScreen(Ecoviolation: e),
-                                ),
-                            )
                             
                           }
                         },

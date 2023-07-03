@@ -32,17 +32,19 @@ namespace GoGreen.Controllers
         // GET: api/GreenIsland
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GreenIslandResponse>>> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<GreenIslandResponse>>> Index(int pageIndex = 1, int pageSize = 100, string? fullTextSearch = "")
         {
 
-            var (datas, totalCount) = await _greenIslandService.Index(pageIndex, pageSize);
+            var (datas, totalCount) = await _greenIslandService.Index(pageIndex, pageSize, fullTextSearch);
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var result = new GreenIslandPaginationResponse<GreenIslandResponse>
             {
-                Items = (List<GreenIslandResponse>)datas,
+                Items = (List<GreenIslandResponse>)datas.ToList(),
                 PageNumber = pageIndex,
                 PageSize = pageSize,
-                TotalCount = totalCount
+                TotalCount = totalCount,
+                TotalPages = totalPages
             };
             return Ok(result);
 
