@@ -187,6 +187,7 @@ namespace GoGreen
                     await EventSeeder.SeedEvents(serviceProvider);
                     await EcoViolationSeeder.SeedEcoViolations(serviceProvider);
                     await GreenIslandSeeder.SeedGreenIslands(serviceProvider);
+                    await ImageSeeder.SeedImages(serviceProvider);
 
                 }
             }
