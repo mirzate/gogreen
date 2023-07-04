@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using GoGreen.Controllers;
 using System;
 using Microsoft.Extensions.Hosting;
+using GoGreen.Data.Seeders;
 
 namespace GoGreen
 {
@@ -54,7 +55,7 @@ namespace GoGreen
 
 
         }
-        public void ConfigureServices(IServiceCollection services)
+        public async Task ConfigureServicesAsync(IServiceCollection services)
         {
             /*
             var config = new ConfigurationBuilder()
@@ -78,6 +79,7 @@ namespace GoGreen
                 .AddDefaultTokenProviders();
 
             services.AddScoped<DataSeeder>();
+           
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
             services.AddScoped<IEventService, EventService>();
@@ -173,11 +175,18 @@ namespace GoGreen
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     dbContext.Database.Migrate();
 
-                   
-                    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-                    dataSeeder.SeedData().Wait();
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    await UserSeeder.SeedUsers(userManager);
 
+                    //var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+                   //dataSeeder.SeedData().Wait();
 
+                    await MunicipalitySeeder.SeedMunicipalities(dbContext);
+                    await EventTypeSeeder.SeedEventTypes(dbContext);
+                    await EcoViolationStatusSeeder.SeedEcoViolationStatuses(serviceProvider);
+                    await EventSeeder.SeedEvents(serviceProvider);
+                    await EcoViolationSeeder.SeedEcoViolations(serviceProvider);
+                    await GreenIslandSeeder.SeedGreenIslands(serviceProvider);
 
                 }
             }

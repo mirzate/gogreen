@@ -5,6 +5,7 @@ using GoGreen.Models;
 using System.Net;
 using Azure;
 using Microsoft.Extensions.Hosting;
+using GoGreen.Data.Seeders;
 
 namespace GoGreen.Data
 {
@@ -78,6 +79,7 @@ namespace GoGreen.Data
                 .WithMany(i => i.GreenIslandImages)
                 .HasForeignKey(ei => ei.ImageId);
 
+            
             base.OnModelCreating(modelBuilder);
         }
 
