@@ -10,8 +10,8 @@ GreenIsland _$GreenIslandFromJson(Map<String, dynamic> json) => GreenIsland()
   ..id = json['id'] as int?
   ..title = json['title'] as String?
   ..description = json['description'] as String?
-  ..longitude = (json['longitude'] as num?)?.toDouble()
-  ..latitude = (json['latitude'] as num?)?.toDouble()
+  ..longitude = (json['longitude'] as num).toDouble()
+  ..latitude = (json['latitude'] as num).toDouble()
   ..municipality = json['municipality'] == null
       ? null
       : Municipality.fromJson(json['municipality'] as Map<String, dynamic>)

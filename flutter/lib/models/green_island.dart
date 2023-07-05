@@ -7,12 +7,12 @@ import 'package:json_annotation/json_annotation.dart';
 part 'green_island.g.dart';
 
 @JsonSerializable()
-class GreenIsland{
+class GreenIsland {
   int? id;
   String? title;
   String? description;
-  double? longitude;
-  double? latitude;
+  late double longitude;
+  late double latitude;
   Municipality? municipality;
   List<Image>? images;
   Image? firstImage;
@@ -22,13 +22,13 @@ class GreenIsland{
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
-  factory GreenIsland.fromJson(Map<String, dynamic> json) => _$GreenIslandFromJson(json);
+  factory GreenIsland.fromJson(Map<String, dynamic> json) =>
+      _$GreenIslandFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$GreenIslandToJson(this);
-
 }
 
 @JsonSerializable()
@@ -39,10 +39,10 @@ class Municipality {
 
   Municipality();
 
-  factory Municipality.fromJson(Map<String, dynamic> json) => _$MunicipalityFromJson(json);
+  factory Municipality.fromJson(Map<String, dynamic> json) =>
+      _$MunicipalityFromJson(json);
   Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
-
 
 @JsonSerializable()
 class Image {
@@ -55,5 +55,3 @@ class Image {
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
   Map<String, dynamic> toJson() => _$ImageToJson(this);
 }
-
-

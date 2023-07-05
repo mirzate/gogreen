@@ -47,10 +47,20 @@ android {
         applicationId "com.example.gogreen"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        //minSdkVersion flutter.minSdkVersion
+        minSdkVersion 20
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // Load the API keys from the properties file
+        def apiKeysPropertiesFile = rootProject.file("api_keys.properties")
+        if (apiKeysPropertiesFile.exists()) {
+            def apiKeysProperties = new Properties()
+            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+            buildConfigField 'String', 'GOOGLE_MAPS_API_KEY', apiKeysProperties['GOOGLE_MAPS_API_KEY']
+        }
+
     }
 
     buildTypes {

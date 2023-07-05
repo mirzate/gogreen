@@ -72,19 +72,6 @@ namespace GoGreen.Data.Seeders
         }
         public static string GetRandomImageUrl()
         {
-            /*
-            var client = new RestClient("https://source.unsplash.com/random");
-            var request = new RestRequest("endpoint", Method.Get);
-            var response = client.Execute(request);
-
-            if (response.IsSuccessful)
-            {
-                JToken imageUrlToken = JToken.Parse(response.Content);
-                string imageUrl = imageUrlToken.Value<string>();
-                return imageUrl;
-            }
-            */
-            // If the request fails, return a default image URL or handle the error as needed
             return "https://images.unsplash.com/photo-1687939307771-4440181ca6c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY4ODQ4ODQxMQ&ixlib=rb-4.0.3&q=80&w=1080";
         }
     }

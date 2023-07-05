@@ -35,16 +35,29 @@ namespace GoGreen.Data
             var users = userManager.Users.ToList();
 
             var greenIslands = new List<GreenIslandRequest>();
+            double minLongitude = 17.1; // Minimum longitude value for the region
+            double maxLongitude = 17.9; // Maximum longitude value for the region
 
-            for (int i = 0; i < 200; i++)
+            double minLatitude = 43.1; // Minimum latitude value for the region
+            double maxLatitude = 43.9; // Maximum latitude value for the region
+
+
+            for (int i = 0; i < 1000; i++)
             {
+                
+                Random random = new Random();
+
+                double longitude = random.NextDouble() * (maxLongitude - minLongitude) + minLongitude;
+                double latitude = random.NextDouble() * (maxLatitude - minLatitude) + minLatitude;
+
+
                 var municipality = municipalities[faker.Random.Int(0, municipalities.Count - 1)];
                 var greenIslandRequest = new GreenIslandRequest
                 {
                     Title = faker.Lorem.Sentence(),
                     Description = faker.Lorem.Paragraph(),
-                    Longitude = (decimal)faker.Address.Longitude(),
-                    Latitude = (decimal)faker.Address.Latitude(),
+                    Longitude = (decimal)longitude,//faker.Address.Longitude(),
+                    Latitude = (decimal)latitude,//faker.Address.Latitude(),
                     Active = true,// faker.Random.Bool(),
                     MunicipalityId = municipality.Id,
     
