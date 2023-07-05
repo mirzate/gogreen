@@ -33,17 +33,20 @@ namespace GoGreen.Controllers
         // GET: api/EcoViolation
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EcoViolationResponse>>> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<EcoViolationResponse>>> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize);
+            var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize, fullTextSearch);
+
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var result = new EcoViolationPaginationResponse<EcoViolationResponse>
             {
-                Items = (List<EcoViolationResponse>)datas,
+                Items = (List<EcoViolationResponse>)datas.ToList(),
                 PageNumber = pageIndex,
                 PageSize = pageSize,
-                TotalCount = totalCount
+                TotalCount = totalCount,
+                TotalPages = totalPages
             };
             return Ok(result);
 

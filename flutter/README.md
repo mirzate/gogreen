@@ -28,3 +28,6 @@ flutter pub run build_runner build --delete-conflicting-outputs
 flutter pub run build_runner watch --delete-conflicting-outputs
 
 flutter run -d windows --dart-define=baseURL=https://localhost:7125/api/
+
+## Mob
+flutter run --dart-define=baseURL=http://10.0.2.2:8080/api/

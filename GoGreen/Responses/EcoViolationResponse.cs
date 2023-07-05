@@ -16,6 +16,10 @@ namespace GoGreen.Responses
 
         public List<ImageResponse> Images { get; set; }
 
+        public ImageResponse FirstImage { get; set; }
+
+        public Municipality? Municipality { get; set; }
+
     }
 
     public class EcoViolationStatusResponse
