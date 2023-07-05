@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gogreen/providers/eco_violation_provider.dart';
 import 'package:gogreen/providers/event_provider.dart';
 import 'package:gogreen/providers/login_provider.dart';
+import 'package:gogreen/providers/green_island_provider.dart';
 import 'package:gogreen/providers/token_provider.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +15,9 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => EventProvider()),
       ChangeNotifierProvider(create: (_) => LoginProvider()),
-      ChangeNotifierProvider(create: (_) => TokenProvider())
+      ChangeNotifierProvider(create: (_) => TokenProvider()),
+      ChangeNotifierProvider(create: (_) => EcoViolationProvider()),
+      ChangeNotifierProvider(create: (_) => GreenIslandProvider()),
     ],
     child: const GoGreenApp()
   ));
@@ -29,7 +33,7 @@ class GoGreenApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.lightGreen
         ),
-      home: LoginPage(),
+      home: const EventListScreen(),
     );
   }
 }

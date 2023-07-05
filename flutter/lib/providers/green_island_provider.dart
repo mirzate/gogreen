@@ -8,20 +8,22 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class EventProvider with ChangeNotifier{
+import '../models/green_island.dart';
+
+class GreenIslandProvider with ChangeNotifier{
 
   static String? _baseURL;
-  String _endpoint = "Event";
+  String _endpoint = "GreenIsland";
 
-  EventProvider(){
+  GreenIslandProvider(){
     //GET
-    //http://localhost:8080/api/Event 
+    //http://localhost:8080/api/GreenIsland 
 
     _baseURL = const String.fromEnvironment("baseURL",defaultValue: "http://localhost:8080/api/");
 
   }
   // Task
-  Future<SearchResult<Event>> get({dynamic params}) async {
+  Future<SearchResult<GreenIsland>> get({dynamic params}) async {
 
     //int pageIndex = 1, int pageSize = 10, 
 
@@ -34,16 +36,16 @@ class EventProvider with ChangeNotifier{
     }
     
     var uri = Uri.parse(url);
-    var headers = getAndCreateHeaders(Authorization?.token ?? "");
+    print("Uri: $uri");
 
-    print(uri);
+    var headers = getAndCreateHeaders();
+  
     var response = await http.get(uri, headers: headers);
-
+    
     if(!!validateResponse(response)){
 
       var data = jsonDecode(response.body);
-
-      var result = SearchResult<Event>();
+      var result = SearchResult<GreenIsland>();
       result.totalCount = data['totalCount'];
       result.pageIndex = data['pageNumber'];
       result.pageSize = data['pageSize'];
@@ -52,13 +54,7 @@ class EventProvider with ChangeNotifier{
 
       if (items is List) { // Check if the 'items' field is a list
         for (var item in items) {
-          /*
-          Event event = Event();
-          event.id = item['id'];
-          event.description = item['description'];
-          event.title = item['title'];
-          */
-          result.result.add(Event.fromJson(item));
+          result.result.add(GreenIsland.fromJson(item));
         }
       }
       
@@ -80,12 +76,9 @@ class EventProvider with ChangeNotifier{
       }
   }
 
-  Map<String, String> getAndCreateHeaders(String token){
-    /*
-    String username = Authorization.username ?? "";
-    String password = Authorization.password ?? "";
-    String basicAuthentication = "Basic ${base64Encode(utf8.encode('$username:$password'))}";
-    */
+  Map<String, String> getAndCreateHeaders(){
+
+    var token = Authorization.token ?? "";
     var headers = {
       "Content-Type": "application/json",
       "Authorization": "Bearer ${token}"

@@ -11,7 +11,7 @@ namespace GoGreen.Services
     public interface IGreenIslandService
     {
 
-        Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex, int pageSize);
+        Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex, int pageSize, string? fullTextSearch);
         Task<GreenIslandResponse> View(int id);
         Task<GreenIsland> Store(GreenIslandRequest request);
         Task<GreenIslandResponse> Update(int id, GreenIslandRequest request);

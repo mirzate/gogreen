@@ -1,63 +1,63 @@
 //import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
 /// the star denotes the source file name.
-part 'event.g.dart';
+part 'eco_violation.g.dart';
 
 @JsonSerializable()
-class Event{
+class Ecoviolation{
   int? id;
   String? title;
   String? description;
-  DateTime? dateFrom;
-  DateTime? dateTo;
-  bool? active;
-  EventType? eventType; // Property for the nested EventType
+  String? contact;
+  String? response;
+
+  //EcoviolationType? EcoviolationType; // Property for the nested EcoViolationType
   Municipality? municipality;
   List<Image>? images;
   Image? firstImage;
 
-  Event();
+  Ecoviolation();
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
-  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+  factory Ecoviolation.fromJson(Map<String, dynamic> json) => _$EcoviolationFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
-  Map<String, dynamic> toJson() => _$EventToJson(this);
+  Map<String, dynamic> toJson() => _$EcoviolationToJson(this);
 
 }
 
+/*
 @JsonSerializable()
-class EventType {
+class EcoviolationType {
   int? id;
   String? name;
 
-  EventType();
+  EcoviolationType();
 
-  factory EventType.fromJson(Map<String, dynamic> json) => _$EventTypeFromJson(json);
-  Map<String, dynamic> toJson() => _$EventTypeToJson(this);
+  factory EcoviolationType.fromJson(Map<String, dynamic> json) => _$EcoviolationTypeFromJson(json);
+  Map<String, dynamic> toJson() => _$EcoviolationTypeToJson(this);
 }
-
+*/
 
 @JsonSerializable()
 class Municipality {
   int? id;
   String? title;
   String? description;
-  bool? active;
 
   Municipality();
 
   factory Municipality.fromJson(Map<String, dynamic> json) => _$MunicipalityFromJson(json);
   Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
+
 
 @JsonSerializable()
 class Image {
@@ -72,27 +72,3 @@ class Image {
 }
 
 
-/*
-"items": [
-{
-  "id": 6,
-  "title": "ert",
-  "description": "ert",
-  "dateFrom": "2023-01-01T00:00:00",
-  "dateTo": "2023-01-01T00:00:00",
-  "active": true,
-  "eventType": {
-    "id": 2,
-    "name": "Akcija čišćenja"
-  },
-  "municipality": {
-    "id": 2,
-    "title": "xxx",
-    "description": "testtest",
-    "active": true
-  },
-  "images": [],
-  "firstImage": null
-}
-  ]
-*/

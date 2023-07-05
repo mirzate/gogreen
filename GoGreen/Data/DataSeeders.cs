@@ -42,7 +42,8 @@ namespace GoGreen.Data
                     new User { UserName = "desktop", Email = "desktop@example.com" },
                     new User { UserName = "mobile", Email = "mobile@example.com" },
                     new User { UserName = "admin@example.com", Email = "admin@example.com" },
-                    new User { UserName = "user5@example.com", Email = "user5@example.com" }
+                    new User { UserName = "user5@example.com", Email = "user5@example.com" },
+                    new User { UserName = "sarajevo", Email = "sarajevo@example.com" },
                 };
 
                 foreach (var user in users)
@@ -67,20 +68,6 @@ namespace GoGreen.Data
 
                 }
 
-                /*
-
-                if (_context.User.Any())
-                {
-                    return;
-                }
-
-
-                var user = new User { Name = "Entity 1" };
-                var entity2 = new MyEntity { Name = "Entity 2" };
-
-                _dbContext.MyEntities.AddRange(entity1, entity2);
-                _dbContext.SaveChanges();
-                */
                 Console.WriteLine("Data seeded successfully.");
             }
         }
