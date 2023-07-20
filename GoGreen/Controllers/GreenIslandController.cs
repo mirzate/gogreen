@@ -81,12 +81,13 @@ namespace GoGreen.Controllers
             {
                 return BadRequest("The user ID claim is missing");
             }
+            var MunicipalityId = 2; //TODO
 
-            var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
+            var municipality = await _context.Municipalities.FindAsync(MunicipalityId);
 
             if (municipality == null)
             {
-                return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
+                return BadRequest($"The Municipality with ID {MunicipalityId} does not exist");
             }
 
             var data = _mapper.Map<GreenIslandRequest>(request);
@@ -128,12 +129,12 @@ namespace GoGreen.Controllers
             {
                 return BadRequest("The user ID claim is missing");
             }
-
-            var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
+            var MunicipalityId = 2; //TODO
+            var municipality = await _context.Municipalities.FindAsync(MunicipalityId);
 
             if (municipality == null)
             {
-                return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
+                return BadRequest($"The Municipality with ID {MunicipalityId} does not exist");
             }
 
             var updatedData = await _greenIslandService.Update(id, request);

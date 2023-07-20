@@ -1,3 +1,6 @@
+import 'package:gogreen/screens/admin/violation/eco_violation_list_screen.dart';
+import 'package:gogreen/screens/admin/event/event_list_screen.dart';
+import 'package:gogreen/screens/admin/green_island/green_island_list_screen.dart';
 import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -19,20 +22,98 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
-        child: Expanded(
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 10,
+        child: Container(
+          alignment: Alignment.center,
+          child: Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                      height: 50,
+                      width: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              // Add your onPressed logic here
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ManageEventListScreen(),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.list), // Add your desired icon
+                            label: Text(
+                                'Manage Events'), // Add your desired label or text
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                  Text("Dasboard")
-                  // Add more Text or other widgets to display additional event data
-                ],
-              ),
+                ),
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                      height: 50,
+                      width: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              // Add your onPressed logic here
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ManageEcoViolationListScreen(),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.info), // Add your desired icon
+                            label: Text(
+                                'Manage Eco Violations'), // Add your desired label or text
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                      height: 50,
+                      width: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              // Add your onPressed logic here
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ManageGreenIslandListScreen(),
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                                Icons.map_rounded), // Add your desired icon
+                            label: Text(
+                                'Manage Green Islands'), // Add your desired label or text
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
