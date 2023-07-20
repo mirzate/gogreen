@@ -10,40 +10,37 @@ import 'package:provider/provider.dart';
 
 import '../models/eco_violation.dart';
 
-class EcoViolationProvider with ChangeNotifier{
-
+class EcoViolationProvider with ChangeNotifier {
   static String? _baseURL;
   String _endpoint = "EcoViolation";
 
-  EcoViolationProvider(){
+  EcoViolationProvider() {
     //GET
-    //http://localhost:8080/api/EcoViolation 
+    //http://localhost:8080/api/EcoViolation
 
-    _baseURL = const String.fromEnvironment("baseURL",defaultValue: "http://localhost:8080/api/");
-
+    _baseURL = const String.fromEnvironment("baseURL",
+        defaultValue: "http://localhost:8080/api/");
   }
   // Task
   Future<SearchResult<Ecoviolation>> get({dynamic params}) async {
-
-    //int pageIndex = 1, int pageSize = 10, 
+    //int pageIndex = 1, int pageSize = 10,
 
     var url = "$_baseURL$_endpoint";
     //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
-  
-    if(params != null){
+
+    if (params != null) {
       var queryString = getQueryString(params);
       url = "$url?$queryString";
     }
-    
+
     var uri = Uri.parse(url);
     print("Uri: $uri");
 
     var headers = getAndCreateHeaders();
-  
-    var response = await http.get(uri, headers: headers);
-    
-    if(!!validateResponse(response)){
 
+    var response = await http.get(uri, headers: headers);
+
+    if (!!validateResponse(response)) {
       var data = jsonDecode(response.body);
       var result = SearchResult<Ecoviolation>();
       result.totalCount = data['totalCount'];
@@ -52,32 +49,31 @@ class EcoViolationProvider with ChangeNotifier{
       result.totalPages = data['totalPages'];
       var items = data['items'];
 
-      if (items is List) { // Check if the 'items' field is a list
+      if (items is List) {
+        // Check if the 'items' field is a list
         for (var item in items) {
           result.result.add(Ecoviolation.fromJson(item));
         }
       }
-      
+
       return result;
-    }else{
+    } else {
       throw Exception("Oops, something bad happened!");
     }
-
   }
 
-  bool validateResponse(http.Response response){
-      if (response.statusCode < 299){
-        return true;
-      }else if(response.statusCode == 401){
-        throw new Exception("Unauthorized");
-      }else{
-        print(response.body);
-        throw new Exception("Error!");
-      }
+  bool validateResponse(http.Response response) {
+    if (response.statusCode < 299) {
+      return true;
+    } else if (response.statusCode == 401) {
+      throw new Exception("Unauthorized");
+    } else {
+      print(response.body);
+      throw new Exception("Error!");
+    }
   }
 
-  Map<String, String> getAndCreateHeaders(){
-
+  Map<String, String> getAndCreateHeaders() {
     var token = Authorization.token ?? "";
     var headers = {
       "Content-Type": "application/json",
@@ -87,7 +83,7 @@ class EcoViolationProvider with ChangeNotifier{
     return headers;
   }
 
-   String getQueryString(Map params,
+  String getQueryString(Map params,
       {String prefix: '&', bool inRecursion: false}) {
     String query = '';
     params.forEach((key, value) {
@@ -118,5 +114,4 @@ class EcoViolationProvider with ChangeNotifier{
     });
     return query;
   }
-
 }

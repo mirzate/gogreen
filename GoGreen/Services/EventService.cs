@@ -37,6 +37,14 @@ namespace GoGreen.Services
                 query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
             }
 
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                query = query.Where(e => e.UserId == userId);
+            }
+
             var events = await query.Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EventImages)
                             .ThenInclude(ei => ei.Image)
