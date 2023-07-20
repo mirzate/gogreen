@@ -6,9 +6,12 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:gogreen/models/green_island.dart' as GreenIslandModel;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
-import '../../../models/green_island.dart';
+import '../../../models/green_island.dart' as MyGreenIsland;
 import '../../../providers/green_island_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
+//import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class GreenIslandEditScreen extends StatefulWidget {
   final GreenIslandModel.GreenIsland greenIsland;
@@ -28,6 +31,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
   int currentSlideIndex = 3;
   List<String> selectedImagePaths = [];
   int? selectedImage;
+  File? _selectedImage;
 
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
 
@@ -51,8 +55,60 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
     _latitudeController.dispose();
     super.dispose();
   }
+/*
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().getImage(source: source);
 
-  void removeImageWithId(int id) {
+    setState(() {
+      if (pickedImage != null) {
+        _selectedImage = File(pickedImage.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+  */
+
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'], // Allow only image files
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      setState(() {
+        _selectedImage = File(file.path!);
+      });
+    } else {
+      // User canceled the file picking process
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_selectedImage == null) {
+      return;
+    }
+    _greenIslandProvider = context.read<GreenIslandProvider>();
+    var updatedGreenIsland = await _greenIslandProvider.uploadImage(
+        widget.greenIsland, _selectedImage!);
+
+    if (updatedGreenIsland != null) {
+      setState(() {
+        widget.greenIsland.images = updatedGreenIsland.images;
+        widget.greenIsland.images
+            ?.sort((a, b) => (b?.id ?? 0).compareTo(a?.id ?? 0));
+
+        carouselKey = UniqueKey();
+      });
+    }
+
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+
+  Future<void> removeImageWithId(int id) async {
     setState(() {
       print("Removing...");
       print(id);
@@ -62,6 +118,9 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
 
       carouselKey = UniqueKey();
     });
+
+    _greenIslandProvider = context.read<GreenIslandProvider>();
+    await _greenIslandProvider.deleteGreenIslandImage(widget.greenIsland, id);
   }
 
   @override
@@ -80,7 +139,8 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (widget.greenIsland.images != null &&
-                        widget.greenIsland.images!.isNotEmpty)
+                        widget.greenIsland.images!.isNotEmpty &&
+                        _selectedImage == null)
                       Column(
                         children: [
                           CarouselSlider(
@@ -164,13 +224,6 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                                         print("Image was selected:");
                                         print(selectedImage);
                                         removeImageWithId(selectedImage!);
-                                        /*
-                                  // Delete selected images from the original list
-                                  widget.greenIsland.images?.removeWhere(
-                                      (image) =>
-                                          selectedImagePaths.contains(image));
-                                  selectedImagePaths.clear();
-                                  */
                                       } else {
                                         print("Image was not selecte");
                                       }
@@ -180,6 +233,61 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                             ],
                           ),
                         ],
+                      ),
+                    /* // For mob version
+                    _selectedImage != null
+                        ? Image.file(
+                            _selectedImage!,
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            height: 150,
+                            width: 150,
+                            color: Colors.grey[300],
+                            child: Icon(Icons.image, size: 50),
+                          ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _pickImage(ImageSource.camera),
+                          child: Text('Take Photo'),
+                        ),
+                        SizedBox(width: 20),
+                        ElevatedButton(
+                          onPressed: () => _pickImage(ImageSource.gallery),
+                          child: Text('Choose from Gallery'),
+                        ),
+                      ],
+                    ),
+                    */
+                    if (_selectedImage != null)
+                      Image.file(
+                        _selectedImage!,
+                        height: 150,
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    SizedBox(height: 20),
+                    if (_selectedImage == null)
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        child: Text('Pick Image'),
+                      ),
+                    SizedBox(height: 10),
+                    if (_selectedImage != null)
+                      ElevatedButton(
+                        onPressed: _uploadImage,
+                        child: Text('Upload Image'),
+                      ),
+                    SizedBox(height: 10),
+                    if (_selectedImage != null)
+                      ElevatedButton(
+                        onPressed: _uploadImage,
+                        child: Text('Cancel'),
                       ),
                     Divider(
                       color: Colors.black, // Specify the color of the line
@@ -224,7 +332,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
   Future<void> _saveChanges() async {
     _greenIslandProvider = context.read<GreenIslandProvider>();
 
-    GreenIsland updatedGreenIsland = GreenIsland();
+    MyGreenIsland.GreenIsland updatedGreenIsland = MyGreenIsland.GreenIsland();
     updatedGreenIsland.id = widget.greenIsland.id;
     updatedGreenIsland.title = _titleController.text;
     updatedGreenIsland.description = _descriptionController.text;
