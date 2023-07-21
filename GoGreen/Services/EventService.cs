@@ -45,7 +45,9 @@ namespace GoGreen.Services
                 query = query.Where(e => e.UserId == userId);
             }
 
-            var events = await query.Skip((pageIndex - 1) * pageSize)
+            var events = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EventImages)
                             .ThenInclude(ei => ei.Image)
                         .Include(e => e.Municipality)
@@ -93,6 +95,7 @@ namespace GoGreen.Services
             var data = _mapper.Map<Event>(eventRequest);
 
             data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            data.MunicipalityId = 2;
             _context.Events.Add(data);
             await _context.SaveChangesAsync();
             var createdEvent = _mapper.Map<Event>(data);
