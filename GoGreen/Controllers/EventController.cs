@@ -79,7 +79,7 @@ namespace GoGreen.Controllers
         // POST: api/Event
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile imageFile)
+        public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile? imageFile)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -95,14 +95,14 @@ namespace GoGreen.Controllers
                 return BadRequest("Type not found");
             }
 
-
+            /*
             var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
 
             if (municipality == null)
             {
                 return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
             }
-
+            */
 
             var createdEvent = await _eventService.Create(request);
            

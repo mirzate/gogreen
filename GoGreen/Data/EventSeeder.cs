@@ -88,7 +88,7 @@ namespace GoGreen.Data
                     DateTo = eventData.DateTo,
                     Active = eventData.Active,
                     TypeId = eventData.TypeId,
-                    MunicipalityId = eventData.MunicipalityId,
+                    MunicipalityId = (int)eventData.MunicipalityId,
                     UserId = user.Id
                 };
 

@@ -8,17 +8,17 @@ import 'package:json_annotation/json_annotation.dart';
 part 'event.g.dart';
 
 @JsonSerializable()
-class Event{
+class Event {
   int? id;
   String? title;
   String? description;
-  DateTime? dateFrom;
-  DateTime? dateTo;
+  String? dateFrom;
+  String? dateTo;
   bool? active;
   EventType? eventType; // Property for the nested EventType
   Municipality? municipality;
-  List<Image>? images;
-  Image? firstImage;
+  List<EventImage>? images;
+  EventImage? firstImage;
 
   Event();
 
@@ -31,7 +31,6 @@ class Event{
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$EventToJson(this);
-
 }
 
 @JsonSerializable()
@@ -41,10 +40,10 @@ class EventType {
 
   EventType();
 
-  factory EventType.fromJson(Map<String, dynamic> json) => _$EventTypeFromJson(json);
+  factory EventType.fromJson(Map<String, dynamic> json) =>
+      _$EventTypeFromJson(json);
   Map<String, dynamic> toJson() => _$EventTypeToJson(this);
 }
-
 
 @JsonSerializable()
 class Municipality {
@@ -55,20 +54,22 @@ class Municipality {
 
   Municipality();
 
-  factory Municipality.fromJson(Map<String, dynamic> json) => _$MunicipalityFromJson(json);
+  factory Municipality.fromJson(Map<String, dynamic> json) =>
+      _$MunicipalityFromJson(json);
   Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
 
 @JsonSerializable()
-class Image {
+class EventImage {
   int? id;
   String? fileName;
   String? filePath;
 
-  Image();
+  EventImage();
 
-  factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
-  Map<String, dynamic> toJson() => _$ImageToJson(this);
+  factory EventImage.fromJson(Map<String, dynamic> json) =>
+      _$EventImageFromJson(json);
+  Map<String, dynamic> toJson() => _$EventImageToJson(this);
 }
 
 

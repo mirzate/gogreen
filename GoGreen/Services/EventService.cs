@@ -95,6 +95,7 @@ namespace GoGreen.Services
             var data = _mapper.Map<Event>(eventRequest);
 
             data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            data.MunicipalityId = 2;
             _context.Events.Add(data);
             await _context.SaveChangesAsync();
             var createdEvent = _mapper.Map<Event>(data);
