@@ -45,7 +45,9 @@ namespace GoGreen.Services
                 query = query.Where(e => e.UserId == userId);
             }
 
-            var events = await query.Skip((pageIndex - 1) * pageSize)
+            var events = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EventImages)
                             .ThenInclude(ei => ei.Image)
                         .Include(e => e.Municipality)

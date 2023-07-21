@@ -1,5 +1,8 @@
+import 'dart:ffi';
+
 import 'package:gogreen/models/green_island.dart';
 import 'package:gogreen/models/search_result.dart';
+import 'package:gogreen/screens/admin/green_island/green_island_add_screen.dart';
 import 'package:gogreen/screens/admin/green_island/green_island_edit_screen.dart';
 import 'package:gogreen/screens/event_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
@@ -71,10 +74,28 @@ class _ManageGreenIslandListScreenState
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
       title: "Manage Green Islands",
-      child: Container(
-        child: Column(
-          children: [_buildSearch(), _buildDataListView()],
+      child: Scaffold(
+        // Wrap the entire content with Scaffold
+        body: Container(
+          child: Column(
+            children: [
+              _buildSearch(),
+              _buildDataListView(),
+            ],
+          ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => GreenIslandAddScreen(),
+              ),
+            );
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightGreenAccent,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -194,7 +215,23 @@ class _ManageGreenIslandListScreenState
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Active',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Edit',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Delete',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
                 ),
@@ -206,6 +243,7 @@ class _ManageGreenIslandListScreenState
                             cells: [
                               DataCell(Text(e.id?.toString() ?? "")),
                               DataCell(Text(e.title?.toString() ?? "")),
+                              DataCell(Text(e.active?.toString() ?? "")),
                               DataCell(IconButton(
                                 icon: Icon(Icons.edit),
                                 iconSize: 16,
@@ -218,6 +256,13 @@ class _ManageGreenIslandListScreenState
                                           GreenIslandEditScreen(greenIsland: e),
                                     ),
                                   );
+                                },
+                              )),
+                              DataCell(IconButton(
+                                icon: Icon(Icons.delete_rounded),
+                                iconSize: 16,
+                                onPressed: () {
+                                  _remove(e);
                                 },
                               )),
                             ]))
@@ -258,5 +303,10 @@ class _ManageGreenIslandListScreenState
         )
       ],
     )));
+  }
+
+  Future<void> _remove(e) async {
+    await _greenIslandProvider.deleteGreenIsland(e);
+    await fetchData();
   }
 }

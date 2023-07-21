@@ -72,28 +72,23 @@ namespace GoGreen.Controllers
         // POST: api/GreenIsland
         
         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<ActionResult<GreenIslandResponse>> Post([FromBody] GreenIslandRequest request, IFormFile imageFile)
+        //[Consumes("multipart/form-data")]
+        public async Task<ActionResult<GreenIslandResponse>> Post([FromBody] GreenIslandRequest request)
         {
+            //, IFormFile imageFile
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return BadRequest("The user ID claim is missing");
             }
-            var MunicipalityId = 2; //TODO
-
-            var municipality = await _context.Municipalities.FindAsync(MunicipalityId);
-
-            if (municipality == null)
-            {
-                return BadRequest($"The Municipality with ID {MunicipalityId} does not exist");
-            }
 
             var data = _mapper.Map<GreenIslandRequest>(request);
 
             var createdData = await _greenIslandService.Store(data);
 
+            /*
             if (imageFile != null)
             {
                 var image = await _imageService.SaveImage(imageFile);
@@ -114,7 +109,7 @@ namespace GoGreen.Controllers
 
                 }
             }
-
+            */
             return _mapper.Map<GreenIslandResponse>(createdData);
 
         }

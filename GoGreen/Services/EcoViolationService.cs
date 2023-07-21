@@ -45,7 +45,9 @@ namespace GoGreen.Services
 
             var totalCount = await query.CountAsync();
 
-            var datas = await query.Skip((pageIndex - 1) * pageSize)
+            var datas = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
                         .Include(e => e.Municipality)

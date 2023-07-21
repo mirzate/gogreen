@@ -62,6 +62,61 @@ class GreenIslandProvider with ChangeNotifier {
     }
   }
 
+  Future<void> deleteGreenIsland(GreenIsland greenIsland) async {
+    var url = "$_baseURL$_endpoint/${greenIsland.id}";
+
+    var headers = getAndCreateHeaders();
+
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        // Update was successful
+        print("Successfully deleted");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Not successfully deleted");
+        print(response.request);
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
+    }
+  }
+
+  Future<void> postGreenIsland(GreenIsland greenIsland) async {
+    var url = "$_baseURL$_endpoint";
+
+    final body = json.encode(greenIsland.toJson());
+    var headers = getAndCreateHeaders();
+    //print(body);
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        // Update was successful
+        print("Successful");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Not successful");
+        print(response.request);
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
+    }
+  }
+
   Future<void> putGreenIsland(GreenIsland greenIsland) async {
     var url = "$_baseURL$_endpoint/${greenIsland.id}";
 

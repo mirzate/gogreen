@@ -32,6 +32,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
   List<String> selectedImagePaths = [];
   int? selectedImage;
   File? _selectedImage;
+  bool activeController = true;
 
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
 
@@ -45,6 +46,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
         TextEditingController(text: widget.greenIsland.longitude.toString());
     _latitudeController =
         TextEditingController(text: widget.greenIsland.latitude.toString());
+    activeController = widget.greenIsland.active!;
   }
 
   @override
@@ -316,6 +318,15 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                       keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 16),
+                    Checkbox(
+                      value: activeController,
+                      onChanged: (newValue) {
+                        setState(() {
+                          activeController = newValue!;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _saveChanges,
                       child: Text('Save Changes'),
@@ -338,6 +349,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
     updatedGreenIsland.description = _descriptionController.text;
     updatedGreenIsland.longitude = double.parse(_longitudeController.text);
     updatedGreenIsland.latitude = double.parse(_latitudeController.text);
+    updatedGreenIsland.active = activeController;
 
     await _greenIslandProvider.putGreenIsland(updatedGreenIsland);
 
