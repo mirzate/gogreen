@@ -1,5 +1,5 @@
-
 import 'package:gogreen/models/search_result.dart';
+import 'package:gogreen/screens/admin/event/event_add_screen.dart';
 import 'package:gogreen/screens/event_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:gogreen/widgets/navbar_screen.dart';
@@ -64,11 +64,29 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
 
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
-      title: "Event List",
-      child: Container(
-        child: Column(
-          children: [_buildSearch(), _buildDataListView()],
+      title: "Manage Green Islands",
+      child: Scaffold(
+        // Wrap the entire content with Scaffold
+        body: Container(
+          child: Column(
+            children: [
+              _buildSearch(),
+              _buildDataListView(),
+            ],
+          ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => EventAddScreen(),
+              ),
+            );
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightGreenAccent,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }

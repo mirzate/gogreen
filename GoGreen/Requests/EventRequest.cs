@@ -16,8 +16,8 @@ namespace GoGreen.Requests
         public bool Active { get; set; }
         [Required]
         public int TypeId { get; set; }
-        [Required]
-        public int MunicipalityId { get; set; }
+
+        public int? MunicipalityId { get; set; }
     }
 
 }
