@@ -15,6 +15,7 @@ namespace GoGreen.Requests
         public decimal Latitude { get; set; }
         [Required]
         public bool Active { get; set; }
+        
         public int MunicipalityId { get; set; }
 
 

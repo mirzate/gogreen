@@ -12,6 +12,7 @@ GreenIsland _$GreenIslandFromJson(Map<String, dynamic> json) => GreenIsland()
   ..description = json['description'] as String?
   ..longitude = (json['longitude'] as num).toDouble()
   ..latitude = (json['latitude'] as num).toDouble()
+  ..active = json['active'] as bool?
   ..municipality = json['municipality'] == null
       ? null
       : Municipality.fromJson(json['municipality'] as Map<String, dynamic>)
@@ -29,6 +30,7 @@ Map<String, dynamic> _$GreenIslandToJson(GreenIsland instance) =>
       'description': instance.description,
       'longitude': instance.longitude,
       'latitude': instance.latitude,
+      'active': instance.active,
       'municipality': instance.municipality,
       'images': instance.images,
       'firstImage': instance.firstImage,

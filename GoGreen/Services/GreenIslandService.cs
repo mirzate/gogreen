@@ -47,7 +47,9 @@ namespace GoGreen.Services
 
             var totalCount = await query.CountAsync();
 
-            var datas = await query.Skip((pageIndex - 1) * pageSize)
+            var datas = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(a => a.GreenIslandImages)
                             .ThenInclude(ei => ei.Image)
                         .Include(e => e.Municipality)
@@ -87,7 +89,9 @@ namespace GoGreen.Services
             var data = _mapper.Map<GreenIsland>(request);
 
             data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
+            data.MunicipalityId = 2;
+
             _context.GreenIslands.Add(data);
             await _context.SaveChangesAsync();
             var dataCreated = _mapper.Map<GreenIsland>(data);

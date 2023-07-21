@@ -77,7 +77,7 @@ namespace GoGreen.Data
                     Longitude = data.Longitude,
                     Latitude = data.Latitude,
                     Active = true,
-                    MunicipalityId = data.MunicipalityId,
+                    MunicipalityId = (int)data.MunicipalityId,
                     UserId = userId
                 };
 

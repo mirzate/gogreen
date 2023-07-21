@@ -13,6 +13,7 @@ class GreenIsland {
   String? description;
   late double longitude;
   late double latitude;
+  bool? active;
   Municipality? municipality;
   List<Image>? images;
   Image? firstImage;
