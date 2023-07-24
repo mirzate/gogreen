@@ -33,7 +33,7 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
   int? selectedImage;
   File? _selectedImage;
   bool activeController = true;
-
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
 
   @override
@@ -295,42 +295,87 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                       color: Colors.black, // Specify the color of the line
                       thickness: 1.0, // Specify the thickness of the line
                     ),
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
-                      maxLines: 3,
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _longitudeController,
-                      decoration: InputDecoration(labelText: 'Longitude'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _latitudeController,
-                      decoration: InputDecoration(labelText: 'Latitude'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    Checkbox(
-                      value: activeController,
-                      onChanged: (newValue) {
-                        setState(() {
-                          activeController = newValue!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _saveChanges,
-                      child: Text('Save Changes'),
-                    ),
+                    Form(
+                        key: _formKey,
+                        child: Column(children: [
+                          TextFormField(
+                              controller: _titleController,
+                              decoration: InputDecoration(labelText: 'Title *'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Title';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              controller: _descriptionController,
+                              decoration:
+                                  InputDecoration(labelText: 'Description *'),
+                              maxLines: 3,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Description';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              controller: _longitudeController,
+                              decoration:
+                                  InputDecoration(labelText: 'Longitude *'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Longitude';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              controller: _latitudeController,
+                              decoration:
+                                  InputDecoration(labelText: 'Latitude *'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Latitude';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: activeController,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    activeController = newValue!;
+                                  });
+                                },
+                              ),
+                              Text('Active'),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Other widgets on the left side
+                                Expanded(
+                                    child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        _saveChanges();
+                                      }
+                                    },
+                                    child: Text('Save Changes'),
+                                  ),
+                                ))
+                              ])
+                        ]))
                     // Add more Text or other widgets to display additional EcoViolation data
                   ],
                 ),
