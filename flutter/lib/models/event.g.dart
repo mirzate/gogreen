@@ -24,7 +24,8 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event()
       .toList()
   ..firstImage = json['firstImage'] == null
       ? null
-      : EventImage.fromJson(json['firstImage'] as Map<String, dynamic>);
+      : EventImage.fromJson(json['firstImage'] as Map<String, dynamic>)
+  ..typeId = json['typeId'] as int?;
 
 Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'id': instance.id,
@@ -37,6 +38,7 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'municipality': instance.municipality,
       'images': instance.images,
       'firstImage': instance.firstImage,
+      'typeId': instance.typeId,
     };
 
 EventType _$EventTypeFromJson(Map<String, dynamic> json) => EventType()

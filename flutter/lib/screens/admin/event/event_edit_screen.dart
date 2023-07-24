@@ -1,75 +1,97 @@
+import 'package:gogreen/providers/event_provider.dart';
 import 'package:gogreen/screens/admin/green_island/green_island_list_screen.dart';
 import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:gogreen/models/green_island.dart' as GreenIslandModel;
+import 'package:gogreen/models/event.dart' as EventModel;
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../models/green_island.dart' as MyGreenIsland;
-import '../../../providers/green_island_provider.dart';
+import '../../../models/event.dart';
+import '../../../providers/event_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 //import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
-class GreenIslandEditScreen extends StatefulWidget {
-  final GreenIslandModel.GreenIsland greenIsland;
+import '../../../providers/other_provider.dart';
+import 'event_list_screen.dart';
 
-  GreenIslandEditScreen({required this.greenIsland});
+class EventEditScreen extends StatefulWidget {
+  final EventModel.Event event;
+
+  EventEditScreen({required this.event});
 
   @override
-  State<GreenIslandEditScreen> createState() => _GreenIslandEditScreenState();
+  State<EventEditScreen> createState() => _EventEditScreenState();
 }
 
-class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
+class _EventEditScreenState extends State<EventEditScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
-  late TextEditingController _longitudeController;
-  late TextEditingController _latitudeController;
-  late GreenIslandProvider _greenIslandProvider;
+  late TextEditingController _datefromController;
+  late TextEditingController _datetoController;
+  late EventProvider _eventProvider;
+  late OtherProvider _otherProvider;
+  List<EventType>? eventTypes = [];
   int currentSlideIndex = 3;
   List<String> selectedImagePaths = [];
   int? selectedImage;
   File? _selectedImage;
   bool activeController = true;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  DateTime selectedDate = DateTime.now();
+  EventType? selectedEventType;
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.greenIsland.title);
+    _titleController = TextEditingController(text: widget.event.title);
     _descriptionController =
-        TextEditingController(text: widget.greenIsland.description);
-    _longitudeController =
-        TextEditingController(text: widget.greenIsland.longitude.toString());
-    _latitudeController =
-        TextEditingController(text: widget.greenIsland.latitude.toString());
-    activeController = widget.greenIsland.active!;
+        TextEditingController(text: widget.event.description);
+    _datefromController = TextEditingController(
+        text: DateFormat('yyyy-MM-dd')
+            .format(DateTime.parse(widget.event.dateFrom as String)));
+    _datetoController = TextEditingController(
+        text: DateFormat('yyyy-MM-dd')
+            .format(DateTime.parse(widget.event.dateTo as String)));
+    activeController = widget.event.active!;
+    _otherProvider = context.read<OtherProvider>();
+    fetchEventType();
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _longitudeController.dispose();
-    _latitudeController.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
-/*
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedImage = await ImagePicker().getImage(source: source);
 
-    setState(() {
-      if (pickedImage != null) {
-        _selectedImage = File(pickedImage.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+  Future<void> fetchEventType() async {
+    try {
+      var data = await _otherProvider.getEventTypes();
+      setState(() {
+        eventTypes = data;
+        //print(eventTypes![0]);
+      });
+
+      var tmp = eventTypes!.firstWhere(
+          (eventType) => eventType.id == widget.event.eventType?.id);
+      selectedEventType = tmp;
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                title: Text("Error"),
+                content: Text(error.toString()),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Ok"))
+                ],
+              ));
+    }
   }
-  */
 
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -91,15 +113,15 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
     if (_selectedImage == null) {
       return;
     }
-    _greenIslandProvider = context.read<GreenIslandProvider>();
-    var updatedGreenIsland = await _greenIslandProvider.uploadImage(
-        widget.greenIsland, _selectedImage!);
+    _eventProvider = context.read<EventProvider>();
 
-    if (updatedGreenIsland != null) {
+    var updatedEvent =
+        await _eventProvider.uploadImage(widget.event, _selectedImage!);
+
+    if (updatedEvent != null) {
       setState(() {
-        widget.greenIsland.images = updatedGreenIsland.images;
-        widget.greenIsland.images
-            ?.sort((a, b) => (b?.id ?? 0).compareTo(a?.id ?? 0));
+        widget.event.images = updatedEvent.images;
+        widget.event.images?.sort((a, b) => (b?.id ?? 0).compareTo(a?.id ?? 0));
 
         carouselKey = UniqueKey();
       });
@@ -114,22 +136,37 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
     setState(() {
       print("Removing...");
       print(id);
-      widget.greenIsland.images?.removeWhere((image) => image.id == id);
+      widget.event.images?.removeWhere((image) => image.id == id);
       selectedImage = null;
       //print(widget.greenIsland.images?.firstWhere((image) => image.id == id));
 
       carouselKey = UniqueKey();
     });
 
-    _greenIslandProvider = context.read<GreenIslandProvider>();
-    await _greenIslandProvider.deleteGreenIslandImage(widget.greenIsland, id);
+    _eventProvider = context.read<EventProvider>();
+    await _eventProvider.deleteEventImage(widget.event, id);
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Edit Green Island'),
+          title: Text('Edit Event'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: SingleChildScrollView(
@@ -140,8 +177,8 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.greenIsland.images != null &&
-                        widget.greenIsland.images!.isNotEmpty &&
+                    if (widget.event.images != null &&
+                        widget.event.images!.isNotEmpty &&
                         _selectedImage == null)
                       Column(
                         children: [
@@ -161,14 +198,14 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                                   currentSlideIndex = index;
                                   // Update selectedImage with the ID of the currently shown image
                                   selectedImage =
-                                      widget.greenIsland.images![index].id;
+                                      widget.event.images![index].id;
 
                                   print(selectedImage);
                                 });
                                 //print(currentSlideIndex);
                               },
                             ),
-                            items: widget.greenIsland.images?.map((image) {
+                            items: widget.event.images?.map((image) {
                                   return GestureDetector(
                                     onTap: () {
                                       // Add or remove the image path from the selectedImagePaths list on tap
@@ -296,14 +333,15 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                       thickness: 1.0, // Specify the thickness of the line
                     ),
                     Form(
-                        key: _formKey,
-                        child: Column(children: [
+                      key: _formKey,
+                      child: Column(
+                        children: [
                           TextFormField(
                               controller: _titleController,
                               decoration: InputDecoration(labelText: 'Title *'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter a Title';
+                                  return 'Please enter a title';
                                 }
                                 return null; // Return null if the validation is successful
                               }),
@@ -315,31 +353,79 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                               maxLines: 3,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter a Description';
+                                  return 'Please enter a description';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          if (eventTypes != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select Event Type *',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                DropdownButtonFormField<EventType>(
+                                  value: selectedEventType,
+                                  items: eventTypes!.map((eventType) {
+                                    return DropdownMenuItem<EventType>(
+                                      value: eventType,
+                                      child: Text(eventType.name ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (selectedEventType) {
+                                    setState(() {
+                                      this.selectedEventType =
+                                          selectedEventType;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select an event type';
+                                    }
+                                    return null; // Return null if validation passes
+                                  },
+                                ),
+                              ],
+                            ),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datefromController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datefromController,
+                              decoration:
+                                  InputDecoration(labelText: 'Date from *'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Date From';
                                 }
                                 return null; // Return null if the validation is successful
                               }),
                           SizedBox(height: 16),
                           TextFormField(
-                              controller: _longitudeController,
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datetoController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datetoController,
                               decoration:
-                                  InputDecoration(labelText: 'Longitude *'),
+                                  InputDecoration(labelText: 'Date to *'),
                               keyboardType: TextInputType.number,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter a Longitude';
-                                }
-                                return null; // Return null if the validation is successful
-                              }),
-                          SizedBox(height: 16),
-                          TextFormField(
-                              controller: _latitudeController,
-                              decoration:
-                                  InputDecoration(labelText: 'Latitude *'),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a Latitude';
+                                  return 'Please enter a Date To';
                                 }
                                 return null; // Return null if the validation is successful
                               }),
@@ -357,25 +443,29 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
                               Text('Active'),
                             ],
                           ),
-                          SizedBox(height: 16),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Other widgets on the left side
-                                Expanded(
-                                    child: Align(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Other widgets on the left side
+                              Expanded(
+                                child: Align(
                                   alignment: Alignment.centerRight,
                                   child: ElevatedButton(
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
-                                        _saveChanges();
+                                        _saveChanges(); // <-- Call the function using ()
                                       }
                                     },
                                     child: Text('Save Changes'),
                                   ),
-                                ))
-                              ])
-                        ]))
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+
                     // Add more Text or other widgets to display additional EcoViolation data
                   ],
                 ),
@@ -386,23 +476,25 @@ class _GreenIslandEditScreenState extends State<GreenIslandEditScreen> {
   }
 
   Future<void> _saveChanges() async {
-    _greenIslandProvider = context.read<GreenIslandProvider>();
+    print("Save 0");
+    _eventProvider = context.read<EventProvider>();
 
-    MyGreenIsland.GreenIsland updatedGreenIsland = MyGreenIsland.GreenIsland();
-    updatedGreenIsland.id = widget.greenIsland.id;
-    updatedGreenIsland.title = _titleController.text;
-    updatedGreenIsland.description = _descriptionController.text;
-    updatedGreenIsland.longitude = double.parse(_longitudeController.text);
-    updatedGreenIsland.latitude = double.parse(_latitudeController.text);
-    updatedGreenIsland.active = activeController;
+    EventModel.Event updatedEvent = EventModel.Event();
+    updatedEvent.id = widget.event.id;
+    updatedEvent.title = _titleController.text;
+    updatedEvent.description = _descriptionController.text;
+    updatedEvent.dateFrom = _datefromController.text;
+    updatedEvent.dateTo = _datetoController.text;
+    updatedEvent.typeId = selectedEventType?.id ?? 1;
+    updatedEvent.active = activeController;
 
-    await _greenIslandProvider.putGreenIsland(updatedGreenIsland);
-
+    await _eventProvider.putEvent(updatedEvent);
+    print("Save 1");
     // Replace the current screen with ManageGreenIslandListScreen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ManageGreenIslandListScreen(),
+        builder: (context) => const ManageEventListScreen(),
       ),
     );
   }

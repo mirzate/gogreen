@@ -36,6 +36,8 @@ class _EventAddScreenState extends State<EventAddScreen> {
   DateTime selectedDate = DateTime.now();
   EventType? selectedEventType;
 
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -130,111 +132,170 @@ class _EventAddScreenState extends State<EventAddScreen> {
                       color: Colors.black, // Specify the color of the line
                       thickness: 1.0, // Specify the thickness of the line
                     ),
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
-                      maxLines: 3,
-                    ),
-                    SizedBox(height: 16),
-                    if (eventTypes != null)
-                      DropdownButtonFormField<EventType>(
-                        value: selectedEventType,
-                        items: eventTypes!.map((eventType) {
-                          return DropdownMenuItem<EventType>(
-                            value: eventType,
-                            child: Text(eventType.name ?? ''),
-                          );
-                        }).toList(),
-                        onChanged: (selectedEventType) {
-                          setState(() {
-                            this.selectedEventType = selectedEventType;
-                          });
-                        },
-                      ),
-                    SizedBox(height: 16),
-                    TextField(
-                      onTap: () async {
-                        await _selectDate(context);
-                        _datefromController.text =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                      },
-                      controller: _datefromController,
-                      decoration: InputDecoration(labelText: 'Date from'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      onTap: () async {
-                        await _selectDate(context);
-                        _datetoController.text =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                      },
-                      controller: _datetoController,
-                      decoration: InputDecoration(labelText: 'Date to'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: activeController,
-                          onChanged: (newValue) {
-                            setState(() {
-                              activeController = newValue!;
-                            });
-                          },
-                        ),
-                        Text('Active'),
-                      ],
-                    ),
-                    if (_selectedImage != null)
-                      Image.file(
-                        _selectedImage!,
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.cover,
-                      ),
-                    SizedBox(height: 20),
-                    if (_selectedImage == null)
-                      ElevatedButton(
-                        onPressed: _pickImage,
-                        child: Text('Pick Image'),
-                      ),
-                    if (_selectedImage != null)
-                      IconButton(
-                        icon: Expanded(
-                          child: Row(
-                            children: [Icon(Icons.delete)],
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _selectedImage = null;
-                          });
-                        },
-                      ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Other widgets on the left side
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: _saveChanges,
-                              child: Text('Add'),
+                    Form(
+                        key: _formKey,
+                        child: Column(children: [
+                          TextFormField(
+                              controller: _titleController,
+                              decoration: InputDecoration(labelText: 'Title *'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a title';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              controller: _descriptionController,
+                              decoration:
+                                  InputDecoration(labelText: 'Description *'),
+                              maxLines: 3,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a description';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          if (eventTypes != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select Event Type *',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                      color: Colors.grey[600]),
+                                ),
+                                DropdownButtonFormField<EventType>(
+                                    value: selectedEventType,
+                                    items: eventTypes!.map((eventType) {
+                                      return DropdownMenuItem<EventType>(
+                                        value: eventType,
+                                        child: Text(eventType.name ?? ''),
+                                      );
+                                    }).toList(),
+                                    onChanged: (selectedEventType) {
+                                      setState(() {
+                                        this.selectedEventType =
+                                            selectedEventType;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Please select an event type';
+                                      }
+                                      return null; // Return null if validation passes
+                                    }),
+                              ],
                             ),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datefromController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datefromController,
+                              decoration:
+                                  InputDecoration(labelText: 'Date from *'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Date From';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          TextFormField(
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datetoController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datetoController,
+                              decoration:
+                                  InputDecoration(labelText: 'Date to *'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Date To';
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
+                          SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: activeController,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    activeController = newValue!;
+                                  });
+                                },
+                              ),
+                              Text('Active'),
+                            ],
                           ),
-                        ),
-                      ],
-                    )
-
+                          if (_selectedImage != null)
+                            Image.file(
+                              _selectedImage!,
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          SizedBox(height: 20),
+                          if (_selectedImage == null)
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Other widgets on the left side
+                                  Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: ElevatedButton(
+                                            onPressed: _pickImage,
+                                            child: Text('Pick Image'),
+                                          )))
+                                ]),
+                          if (_selectedImage != null)
+                            IconButton(
+                              icon: Expanded(
+                                child: Row(
+                                  children: [Icon(Icons.delete)],
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedImage = null;
+                                });
+                              },
+                            ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Other widgets on the left side
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        _saveChanges(); // <-- Call the function using ()
+                                      }
+                                    },
+                                    child: Text('Add'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        ])),
                     // Add more Text or other widgets to display additional EcoViolation data
                   ],
                 ),
