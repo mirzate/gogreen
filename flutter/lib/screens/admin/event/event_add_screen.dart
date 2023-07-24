@@ -142,19 +142,31 @@ class _EventAddScreenState extends State<EventAddScreen> {
                     ),
                     SizedBox(height: 16),
                     if (eventTypes != null)
-                      DropdownButtonFormField<EventType>(
-                        value: selectedEventType,
-                        items: eventTypes!.map((eventType) {
-                          return DropdownMenuItem<EventType>(
-                            value: eventType,
-                            child: Text(eventType.name ?? ''),
-                          );
-                        }).toList(),
-                        onChanged: (selectedEventType) {
-                          setState(() {
-                            this.selectedEventType = selectedEventType;
-                          });
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Select Event Type',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.grey[600]),
+                          ),
+                          DropdownButtonFormField<EventType>(
+                            value: selectedEventType,
+                            items: eventTypes!.map((eventType) {
+                              return DropdownMenuItem<EventType>(
+                                value: eventType,
+                                child: Text(eventType.name ?? ''),
+                              );
+                            }).toList(),
+                            onChanged: (selectedEventType) {
+                              setState(() {
+                                this.selectedEventType = selectedEventType;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     SizedBox(height: 16),
                     TextField(

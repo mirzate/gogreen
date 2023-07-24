@@ -95,6 +95,32 @@ class EventProvider with ChangeNotifier {
     }
   }
 
+  Future<void> deleteEvent(Event eModel) async {
+    var url = "$_baseURL$_endpoint/${eModel.id}";
+
+    var headers = getAndCreateHeaders();
+
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        // Update was successful
+        print("Successfully deleted");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Not successfully deleted");
+        //print(response.request);
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
+    }
+  }
+
   Future<void> postEvent(Event e, File? selectedImage) async {
     var url = "$_baseURL$_endpoint";
 
