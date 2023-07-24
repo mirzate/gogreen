@@ -10,20 +10,13 @@ namespace GoGreen.Models
         public string? Contact { get; set; }
         public string? Response { get; set; }
         public bool? Published { get; set; } = true;
+        
 
-
-        public int? EcoViolationStatusId { get; set; } = 1;
-
-        [ForeignKey("EcoViolationStatusId")]
+        [ForeignKey("EcoViolationStatus")]
+        public int? EcoViolationStatusId { get; set; }
         public EcoViolationStatus EcoViolationStatus { get; set; }
-
-        public EcoViolationStatusEnum EcoViolationStatusEnum { get; set; }
-
         
         public string? UserId { get; set; }
-
-        //[ForeignKey("UserId")]
-        //public User User { get; set; }
 
 
         [ForeignKey("Municipality")]
@@ -32,14 +25,6 @@ namespace GoGreen.Models
 
         public ICollection<EcoViolationImage> EcoViolationImages { get; set; }
 
-    }
-
-    public enum EcoViolationStatusEnum
-    {
-        New,
-        InProgress,
-        Completed,
-        Rejected
     }
 
 

@@ -135,7 +135,6 @@ class EventProvider with ChangeNotifier {
     request.fields['TypeId'] = e.eventType?.id.toString() ?? '';
     request.fields['Active'] = e.active.toString().toLowerCase();
 
-    // Add the image file to the request
     if (selectedImage != null) {
       var imageFile =
           await http.MultipartFile.fromPath('imageFile', selectedImage.path);

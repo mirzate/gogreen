@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:gogreen/models/eco_violation.dart';
 import 'package:gogreen/screens/admin/event/event_list_screen.dart';
 import 'package:gogreen/screens/admin/green_island/green_island_list_screen.dart';
@@ -30,7 +31,10 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
   late EcoViolationProvider _ecoViolationProvider;
   late OtherProvider _otherProvider;
   List<Municipality>? municipalities = [];
-  File? _selectedImage;
+
+  List<File> _selectedImages = [];
+  Key carouselKey = UniqueKey();
+  int currentSlideIndex = 0;
 
   Municipality? selectedMunicipality;
 
@@ -82,12 +86,13 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png'], // Allow only image files
+      allowMultiple: true, // Allow selecting multiple images
     );
 
     if (result != null) {
-      PlatformFile file = result.files.first;
+      List<PlatformFile> files = result.files;
       setState(() {
-        _selectedImage = File(file.path!);
+        _selectedImages = files.map((file) => File(file.path!)).toList();
       });
     } else {
       // User canceled the file picking process
@@ -198,44 +203,70 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                                 labelText: 'Contact (optional)'),
                             maxLines: 3,
                           ),
-                          SizedBox(height: 16),
-                          if (_selectedImage != null)
-                            Flutter.Image.file(
-                              _selectedImage!,
-                              height: 150,
-                              width: 150,
-                              fit: BoxFit.cover,
-                            ),
-                          SizedBox(height: 20),
-                          if (_selectedImage == null)
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Other widgets on the left side
-                                  Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: ElevatedButton(
-                                            onPressed: _pickImage,
-                                            child: Text('Pick Image'),
-                                          )))
-                                ]),
-                          if (_selectedImage != null)
-                            IconButton(
-                              icon: Expanded(
-                                child: Row(
-                                  children: [Icon(Icons.delete)],
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _selectedImage = null;
-                                });
-                              },
-                            ),
                         ])),
+                    SizedBox(height: 16),
                     // Add more Text or other widgets to display additional EcoViolation data
+                    // List Image
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Select Image *',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _selectedImages.map((image) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0), // Add margin here
+                                child: Stack(
+                                  children: [
+                                    Flutter.Image.file(
+                                      image,
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        color: Colors
+                                            .grey, // Set the background color to white
+                                        child: IconButton(
+                                          icon: Icon(Icons.delete),
+                                          color: Colors
+                                              .black, // Set the icon color (e.g., red)
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedImages.remove(image);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: _pickImage,
+                          child: Text('Pick Image'),
+                        ),
+                      ],
+                    )
+
+                    // End List Image
                   ],
                 ),
               ),
@@ -252,8 +283,9 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
     addData.title = _titleController.text;
     addData.description = _descriptionController.text;
     addData.municipality = selectedMunicipality;
+    addData.contact = _contactController.text;
 
-    await _ecoViolationProvider.postEcoViolation(addData, _selectedImage);
+    await _ecoViolationProvider.postEcoViolation(addData, _selectedImages);
 
     Navigator.pushReplacement(
       context,
