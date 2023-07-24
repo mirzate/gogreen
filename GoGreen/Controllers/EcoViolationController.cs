@@ -75,7 +75,7 @@ namespace GoGreen.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, IFormFile imageFile)
+        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, IFormFile? imageFile)
         {
 
             var data = _mapper.Map<EcoViolationRequest>(request);

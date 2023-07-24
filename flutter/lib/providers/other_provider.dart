@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:gogreen/models/event.dart';
+import 'package:gogreen/models/eco_violation.dart' as mEcoViolation;
 import 'package:gogreen/models/search_result.dart';
 import 'package:gogreen/providers/token_provider.dart';
 import 'package:gogreen/utils/util.dart';
@@ -12,6 +13,7 @@ class OtherProvider with ChangeNotifier {
   static String? _baseURL;
 
   String _endpointEventType = "EventType";
+  String _endpointMunicipality = "Municipality";
 
   OtherProvider() {
     //GET
@@ -20,6 +22,34 @@ class OtherProvider with ChangeNotifier {
     _baseURL = const String.fromEnvironment("baseURL",
         defaultValue: "http://localhost:8080/api/");
   }
+
+  Future<List<mEcoViolation.Municipality>> getMunicipalities(
+      {dynamic params}) async {
+    //int pageIndex = 1, int pageSize = 10,
+
+    var url = "$_baseURL$_endpointMunicipality";
+    //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
+
+    if (params != null) {
+      var queryString = getQueryString(params);
+      url = "$url?$queryString";
+    }
+
+    var uri = Uri.parse(url);
+    var headers = getAndCreateHeaders(Authorization?.token ?? "");
+
+    print(uri);
+    var response = await http.get(uri, headers: headers);
+
+    if (!!validateResponse(response)) {
+      var data = jsonDecode(response.body);
+      return List<mEcoViolation.Municipality>.from(
+          data.map((json) => mEcoViolation.Municipality.fromJson(json)));
+    } else {
+      throw Exception("Oops, something bad happened!");
+    }
+  }
+
   // Task
   Future<List<EventType>> getEventTypes({dynamic params}) async {
     //int pageIndex = 1, int pageSize = 10,

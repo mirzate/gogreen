@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:gogreen/models/event.dart';
 import 'package:gogreen/models/search_result.dart';
@@ -62,6 +63,41 @@ class EcoViolationProvider with ChangeNotifier {
     }
   }
 
+  Future<void> postEcoViolation(Ecoviolation e, File? selectedImage) async {
+    var url = "$_baseURL$_endpoint";
+
+    var headers = getAndCreateHeaders(contentType: "multipart/form-data");
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.headers.addAll(headers);
+    request.fields['Title'] = e.title.toString();
+    request.fields['Description'] = e.title.toString();
+    request.fields['MunicipalityId'] = e.municipality?.id.toString() ?? '';
+    // Add the image file to the request
+    if (selectedImage != null) {
+      var imageFile =
+          await http.MultipartFile.fromPath('imageFile', selectedImage.path);
+      request.files.add(imageFile);
+    }
+
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode < 299) {
+        // Update was successful
+        print("Successful");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Not successful");
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
+    }
+  }
+
   bool validateResponse(http.Response response) {
     if (response.statusCode < 299) {
       return true;
@@ -73,10 +109,10 @@ class EcoViolationProvider with ChangeNotifier {
     }
   }
 
-  Map<String, String> getAndCreateHeaders() {
+  Map<String, String> getAndCreateHeaders({String? contentType}) {
     var token = Authorization.token ?? "";
     var headers = {
-      "Content-Type": "application/json",
+      "Content-Type": contentType ?? "application/json",
       "Authorization": "Bearer ${token}"
     };
 
