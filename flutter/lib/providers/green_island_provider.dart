@@ -79,7 +79,7 @@ class GreenIslandProvider with ChangeNotifier {
       } else {
         // Handle the error if update was unsuccessful
         print("Not successfully deleted");
-        print(response.request);
+        //print(response.request);
         print(response.body);
       }
     } catch (error) {
