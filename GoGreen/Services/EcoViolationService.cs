@@ -51,6 +51,7 @@ namespace GoGreen.Services
                         .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
                         .Include(e => e.Municipality)
+                        .Include(e => e.EcoViolationStatus)
                         .Take(pageSize)
                         .ToListAsync();
 
@@ -73,6 +74,7 @@ namespace GoGreen.Services
                 .Include(a => a.EcoViolationStatus)
                 .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
+                .Include(e => e.Municipality)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
@@ -88,8 +90,15 @@ namespace GoGreen.Services
             
             var data = _mapper.Map<EcoViolation>(request);
 
-            //data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+            var openStatus = await _context.EcoViolationStatuses
+                                        .FirstOrDefaultAsync(s => s.Name == "Open");
+
+            if (openStatus != null)
+            {
+
+                data.EcoViolationStatusId = openStatus.Id;
+            }
+
             _context.EcoViolations.Add(data);
             await _context.SaveChangesAsync();
             var dataCreated = _mapper.Map<EcoViolation>(data);

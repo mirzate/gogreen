@@ -63,7 +63,8 @@ class EcoViolationProvider with ChangeNotifier {
     }
   }
 
-  Future<void> postEcoViolation(Ecoviolation e, File? selectedImage) async {
+  Future<void> postEcoViolation(
+      Ecoviolation e, List<File> selectedImages) async {
     var url = "$_baseURL$_endpoint";
 
     var headers = getAndCreateHeaders(contentType: "multipart/form-data");
@@ -73,10 +74,13 @@ class EcoViolationProvider with ChangeNotifier {
     request.fields['Title'] = e.title.toString();
     request.fields['Description'] = e.title.toString();
     request.fields['MunicipalityId'] = e.municipality?.id.toString() ?? '';
-    // Add the image file to the request
-    if (selectedImage != null) {
-      var imageFile =
-          await http.MultipartFile.fromPath('imageFile', selectedImage.path);
+    request.fields['Contact'] = e.contact?.toString() ?? '';
+
+    for (var selectedImage in selectedImages) {
+      var imageFile = await http.MultipartFile.fromPath(
+        'imageFiles',
+        selectedImage.path,
+      );
       request.files.add(imageFile);
     }
 
@@ -94,7 +98,7 @@ class EcoViolationProvider with ChangeNotifier {
       }
     } catch (error) {
       // Handle any exceptions that occur during the API call
-      print("Error was occur");
+      print("Error occurred");
     }
   }
 
