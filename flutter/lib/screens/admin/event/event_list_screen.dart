@@ -294,7 +294,7 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
                                 icon: Icon(Icons.delete_rounded),
                                 iconSize: 16,
                                 onPressed: () {
-                                  //_remove(e);
+                                  _remove(e);
                                 },
                               )),
                             ]))
@@ -335,5 +335,10 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
         )
       ],
     )));
+  }
+
+  Future<void> _remove(e) async {
+    await _eventProvider.deleteEvent(e);
+    await fetchData();
   }
 }
