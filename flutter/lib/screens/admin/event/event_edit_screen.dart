@@ -42,8 +42,13 @@ class _EventEditScreenState extends State<EventEditScreen> {
   bool activeController = true;
   DateTime selectedDate = DateTime.now();
   EventType? selectedEventType;
-
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool _titleIsValid = true;
+  bool _descriptionIsValid = true;
+  bool _dateFromIsValid = true;
+  bool _dateToIsValid = true;
 
   @override
   void initState() {
@@ -332,81 +337,142 @@ class _EventEditScreenState extends State<EventEditScreen> {
                       color: Colors.black, // Specify the color of the line
                       thickness: 1.0, // Specify the thickness of the line
                     ),
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
-                      maxLines: 3,
-                    ),
-                    SizedBox(height: 16),
-                    if (eventTypes != null)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Form(
+                      key: _formKey,
+                      child: Column(
                         children: [
-                          Text(
-                            'Select Event Type',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                              color: Colors.grey[600],
+                          TextField(
+                              controller: _titleController,
+                              decoration: InputDecoration(
+                                labelText: 'Title *',
+                                errorText: _descriptionIsValid
+                                    ? null
+                                    : 'Please enter a Title',
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _titleIsValid = value.isNotEmpty;
+                                });
+                              }),
+                          SizedBox(height: 16),
+                          TextField(
+                              controller: _descriptionController,
+                              decoration: InputDecoration(
+                                labelText: 'Description *',
+                                errorText: _descriptionIsValid
+                                    ? null
+                                    : 'Please enter a description',
+                              ),
+                              maxLines: 3,
+                              onChanged: (value) {
+                                setState(() {
+                                  _descriptionIsValid = value.isNotEmpty;
+                                });
+                              }),
+                          SizedBox(height: 16),
+                          if (eventTypes != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select Event Type *',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                DropdownButtonFormField<EventType>(
+                                  value: selectedEventType,
+                                  items: eventTypes!.map((eventType) {
+                                    return DropdownMenuItem<EventType>(
+                                      value: eventType,
+                                      child: Text(eventType.name ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (selectedEventType) {
+                                    setState(() {
+                                      this.selectedEventType =
+                                          selectedEventType;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please select an event type';
+                                    }
+                                    return null; // Return null if validation passes
+                                  },
+                                ),
+                              ],
                             ),
-                          ),
-                          DropdownButtonFormField<EventType>(
-                            value: selectedEventType,
-                            items: eventTypes!.map((eventType) {
-                              return DropdownMenuItem<EventType>(
-                                value: eventType,
-                                child: Text(eventType.name ?? ''),
-                              );
-                            }).toList(),
-                            onChanged: (selectedEventType) {
+                          SizedBox(height: 16),
+                          TextField(
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datefromController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datefromController,
+                              decoration: InputDecoration(
+                                labelText: 'Date from *',
+                                errorText: _dateFromIsValid
+                                    ? null
+                                    : 'Please enter a Date From',
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                setState(() {
+                                  _dateFromIsValid = value.isNotEmpty;
+                                });
+                              }),
+                          SizedBox(height: 16),
+                          TextField(
+                              onTap: () async {
+                                await _selectDate(context);
+                                _datetoController.text =
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(selectedDate);
+                              },
+                              controller: _datetoController,
+                              decoration: InputDecoration(
+                                labelText: 'Date to *',
+                                errorText: _dateFromIsValid
+                                    ? null
+                                    : 'Please enter a Date To',
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                setState(() {
+                                  _dateToIsValid = value.isNotEmpty;
+                                });
+                              }),
+                          SizedBox(height: 16),
+                          Checkbox(
+                            value: activeController,
+                            onChanged: (newValue) {
                               setState(() {
-                                this.selectedEventType = selectedEventType;
+                                activeController = newValue!;
                               });
                             },
                           ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate() &&
+                                  _descriptionIsValid! &&
+                                  _titleIsValid! &&
+                                  _dateFromIsValid! &&
+                                  _dateToIsValid!) {
+                                _saveChanges();
+                              }
+                            },
+                            child: Text('Save Changes'),
+                          )
                         ],
                       ),
-                    SizedBox(height: 16),
-                    TextField(
-                      onTap: () async {
-                        await _selectDate(context);
-                        _datefromController.text =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                      },
-                      controller: _datefromController,
-                      decoration: InputDecoration(labelText: 'Date from'),
-                      keyboardType: TextInputType.number,
                     ),
-                    SizedBox(height: 16),
-                    TextField(
-                      onTap: () async {
-                        await _selectDate(context);
-                        _datetoController.text =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                      },
-                      controller: _datetoController,
-                      decoration: InputDecoration(labelText: 'Date to'),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: 16),
-                    Checkbox(
-                      value: activeController,
-                      onChanged: (newValue) {
-                        setState(() {
-                          activeController = newValue!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _saveChanges,
-                      child: Text('Save Changes'),
-                    ),
+
                     // Add more Text or other widgets to display additional EcoViolation data
                   ],
                 ),
@@ -417,6 +483,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
   }
 
   Future<void> _saveChanges() async {
+    print("Save 0");
     _eventProvider = context.read<EventProvider>();
 
     EventModel.Event updatedEvent = EventModel.Event();
@@ -429,7 +496,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
     updatedEvent.active = activeController;
 
     await _eventProvider.putEvent(updatedEvent);
-
+    print("Save 1");
     // Replace the current screen with ManageGreenIslandListScreen
     Navigator.pushReplacement(
       context,
