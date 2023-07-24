@@ -11,6 +11,7 @@ import '../../../models/event.dart';
 import '../../../providers/event_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 import '../../../providers/token_provider.dart';
+import 'event_edit_screen.dart';
 
 class ManageEventListScreen extends StatefulWidget {
   const ManageEventListScreen({super.key});
@@ -206,6 +207,14 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Type',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Active',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
@@ -219,23 +228,43 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
                   ),
                 ),
               ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              )
             ],
             rows: result?.result
                     .map((Event e) => DataRow(
                             onSelectChanged: (value) => {
                                   if (value == true)
                                     {
+                                      /*
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               EventDetailScreen(event: e),
                                         ),
                                       )
+                                      */
                                     }
                                 },
                             cells: [
                               DataCell(Text(e.id?.toString() ?? "")),
                               DataCell(Text(e.title?.toString() ?? "")),
+                              DataCell(
+                                  Text(e.eventType?.name?.toString() ?? "")),
                               DataCell(Text(e.active?.toString() ?? "")),
                               DataCell(Container(
                                   width: 80,
@@ -246,6 +275,28 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
                                     //width: 200, // Set the desired width of the image
                                     //height: 200, // Set the desired height of the image
                                   ))),
+                              DataCell(IconButton(
+                                icon: Icon(Icons.edit),
+                                iconSize: 16,
+                                onPressed: () {
+                                  // Add your button onPressed logic here
+                                  // This function will be called when the button is pressed
+
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EventEditScreen(event: e),
+                                    ),
+                                  );
+                                },
+                              )),
+                              DataCell(IconButton(
+                                icon: Icon(Icons.delete_rounded),
+                                iconSize: 16,
+                                onPressed: () {
+                                  //_remove(e);
+                                },
+                              )),
                             ]))
                     .toList() ??
                 []),

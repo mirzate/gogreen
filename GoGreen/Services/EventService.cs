@@ -132,6 +132,23 @@ namespace GoGreen.Services
                 existingEvent.Description = request.Description;
             }
 
+            if (request.DateFrom != null)
+            {
+                existingEvent.DateFrom = request.DateFrom;
+            }
+            if (request.DateTo != null)
+            {
+                existingEvent.DateTo = request.DateTo;
+            }
+            if (request.Active != null)
+            {
+                existingEvent.Active = request.Active;
+            }
+            if (request.TypeId != null)
+            {
+                existingEvent.TypeId = request.TypeId;
+            }
+            // Update o
             // Update other properties as needed
 
             _context.Events.Update(existingEvent);

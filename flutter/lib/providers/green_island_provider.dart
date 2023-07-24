@@ -136,7 +136,7 @@ class GreenIslandProvider with ChangeNotifier {
       } else {
         // Handle the error if update was unsuccessful
         print("Update was unsuccessful");
-        print(response.request);
+        //print(response.request);
         print(response.body);
       }
     } catch (error) {

@@ -15,10 +15,11 @@ class Event {
   String? dateFrom;
   String? dateTo;
   bool? active;
-  EventType? eventType; // Property for the nested EventType
+  EventType? eventType;
   Municipality? municipality;
   List<EventImage>? images;
   EventImage? firstImage;
+  int? typeId;
 
   Event();
 
@@ -74,6 +75,7 @@ class EventImage {
 
 
 /*
+
 "items": [
 {
   "id": 6,
