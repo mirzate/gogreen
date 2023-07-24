@@ -15,6 +15,10 @@ Ecoviolation _$EcoviolationFromJson(Map<String, dynamic> json) => Ecoviolation()
   ..municipality = json['municipality'] == null
       ? null
       : Municipality.fromJson(json['municipality'] as Map<String, dynamic>)
+  ..ecoViolationStatus = json['ecoViolationStatus'] == null
+      ? null
+      : EcoViolationStatus.fromJson(
+          json['ecoViolationStatus'] as Map<String, dynamic>)
   ..images = (json['images'] as List<dynamic>?)
       ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
       .toList()
@@ -30,8 +34,20 @@ Map<String, dynamic> _$EcoviolationToJson(Ecoviolation instance) =>
       'contact': instance.contact,
       'response': instance.response,
       'municipality': instance.municipality,
+      'ecoViolationStatus': instance.ecoViolationStatus,
       'images': instance.images,
       'firstImage': instance.firstImage,
+    };
+
+EcoViolationStatus _$EcoViolationStatusFromJson(Map<String, dynamic> json) =>
+    EcoViolationStatus()
+      ..id = json['id'] as int?
+      ..name = json['name'] as String?;
+
+Map<String, dynamic> _$EcoViolationStatusToJson(EcoViolationStatus instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
     };
 
 Municipality _$MunicipalityFromJson(Map<String, dynamic> json) => Municipality()

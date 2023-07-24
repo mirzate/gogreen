@@ -15,6 +15,7 @@ class Ecoviolation {
   String? response;
   //EcoviolationType? EcoviolationType; // Property for the nested EcoViolationType
   Municipality? municipality;
+  EcoViolationStatus? ecoViolationStatus;
   List<Image>? images;
   Image? firstImage;
 
@@ -44,6 +45,17 @@ class EcoviolationType {
   Map<String, dynamic> toJson() => _$EcoviolationTypeToJson(this);
 }
 */
+@JsonSerializable()
+class EcoViolationStatus {
+  int? id;
+  String? name;
+
+  EcoViolationStatus();
+
+  factory EcoViolationStatus.fromJson(Map<String, dynamic> json) =>
+      _$EcoViolationStatusFromJson(json);
+  Map<String, dynamic> toJson() => _$EcoViolationStatusToJson(this);
+}
 
 @JsonSerializable()
 class Municipality {

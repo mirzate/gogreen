@@ -161,6 +161,14 @@ class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Status',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Image',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
@@ -186,6 +194,9 @@ class _EcoViolationListScreenState extends State<EcoViolationListScreen> {
                               DataCell(Text(e.title?.toString() ?? "")),
                               DataCell(
                                   Text(e.municipality?.title.toString() ?? "")),
+                              DataCell(Text(
+                                  e.ecoViolationStatus?.name.toString() ??
+                                      "N/A")),
                               DataCell(Container(
                                   width: 80,
                                   height: 80,

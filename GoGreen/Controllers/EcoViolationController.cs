@@ -38,6 +38,7 @@ namespace GoGreen.Controllers
 
             var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize, fullTextSearch);
 
+
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var result = new EcoViolationPaginationResponse<EcoViolationResponse>
@@ -75,31 +76,33 @@ namespace GoGreen.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, IFormFile? imageFile)
+        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, List<IFormFile?> imageFiles)
         {
 
             var data = _mapper.Map<EcoViolationRequest>(request);
 
             var createdData = await _ecoViolationService.Store(data);
 
-            if (imageFile != null)
+            if (imageFiles != null && imageFiles.Count > 0)
             {
-                var image = await _imageService.SaveImage(imageFile);
-
-                if (image != null)
+                foreach (var imageFile in imageFiles)
                 {
-                    var nImage = new EcoViolationImage
+                    var image = await _imageService.SaveImage(imageFile);
+
+                    if (image != null)
                     {
-                        EcoViolationId = createdData.Id,
-                        ImageId = image.Id
-                    };
+                        var nImage = new EcoViolationImage
+                        {
+                            EcoViolationId = createdData.Id,
+                            ImageId = image.Id
+                        };
 
-                    _context.Add(nImage);
+                        _context.Add(nImage);
 
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
 
-                    createdData.EcoViolationImages.Add(nImage); 
-
+                        createdData.EcoViolationImages.Add(nImage);
+                    }
                 }
             }
 
