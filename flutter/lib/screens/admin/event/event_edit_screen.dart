@@ -45,11 +45,6 @@ class _EventEditScreenState extends State<EventEditScreen> {
   Key carouselKey = UniqueKey(); // Add a unique key to the CarouselSlider
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _titleIsValid = true;
-  bool _descriptionIsValid = true;
-  bool _dateFromIsValid = true;
-  bool _dateToIsValid = true;
-
   @override
   void initState() {
     super.initState();
@@ -341,33 +336,26 @@ class _EventEditScreenState extends State<EventEditScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
                               controller: _titleController,
-                              decoration: InputDecoration(
-                                labelText: 'Title *',
-                                errorText: _descriptionIsValid
-                                    ? null
-                                    : 'Please enter a Title',
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _titleIsValid = value.isNotEmpty;
-                                });
+                              decoration: InputDecoration(labelText: 'Title *'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a title';
+                                }
+                                return null; // Return null if the validation is successful
                               }),
                           SizedBox(height: 16),
-                          TextField(
+                          TextFormField(
                               controller: _descriptionController,
-                              decoration: InputDecoration(
-                                labelText: 'Description *',
-                                errorText: _descriptionIsValid
-                                    ? null
-                                    : 'Please enter a description',
-                              ),
+                              decoration:
+                                  InputDecoration(labelText: 'Description *'),
                               maxLines: 3,
-                              onChanged: (value) {
-                                setState(() {
-                                  _descriptionIsValid = value.isNotEmpty;
-                                });
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a description';
+                                }
+                                return null; // Return null if the validation is successful
                               }),
                           SizedBox(height: 16),
                           if (eventTypes != null)
@@ -406,7 +394,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
                               ],
                             ),
                           SizedBox(height: 16),
-                          TextField(
+                          TextFormField(
                               onTap: () async {
                                 await _selectDate(context);
                                 _datefromController.text =
@@ -414,20 +402,17 @@ class _EventEditScreenState extends State<EventEditScreen> {
                                         .format(selectedDate);
                               },
                               controller: _datefromController,
-                              decoration: InputDecoration(
-                                labelText: 'Date from *',
-                                errorText: _dateFromIsValid
-                                    ? null
-                                    : 'Please enter a Date From',
-                              ),
+                              decoration:
+                                  InputDecoration(labelText: 'Date from *'),
                               keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                setState(() {
-                                  _dateFromIsValid = value.isNotEmpty;
-                                });
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Date From';
+                                }
+                                return null; // Return null if the validation is successful
                               }),
                           SizedBox(height: 16),
-                          TextField(
+                          TextFormField(
                               onTap: () async {
                                 await _selectDate(context);
                                 _datetoController.text =
@@ -435,39 +420,47 @@ class _EventEditScreenState extends State<EventEditScreen> {
                                         .format(selectedDate);
                               },
                               controller: _datetoController,
-                              decoration: InputDecoration(
-                                labelText: 'Date to *',
-                                errorText: _dateFromIsValid
-                                    ? null
-                                    : 'Please enter a Date To',
-                              ),
+                              decoration:
+                                  InputDecoration(labelText: 'Date to *'),
                               keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                setState(() {
-                                  _dateToIsValid = value.isNotEmpty;
-                                });
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a Date To';
+                                }
+                                return null; // Return null if the validation is successful
                               }),
                           SizedBox(height: 16),
-                          Checkbox(
-                            value: activeController,
-                            onChanged: (newValue) {
-                              setState(() {
-                                activeController = newValue!;
-                              });
-                            },
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: activeController,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    activeController = newValue!;
+                                  });
+                                },
+                              ),
+                              Text('Active'),
+                            ],
                           ),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate() &&
-                                  _descriptionIsValid! &&
-                                  _titleIsValid! &&
-                                  _dateFromIsValid! &&
-                                  _dateToIsValid!) {
-                                _saveChanges();
-                              }
-                            },
-                            child: Text('Save Changes'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Other widgets on the left side
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        _saveChanges(); // <-- Call the function using ()
+                                      }
+                                    },
+                                    child: Text('Save Changes'),
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         ],
                       ),
