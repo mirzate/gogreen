@@ -14,6 +14,7 @@ class OtherProvider with ChangeNotifier {
 
   String _endpointEventType = "EventType";
   String _endpointMunicipality = "Municipality";
+  String _endpointEcoViolationStatus = "EcoViolationStatus";
 
   OtherProvider() {
     //GET
@@ -21,6 +22,33 @@ class OtherProvider with ChangeNotifier {
 
     _baseURL = const String.fromEnvironment("baseURL",
         defaultValue: "http://localhost:8080/api/");
+  }
+
+  Future<List<mEcoViolation.EcoViolationStatus>> getEcoViolationStatus(
+      {dynamic params}) async {
+    //int pageIndex = 1, int pageSize = 10,
+
+    var url = "$_baseURL$_endpointEcoViolationStatus";
+    //var url = "$_baseURL$_endpoint?pageIndex=$pageIndex&pageSize=$pageSize";
+
+    if (params != null) {
+      var queryString = getQueryString(params);
+      url = "$url?$queryString";
+    }
+
+    var uri = Uri.parse(url);
+    var headers = getAndCreateHeaders(Authorization?.token ?? "");
+
+    print(uri);
+    var response = await http.get(uri, headers: headers);
+
+    if (!!validateResponse(response)) {
+      var data = jsonDecode(response.body);
+      return List<mEcoViolation.EcoViolationStatus>.from(
+          data.map((json) => mEcoViolation.EcoViolationStatus.fromJson(json)));
+    } else {
+      throw Exception("Oops, something bad happened!");
+    }
   }
 
   Future<List<mEcoViolation.Municipality>> getMunicipalities(

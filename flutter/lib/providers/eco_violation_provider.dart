@@ -63,6 +63,34 @@ class EcoViolationProvider with ChangeNotifier {
     }
   }
 
+  Future<void> putEcoViolation(Ecoviolation eModel) async {
+    var url = "$_baseURL$_endpoint/${eModel.id}";
+
+    final body = json.encode(eModel.toJson());
+    var headers = getAndCreateHeaders();
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        // Update was successful
+        print("Update was successful");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Update was unsuccessful");
+        //print(response.request);
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
+    }
+  }
+
   Future<void> postEcoViolation(
       Ecoviolation e, List<File> selectedImages) async {
     var url = "$_baseURL$_endpoint";

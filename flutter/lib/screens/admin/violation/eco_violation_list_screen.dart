@@ -1,4 +1,3 @@
-
 import 'package:gogreen/models/search_result.dart';
 import 'package:gogreen/screens/eco_violation_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
@@ -12,6 +11,7 @@ import '../../../providers/eco_violation_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 
 import '../../../providers/token_provider.dart';
+import 'eco_violation_edit_screen.dart';
 
 class ManageEcoViolationListScreen extends StatefulWidget {
   const ManageEcoViolationListScreen({super.key});
@@ -137,6 +137,14 @@ class _ManageEcoViolationListScreenState
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Status',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Municipality',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
@@ -159,8 +167,8 @@ class _ManageEcoViolationListScreenState
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              EcoViolationDetailScreen(
-                                                  Ecoviolation: e),
+                                              EcoViolationEditScreen(
+                                                  ecoViolation: e),
                                         ),
                                       )
                                     }
@@ -168,6 +176,8 @@ class _ManageEcoViolationListScreenState
                             cells: [
                               DataCell(Text(e.id?.toString() ?? "")),
                               DataCell(Text(e.title?.toString() ?? "")),
+                              DataCell(Text(
+                                  e.ecoViolationStatus?.name.toString() ?? "")),
                               DataCell(
                                   Text(e.municipality?.title.toString() ?? "")),
                               DataCell(Container(
