@@ -40,7 +40,8 @@ namespace GoGreen.Services
             if (httpContext.User.Identity.IsAuthenticated)
             {
                 var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                query = query.Where(e => e.UserId == userId);
+                var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+                query = query.Where(e => e.MunicipalityId == user.MunicipalityId);
             }
 
             var totalCount = await query.CountAsync();
@@ -105,7 +106,7 @@ namespace GoGreen.Services
             return dataCreated;
         }
 
-        public async Task<EcoViolationResponse> Update(int id, EcoViolationRequest request)
+        public async Task<EcoViolationResponse> Update(int id, EcoViolationMunicipalityRequest request)
         {
             
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -117,6 +118,7 @@ namespace GoGreen.Services
 
 
             var existingData = await _context.EcoViolations
+                .Include(a => a.EcoViolationStatus)
             .Where(e => e.Id == id)
             .SingleOrDefaultAsync();
 
@@ -127,9 +129,13 @@ namespace GoGreen.Services
             }
 
             // Update only the properties provided in the request
-            if (request.Contact != null)
+            if (request.Response != null)
             {
-                existingData.Contact = request.Contact;
+                existingData.Response = request.Response;
+            }
+            if (request.EcoViolationStatus != null)
+            {
+                existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
             }
 
 
@@ -142,6 +148,7 @@ namespace GoGreen.Services
 
             return updatedData;
         }
+
 
         public async Task<bool> Delete(int id)
         {

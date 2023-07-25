@@ -110,9 +110,9 @@ namespace GoGreen.Controllers
 
         }
 
-        // PUT: api/EcoViolation/5
+
         [HttpPut("{id}")]
-        public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationRequest request)
+        public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationMunicipalityRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -121,11 +121,32 @@ namespace GoGreen.Controllers
                 return BadRequest("The user ID claim is missing");
             }
 
+            var type = await _context.EcoViolationStatuses.FindAsync(request.EcoViolationStatus.Id);
+
+            if (type == null)
+            {
+                return BadRequest("Eco Violation Status not found");
+            }
+
+            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            var data = await _context.EcoViolations
+                        .Where(a => a.MunicipalityId == user.MunicipalityId)
+                        .Where(a => a.Id == id)
+                        .FirstOrDefaultAsync();
+
+            if (data == null)
+            {
+                return BadRequest("The user has no permission for this action");
+            }
+
             var updatedData = await _ecoViolationService.Update(id, request);
 
 
             return _mapper.Map<EcoViolationResponse>(updatedData);
         }
+
 
         // DELETE: api/EcoViolation/5
         [HttpDelete("{id}")]

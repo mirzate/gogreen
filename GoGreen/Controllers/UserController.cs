@@ -1,4 +1,6 @@
-﻿using GoGreen.Data;
+﻿using AutoMapper;
+using Bogus.DataSets;
+using GoGreen.Data;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +17,11 @@ namespace GoGreen.Controllers
     {
 
         private readonly ApplicationDbContext _dbContext;
-        public UserController(ApplicationDbContext dbContext)
+        private readonly IMapper _mapper;
+        public UserController(ApplicationDbContext dbContext, IMapper mapper)
         {
             this._dbContext = dbContext;
+            _mapper = mapper;
 
         }
 
@@ -37,13 +41,9 @@ namespace GoGreen.Controllers
             {
                 return NotFound();
             }
-            var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _dbContext.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
 
-            var response = new UserResponse
-            {
-                Id = user.Id,
-                Email = user.Email
-            };
+            var response = _mapper.Map<UserResponse>(user);
 
             return Ok(response);
 
