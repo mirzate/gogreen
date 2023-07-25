@@ -175,13 +175,15 @@ namespace GoGreen
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     dbContext.Database.Migrate();
 
+                    await MunicipalitySeeder.SeedMunicipalities(dbContext);
+
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-                    await UserSeeder.SeedUsers(userManager);
+                    await UserSeeder.SeedUsers(userManager, serviceProvider);
 
                     //var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
                    //dataSeeder.SeedData().Wait();
 
-                    await MunicipalitySeeder.SeedMunicipalities(dbContext);
+                   
                     await EventTypeSeeder.SeedEventTypes(dbContext);
                     await EcoViolationStatusSeeder.SeedEcoViolationStatuses(serviceProvider);
                     await EventSeeder.SeedEvents(serviceProvider);
