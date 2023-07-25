@@ -14,7 +14,8 @@ namespace GoGreen.Services
         Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex, int pageSize, string fullTextSearch);
         Task<EcoViolationResponse> View(int id);
         Task<EcoViolation> Store(EcoViolationRequest request);
-        Task<EcoViolationResponse> Update(int id, EcoViolationRequest request);
+        Task<EcoViolationResponse> Update(int id, EcoViolationMunicipalityRequest request);
+
         Task<bool> Delete(int id);
 
     }

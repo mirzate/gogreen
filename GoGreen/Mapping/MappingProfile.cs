@@ -22,6 +22,8 @@ namespace GoGreen.Mappings
 
             CreateMap<Image, ImageResponse>();
 
+            CreateMap<User, UserResponse>();
+
             CreateMap<Event, EventResponse>()
              .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.EventImages.Select(ei => ei.Image)));
 
