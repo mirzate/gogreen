@@ -21,7 +21,7 @@ class EventListScreen extends StatefulWidget {
 class _EventListScreenState extends State<EventListScreen> {
   TextEditingController _fullTextSearchController = new TextEditingController();
   late EventProvider _eventProvider;
-  SearchResult<Event>? result;
+  SearchResult<Event>? eventResults;
   int currentPage = 1;
   int pageSize = 6;
 
@@ -44,7 +44,7 @@ class _EventListScreenState extends State<EventListScreen> {
       print(params);
       var data = await _eventProvider.get(params: params);
       setState(() {
-        result = data;
+        eventResults = data;
       });
     } catch (error) {
       showDialog(
@@ -66,7 +66,7 @@ class _EventListScreenState extends State<EventListScreen> {
       title: "Event List",
       child: Container(
         child: Column(
-          children: [_buildSearch(), _buildDataListView()],
+          children: [_buildSearch(), _buildListView(), _pagination()],
         ),
       ),
     );
@@ -102,61 +102,102 @@ class _EventListScreenState extends State<EventListScreen> {
           SizedBox(
             height: 10,
           ),
-          /*
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Back"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                    ),
-                ),
-              ),
-              */
-          SizedBox(
-            height: 10,
-          ),
-          /*
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EventDetailScreen(),
-                      ),
-                  );
-                },
-                child: Text("Details"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),),
-              SizedBox(height: 10,),
-              */
-          /*
-              ElevatedButton(
-                onPressed: () async {
-                  var data = await _eventProvider.get(params: {
-                    "fullTextSearch": _fullTextSearchController.text
-                  });
-                  setState(() {
-                    result = data;
-                  });
-                  print(data.result[0].title);
-                  print(result);
-                  
-                },
-                child: Text("Get Data from EP"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),)
-              */
         ],
       ),
+    );
+  }
+
+  Expanded _buildListView() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: eventResults?.result.length ?? 0,
+        itemBuilder: (context, index) {
+          Event event = eventResults!.result[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
+            child: Container(
+              color: Colors.grey[300], // Set the background color to grey
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EventDetailScreen(event: event),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.green[50]!), // Change to dark yellow color
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.all(16), // Add padding to the button content
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          8), // Add rounded corners to the button
+                    ),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${event.title}',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    SizedBox(
+                        height:
+                            8), // Add space between the title and the image.
+                    Image.network(
+                      event.firstImage?.filePath ??
+                          'https://example.com/placeholder.jpg',
+                      fit: BoxFit.cover,
+                      width: 80,
+                      height: 80,
+                    ),
+                    // Add other widgets for additional data display
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _pagination() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Visibility(
+          visible: (eventResults?.pageIndex ?? 0) != 1,
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () async {
+              setState(() {
+                if (currentPage > 1) {
+                  currentPage--;
+                }
+              });
+              await fetchData();
+              //print(currentPage);
+            },
+          ),
+        ),
+        Text('Page $currentPage'),
+        Visibility(
+          visible: currentPage < (eventResults?.totalPages ?? 0),
+          child: IconButton(
+            icon: Icon(Icons.arrow_forward),
+            onPressed: () async {
+              setState(() {
+                currentPage++;
+              });
+              await fetchData();
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -201,7 +242,7 @@ class _EventListScreenState extends State<EventListScreen> {
                 ),
               ),
             ],
-            rows: result?.result
+            rows: eventResults?.result
                     .map((Event e) => DataRow(
                             onSelectChanged: (value) => {
                                   if (value == true)
@@ -234,7 +275,7 @@ class _EventListScreenState extends State<EventListScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Visibility(
-              visible: (result?.pageIndex ?? 0) != 1,
+              visible: (eventResults?.pageIndex ?? 0) != 1,
               child: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () async {
@@ -250,7 +291,7 @@ class _EventListScreenState extends State<EventListScreen> {
             ),
             Text('Page $currentPage'),
             Visibility(
-              visible: currentPage < (result?.totalPages ?? 0),
+              visible: currentPage < (eventResults?.totalPages ?? 0),
               child: IconButton(
                 icon: Icon(Icons.arrow_forward),
                 onPressed: () async {
