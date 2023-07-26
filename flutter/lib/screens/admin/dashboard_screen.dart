@@ -16,105 +16,113 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Municipality Dashboard'),
-        backgroundColor: Theme.of(context).primaryColor,
+    return NavbarScreenWidget(
+      title: "Municipality Dashboards",
+      child: Scaffold(
+        // Wrap the entire content with Scaffold
+        body: Container(
+          child: Column(
+            children: [_content()],
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          alignment: Alignment.center,
-          child: Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Container(
-                      height: 50,
-                      width: 150,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              // Add your onPressed logic here
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageEventListScreen(),
-                                ),
-                              );
-                            },
-                            icon: Icon(Icons.list), // Add your desired icon
-                            label: Text(
-                                'Manage Events'), // Add your desired label or text
-                          )
-                        ],
-                      ),
+    );
+  }
+
+  Widget _content() {
+    return SingleChildScrollView(
+      child: Container(
+        alignment: Alignment.center,
+        child: Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Card(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    height: 50,
+                    width: 150,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            // Add your onPressed logic here
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ManageEventListScreen(),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.list), // Add your desired icon
+                          label: Text(
+                              'Manage Events'), // Add your desired label or text
+                        )
+                      ],
                     ),
                   ),
                 ),
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Container(
-                      height: 50,
-                      width: 150,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              // Add your onPressed logic here
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageEcoViolationListScreen(),
-                                ),
-                              );
-                            },
-                            icon: Icon(Icons.info), // Add your desired icon
-                            label: Text(
-                                'Manage Eco Violations'), // Add your desired label or text
-                          )
-                        ],
-                      ),
+              ),
+              Card(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    height: 50,
+                    width: 150,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            // Add your onPressed logic here
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ManageEcoViolationListScreen(),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.info), // Add your desired icon
+                          label: Text(
+                              'Manage Eco Violations'), // Add your desired label or text
+                        )
+                      ],
                     ),
                   ),
                 ),
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Container(
-                      height: 50,
-                      width: 150,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              // Add your onPressed logic here
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManageGreenIslandListScreen(),
-                                ),
-                              );
-                            },
-                            icon: Icon(
-                                Icons.map_rounded), // Add your desired icon
-                            label: Text(
-                                'Manage Green Islands'), // Add your desired label or text
-                          )
-                        ],
-                      ),
+              ),
+              Card(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    height: 50,
+                    width: 150,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            // Add your onPressed logic here
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ManageGreenIslandListScreen(),
+                              ),
+                            );
+                          },
+                          icon:
+                              Icon(Icons.map_rounded), // Add your desired icon
+                          label: Text(
+                              'Manage Green Islands'), // Add your desired label or text
+                        )
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
