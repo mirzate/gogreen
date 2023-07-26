@@ -28,9 +28,10 @@ class _GreenIslandMapScreenState extends State<GreenIslandMapScreen> {
 
   TextEditingController _fullTextSearchController = new TextEditingController();
   late GreenIslandProvider _GreenIslandProvider;
-  SearchResult<GreenIsland>? result;
+  SearchResult<GreenIsland>? results;
   int currentPage = 1;
   int pageSize = 50;
+  Key mapKey = UniqueKey();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -61,7 +62,8 @@ class _GreenIslandMapScreenState extends State<GreenIslandMapScreen> {
       };
       var data = await _GreenIslandProvider.get(params: params);
       setState(() {
-        result = data as SearchResult<GreenIsland>?;
+        results = data as SearchResult<GreenIsland>?;
+        mapKey = UniqueKey();
       });
     } catch (error) {
       showDialog(
@@ -91,20 +93,7 @@ class _GreenIslandMapScreenState extends State<GreenIslandMapScreen> {
         child: Column(
           children: [
             _buildSearch(),
-            Expanded(
-              child: GoogleMap(
-                mapType: MapType.hybrid,
-                initialCameraPosition: CameraPosition(
-                  target: _defaultPosition, // Set the default position
-                  zoom: 12, // Set the default zoom level
-                ),
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                  addMarkers(controller);
-                },
-                markers: _markers,
-              ),
-            )
+            _googleMap(),
           ],
         ),
       ),
@@ -125,8 +114,8 @@ class _GreenIslandMapScreenState extends State<GreenIslandMapScreen> {
       {}; // Define a Set<Marker> variable to hold the markers
 
   void addMarkers(GoogleMapController controller) {
-    if (result != null) {
-      for (var item in result!.result) {
+    if (results != null) {
+      for (var item in results!.result) {
         Marker marker = Marker(
           markerId: MarkerId(item.id.toString()), // Provide a unique marker ID
           position: LatLng(
@@ -148,6 +137,24 @@ class _GreenIslandMapScreenState extends State<GreenIslandMapScreen> {
         CameraUpdate.newLatLng(_markers.first.position),
       );
     }
+  }
+
+  Widget _googleMap() {
+    return Expanded(
+      child: GoogleMap(
+        mapType: MapType.hybrid,
+        key: mapKey,
+        initialCameraPosition: CameraPosition(
+          target: _defaultPosition, // Set the default position
+          zoom: 12, // Set the default zoom level
+        ),
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+          addMarkers(controller);
+        },
+        markers: _markers,
+      ),
+    );
   }
 
   Widget _buildSearch() {
