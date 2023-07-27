@@ -19,6 +19,7 @@ namespace GoGreen.Responses
 
         public Municipality? Municipality { get; set; }
 
+        public int ViewCount { get; set; }
     }
 
 }

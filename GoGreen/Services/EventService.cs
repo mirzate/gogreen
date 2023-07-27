@@ -84,7 +84,10 @@ namespace GoGreen.Services
             {
                 return null;
             }
-
+            /*
+            data.ViewCount = 1;
+            await _context.SaveChangesAsync();
+            */
             var eventResponse = _mapper.Map<EventResponse>(data);
             return eventResponse;
         }
@@ -93,10 +96,14 @@ namespace GoGreen.Services
         {
             
             var data = _mapper.Map<Event>(eventRequest);
+            
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.User.FirstOrDefaultAsync(a => a.Id == userId);
 
-            data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            data.MunicipalityId = 2;
+            data.MunicipalityId = (int)user.MunicipalityId;
+            data.UserId = userId;
             _context.Events.Add(data);
+
             await _context.SaveChangesAsync();
             var createdEvent = _mapper.Map<Event>(data);
             return createdEvent;
