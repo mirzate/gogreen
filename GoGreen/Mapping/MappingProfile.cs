@@ -16,10 +16,13 @@ namespace GoGreen.Mappings
             CreateMap<EcoViolation, EcoViolationResponse>().ReverseMap();
             CreateMap<EcoViolationRequest, EcoViolation>().ReverseMap();
 
+            
             CreateMap<GreenIsland, GreenIslandResponse>().ReverseMap();
             CreateMap<GreenIslandRequest, GreenIsland>().ReverseMap();
 
             CreateMap<Image, ImageResponse>();
+
+            CreateMap<User, UserResponse>();
 
             CreateMap<Event, EventResponse>()
              .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.EventImages.Select(ei => ei.Image)));
@@ -29,6 +32,11 @@ namespace GoGreen.Mappings
 
             CreateMap<EcoViolation, EcoViolationResponse>()
             .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.EcoViolationImages.Select(ei => ei.Image)));
+
+            /*
+            CreateMap<EcoViolation, EcoViolationResponse>()
+                .ForMember(dest => dest.EcoViolationStatus, opt => opt.MapFrom(src => src.EcoViolationStatus));
+            */
         }
     }
 }

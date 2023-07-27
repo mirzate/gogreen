@@ -23,6 +23,8 @@ services:
     restart: unless-stopped
     build:
       context: .
+    env_file:
+      - .env
     environment:
       - ConnectionStrings:DefaultConnection=Server=gogreen-sql-db,1433;Database=gogreen;User=sa;Password=Password1$;ConnectRetryCount=0; TrustServerCertificate=True
       - RabbitMQConfig__HostName=gogreen-rabbitmq
@@ -30,7 +32,8 @@ services:
       - RabbitMQConfig__UserName=admin
       - RabbitMQConfig__Password=password
       - RabbitMQConfig__defaultQueue=my_queue
-      - ASPNETCORE_ENVIRONMENT=Development
+      - AzureStorage__ConnectionString=${AzureStorage__ConnectionString}
+      - ASPNETCORE_ENVIRONMENT=Production
     ports:
       - "8080:8080"
     networks:

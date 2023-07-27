@@ -8,6 +8,7 @@ using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GoGreen.Services
 {
@@ -24,19 +25,45 @@ namespace GoGreen.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<(IEnumerable<GreenIslandResponse> GreenIslands, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
-            var query = _context.GreenIslands;
+      
+            var query = _context.GreenIslands.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(fullTextSearch))
+            {
+                query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
+            }
+
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+          
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                query = query.Where(e => e.UserId == userId);
+            }
+
 
             var totalCount = await query.CountAsync();
 
-            var datas = await query.Skip((pageIndex - 1) * pageSize)
+            var datas = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(a => a.GreenIslandImages)
                             .ThenInclude(ei => ei.Image)
+                        .Include(e => e.Municipality)
                         .Take(pageSize)
                         .ToListAsync();
             
-            var dataResponses = _mapper.Map<IEnumerable<GreenIslandResponse>>(datas);
+            //var dataResponses = _mapper.Map<IEnumerable<GreenIslandResponse>>(datas);
+
+            var dataResponses = datas.Select(e =>
+            {
+                var dataResponses = _mapper.Map<GreenIslandResponse>(e);
+                dataResponses.FirstImage = _mapper.Map<ImageResponse>(e.GreenIslandImages.FirstOrDefault()?.Image);
+                return dataResponses;
+            });
 
             return (dataResponses, totalCount);
         }
@@ -62,7 +89,9 @@ namespace GoGreen.Services
             var data = _mapper.Map<GreenIsland>(request);
 
             data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
+            data.MunicipalityId = 2;
+
             _context.GreenIslands.Add(data);
             await _context.SaveChangesAsync();
             var dataCreated = _mapper.Map<GreenIsland>(data);

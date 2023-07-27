@@ -6,16 +6,17 @@ import 'package:intl/intl.dart';
 class Authorization {
   static String? username;
   static String? password;
+  static String? token;
 }
 
-Image imageFromBase64String(String base64Image){
+Image imageFromBase64String(String base64Image) {
   return Image.memory(base64Decode(base64Image));
 }
 
-String formatNumber(dynamic){
+String formatNumber(dynamic) {
   var f = NumberFormat('###,00');
-  
-  if(dynamic == null) return "";
-  
+
+  if (dynamic == null) return "";
+
   return f.format(dynamic);
 }

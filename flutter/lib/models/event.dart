@@ -1,4 +1,4 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -8,19 +8,20 @@ import 'package:json_annotation/json_annotation.dart';
 part 'event.g.dart';
 
 @JsonSerializable()
-class Event{
+class Event {
   int? id;
   String? title;
   String? description;
-  DateTime? dateFrom;
-  DateTime? dateTo;
+  String? dateFrom;
+  String? dateTo;
   bool? active;
-  EventType? eventType; // Property for the nested EventType
-  MunicipalityType? municipalityType;
-  Image? image;
-  //String? base64Data = 'SGVsbG8gV29ybGQh'; // Replace with your base64-encoded data
+  EventType? eventType;
+  Municipality? municipality;
+  List<EventImage>? images;
+  EventImage? firstImage;
+  int? typeId;
 
-  Event(this.id, this.title, this.description, this.dateFrom);
+  Event();
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
@@ -31,7 +32,6 @@ class Event{
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$EventToJson(this);
-
 }
 
 @JsonSerializable()
@@ -41,63 +41,61 @@ class EventType {
 
   EventType();
 
-  factory EventType.fromJson(Map<String, dynamic> json) => _$EventTypeFromJson(json);
+  factory EventType.fromJson(Map<String, dynamic> json) =>
+      _$EventTypeFromJson(json);
   Map<String, dynamic> toJson() => _$EventTypeToJson(this);
 }
 
-
 @JsonSerializable()
-class MunicipalityType {
+class Municipality {
   int? id;
   String? title;
   String? description;
   bool? active;
 
-  MunicipalityType();
+  Municipality();
 
-  factory MunicipalityType.fromJson(Map<String, dynamic> json) => _$MunicipalityTypeFromJson(json);
-  Map<String, dynamic> toJson() => _$MunicipalityTypeToJson(this);
+  factory Municipality.fromJson(Map<String, dynamic> json) =>
+      _$MunicipalityFromJson(json);
+  Map<String, dynamic> toJson() => _$MunicipalityToJson(this);
 }
 
 @JsonSerializable()
-class Image {
+class EventImage {
   int? id;
   String? fileName;
   String? filePath;
 
-  Image();
+  EventImage();
 
-  factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
-  Map<String, dynamic> toJson() => _$ImageToJson(this);
+  factory EventImage.fromJson(Map<String, dynamic> json) =>
+      _$EventImageFromJson(json);
+  Map<String, dynamic> toJson() => _$EventImageToJson(this);
 }
 
 
 /*
+
 "items": [
-            {
-                "id": 0,
-                "title": "string",
-                "description": "string",
-                "dateFrom": "2023-06-06T19:51:36.537Z",
-                "dateTo": "2023-06-06T19:51:36.537Z",
-                "active": true,
-                "eventType": {
-                  "id": 0,
-                  "name": "string"
-                },
-                "municipality": {
-                  "id": 0,
-                  "title": "string",
-                  "description": "string",
-                  "active": true
-                },
-                "images": [
-                  {
-                    "id": 0,
-                    "fileName": "string",
-                    "filePath": "string"
-                  }
-                ]
-              }
+{
+  "id": 6,
+  "title": "ert",
+  "description": "ert",
+  "dateFrom": "2023-01-01T00:00:00",
+  "dateTo": "2023-01-01T00:00:00",
+  "active": true,
+  "eventType": {
+    "id": 2,
+    "name": "Akcija čišćenja"
+  },
+  "municipality": {
+    "id": 2,
+    "title": "xxx",
+    "description": "testtest",
+    "active": true
+  },
+  "images": [],
+  "firstImage": null
+}
   ]
 */

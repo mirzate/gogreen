@@ -1,8 +1,7 @@
-
 import 'package:gogreen/models/search_result.dart';
 import 'package:gogreen/screens/event_detail_screen.dart';
 import 'package:gogreen/utils/util.dart';
-import 'package:gogreen/widgets/master_screen.dart';
+import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../models/event.dart';
 import '../providers/event_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
+import '../providers/token_provider.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});
@@ -19,144 +19,292 @@ class EventListScreen extends StatefulWidget {
 }
 
 class _EventListScreenState extends State<EventListScreen> {
-
   TextEditingController _fullTextSearchController = new TextEditingController();
-
   late EventProvider _eventProvider;
+  SearchResult<Event>? eventResults;
+  int currentPage = 1;
+  int pageSize = 6;
 
   @override
-  SearchResult<Event>? result;
-
-  void didChangeDependencies(){
+  void didChangeDependencies() {
     super.didChangeDependencies();
     _eventProvider = context.read<EventProvider>();
+    fetchData();
   }
+
+  Future<void> fetchData() async {
+    try {
+      //_fullTextSearchController.clear(); // Da je potrebno obrisati
+
+      var params = {
+        "fullTextSearch": _fullTextSearchController.text,
+        "pageIndex": currentPage,
+        "pageSize": pageSize,
+      };
+      print(params);
+      var data = await _eventProvider.get(params: params);
+      setState(() {
+        eventResults = data;
+      });
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                title: Text("Error"),
+                content: Text(error.toString()),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Ok"))
+                ],
+              ));
+    }
+  }
+
   Widget build(BuildContext context) {
-    return MasterScreenWidget(
+    return NavbarScreenWidget(
       title: "Event List",
       child: Container(
         child: Column(
-          children: [
-            _buildSearch(),
-            _buildDataListView()
-          ],
+          children: [_buildSearch(), _buildListView(), _pagination()],
         ),
-        ),
-      );
-  }
-
-  Widget _buildSearch(){
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(children: [
-              Expanded(
-                child: TextField(
-                      decoration: InputDecoration(
-                        labelText: "Search",
-                        prefixIcon: Icon(Icons.search)
-                      ),
-                      controller: _fullTextSearchController,
-                    ),
-              ),
-              SizedBox(height: 10,),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Back"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                    ),
-                ),
-              ),
-              SizedBox(height: 10,),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EventDetailScreen(),
-                      ),
-                  );
-                },
-                child: Text("Details"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),),
-              SizedBox(height: 10,),
-              ElevatedButton(
-                onPressed: () async {
-                  var data = await _eventProvider.get(params: {
-                    "fullTextSearch": _fullTextSearchController.text
-                  });
-                  setState(() {
-                    result = data;
-                  });
-                  print(data.result[0].title);
-                },
-                child: Text("Get Data from EP"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).primaryColor,
-                  ),
-              ),)
-      ],),
+      ),
     );
   }
-  Expanded _buildDataListView() {
-    return Expanded(child: 
-            SingleChildScrollView(child: 
-              DataTable(
-                columns: [
-                    const DataColumn(label: const Expanded(
-                      child: const Text(
-                        'ID',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
+
+  Widget _buildSearch() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: "Search",
+                prefixIcon: Icon(Icons.search),
+                suffixIcon: _fullTextSearchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          _fullTextSearchController.clear();
+                          fetchData();
+                        },
+                      )
+                    : null,
+              ),
+              controller: _fullTextSearchController,
+              onSubmitted: (String value) {
+                currentPage = 1;
+                fetchData();
+              },
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded _buildListView() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: eventResults?.result.length ?? 0,
+        itemBuilder: (context, index) {
+          Event event = eventResults!.result[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
+            child: Container(
+              color: Colors.grey[300], // Set the background color to grey
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EventDetailScreen(event: event),
                     ),
-                    ),
-                    const DataColumn(label: const Expanded(
-                      child: const Text(
-                        'Title',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                    ),
-                    ),
-                      const DataColumn(label: const Expanded(
-                    child: const Text(
-                      'Active',
-                      style: TextStyle(fontStyle: FontStyle.italic),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Colors.green[50]!), // Change to dark yellow color
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.all(16), // Add padding to the button content
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          8), // Add rounded corners to the button
                     ),
                   ),
-                  ),
-                  const DataColumn(label: const Expanded(
-                    child: const Text(
-                      'Image',
-                      style: TextStyle(fontStyle: FontStyle.italic),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${event.title}',
+                      style: TextStyle(color: Colors.black),
                     ),
-                  ),
-                  ),
-                ], 
-                rows: result?.result.map((Event e) => DataRow(cells: [
-                  DataCell(Text(e.id?.toString() ?? "")),
-                  DataCell(Text(e.title?.toString() ?? "")),
-                  DataCell(Text(e.active?.toString() ?? "")),
-                  DataCell(Container(
-                    width: 100,
-                    height: 100,
-                    //child: imageFromBase64String(e.base64Data),
-                    child: Flutter.Image.network(
-                          "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png", // Replace with the URL of your image
-                          width: 200, // Set the desired width of the image
-                          height: 200, // Set the desired height of the image
-                        )
-                  )),
-                  ]
-                )
-            ).toList() ?? []
-          ),)
+                    SizedBox(
+                        height:
+                            8), // Add space between the title and the image.
+                    Image.network(
+                      event.firstImage?.filePath ??
+                          'https://example.com/placeholder.jpg',
+                      fit: BoxFit.cover,
+                      width: 80,
+                      height: 80,
+                    ),
+                    // Add other widgets for additional data display
+                  ],
+                ),
+              ),
+            ),
           );
+        },
+      ),
+    );
+  }
+
+  Widget _pagination() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Visibility(
+          visible: (eventResults?.pageIndex ?? 0) != 1,
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () async {
+              setState(() {
+                if (currentPage > 1) {
+                  currentPage--;
+                }
+              });
+              await fetchData();
+              //print(currentPage);
+            },
+          ),
+        ),
+        Text('Page $currentPage'),
+        Visibility(
+          visible: currentPage < (eventResults?.totalPages ?? 0),
+          child: IconButton(
+            icon: Icon(Icons.arrow_forward),
+            onPressed: () async {
+              setState(() {
+                currentPage++;
+              });
+              await fetchData();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Expanded _buildDataListView() {
+    return Expanded(
+        child: SingleChildScrollView(
+            child: Column(
+      children: [
+        DataTable(
+            showCheckboxColumn: false,
+            columns: [
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'ID',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Title',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Active',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
+                    'Image',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+            ],
+            rows: eventResults?.result
+                    .map((Event e) => DataRow(
+                            onSelectChanged: (value) => {
+                                  if (value == true)
+                                    {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EventDetailScreen(event: e),
+                                        ),
+                                      )
+                                    }
+                                },
+                            cells: [
+                              DataCell(Text(e.id?.toString() ?? "")),
+                              DataCell(Text(e.title?.toString() ?? "")),
+                              DataCell(Text(e.active?.toString() ?? "")),
+                              DataCell(Container(
+                                  width: 80,
+                                  height: 80,
+                                  child: Flutter.Image.network(
+                                    e.firstImage?.filePath.toString() ??
+                                        "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png",
+                                    //width: 200, // Set the desired width of the image
+                                    //height: 200, // Set the desired height of the image
+                                  ))),
+                            ]))
+                    .toList() ??
+                []),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Visibility(
+              visible: (eventResults?.pageIndex ?? 0) != 1,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () async {
+                  setState(() {
+                    if (currentPage > 1) {
+                      currentPage--;
+                    }
+                  });
+                  await fetchData();
+                  //print(currentPage);
+                },
+              ),
+            ),
+            Text('Page $currentPage'),
+            Visibility(
+              visible: currentPage < (eventResults?.totalPages ?? 0),
+              child: IconButton(
+                icon: Icon(Icons.arrow_forward),
+                onPressed: () async {
+                  setState(() {
+                    currentPage++;
+                  });
+                  await fetchData();
+                },
+              ),
+            ),
+          ],
+        )
+      ],
+    )));
   }
 }

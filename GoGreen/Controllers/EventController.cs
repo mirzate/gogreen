@@ -33,20 +33,24 @@ namespace GoGreen.Controllers
 
         // GET: api/Event
         [AllowAnonymous]
+        //[Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10)
+        [ServiceFilter(typeof(CustomExceptionHandler))]
+        public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize);
+            //throw new NotImplementedException("This code is not implemented, test...");
+            var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize, fullTextSearch);
 
             //return Ok(events);
-
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var result = new EventPaginationResponse<EventResponse>
             {
-                Items = (List<EventResponse>)events,
+                Items = (List<EventResponse>)events.ToList(),
                 PageNumber = pageIndex,
                 PageSize = pageSize,
-                TotalCount = totalCount
+                TotalCount = totalCount,
+                TotalPages = totalPages
             };
             return Ok(result);
 
@@ -75,7 +79,7 @@ namespace GoGreen.Controllers
         // POST: api/Event
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile imageFile)
+        public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile? imageFile)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -91,14 +95,14 @@ namespace GoGreen.Controllers
                 return BadRequest("Type not found");
             }
 
-
+            /*
             var municipality = await _context.Municipalities.FindAsync(request.MunicipalityId);
 
             if (municipality == null)
             {
                 return BadRequest($"The Municipality with ID {request.MunicipalityId} does not exist");
             }
-
+            */
 
             var createdEvent = await _eventService.Create(request);
            

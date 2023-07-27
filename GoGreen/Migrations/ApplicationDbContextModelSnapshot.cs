@@ -37,9 +37,6 @@ namespace GoGreen.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EcoViolationStatusEnum")
-                        .HasColumnType("int");
-
                     b.Property<int?>("EcoViolationStatusId")
                         .IsRequired()
                         .HasColumnType("int");
@@ -324,6 +321,9 @@ namespace GoGreen.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int?>("MunicipalityId")
+                        .HasColumnType("int");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -352,6 +352,8 @@ namespace GoGreen.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MunicipalityId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -500,7 +502,7 @@ namespace GoGreen.Migrations
             modelBuilder.Entity("GoGreen.Models.EcoViolation", b =>
                 {
                     b.HasOne("GoGreen.Models.EcoViolationStatus", "EcoViolationStatus")
-                        .WithMany("EcoViolations")
+                        .WithMany()
                         .HasForeignKey("EcoViolationStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -619,6 +621,15 @@ namespace GoGreen.Migrations
                     b.Navigation("Image");
                 });
 
+            modelBuilder.Entity("GoGreen.Models.User", b =>
+                {
+                    b.HasOne("GoGreen.Models.Municipality", "Municipality")
+                        .WithMany()
+                        .HasForeignKey("MunicipalityId");
+
+                    b.Navigation("Municipality");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -673,11 +684,6 @@ namespace GoGreen.Migrations
             modelBuilder.Entity("GoGreen.Models.EcoViolation", b =>
                 {
                     b.Navigation("EcoViolationImages");
-                });
-
-            modelBuilder.Entity("GoGreen.Models.EcoViolationStatus", b =>
-                {
-                    b.Navigation("EcoViolations");
                 });
 
             modelBuilder.Entity("GoGreen.Models.Event", b =>

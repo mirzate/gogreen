@@ -8,6 +8,8 @@ using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace GoGreen.Services
 {
@@ -17,12 +19,14 @@ namespace GoGreen.Services
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ImageService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
+        private readonly IConfiguration _config;
+        public ImageService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment, IConfiguration config)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _webHostEnvironment = webHostEnvironment;
+            _config = config;
         }
 
         public async Task<ImageResponse> SaveImage(IFormFile imageFile)
@@ -30,6 +34,30 @@ namespace GoGreen.Services
             if (imageFile == null || imageFile.Length == 0)
                 return null;
 
+
+            // Cloud Azure Object Storage implementation
+            var connectionString = _config["AzureStorage:ConnectionString"];
+            var containerName = "rs2containergogreen";
+
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+            var blobClient = containerClient.GetBlobClient(fileName);
+
+            using (var stream = imageFile.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, overwrite: true);
+            }
+
+            var image = new Image
+            {
+                FileName = fileName,
+                FilePath = blobClient.Uri.ToString()
+            };
+
+            /*
+            // Local implementation
             var uploadsFolderPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
             if (!Directory.Exists(uploadsFolderPath))
                 Directory.CreateDirectory(uploadsFolderPath);
@@ -41,12 +69,17 @@ namespace GoGreen.Services
             {
                 await imageFile.CopyToAsync(fileStream);
             }
+            
 
             var image = new Image
             {
                 FileName = fileName,
                 FilePath = filePath
             };
+            */
+
+
+
             _context.Add(image);
             await _context.SaveChangesAsync();
             var createdImage = _mapper.Map<ImageResponse>(image);
@@ -56,10 +89,25 @@ namespace GoGreen.Services
         public void DeleteImage(string fileName)
         {
 
-            //WebRootPath
-            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads", fileName);
+            // Cloud Azure Object Storage
+            var connectionString = _config["AzureStorage:ConnectionString"];
+            var containerName = "rs2containergogreen";
+
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            var blobClient = containerClient.GetBlobClient(fileName);
+
+            blobClient.DeleteIfExists();
+
+            
+            // Local 
+            var uploadsFolderPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
+            var filePath = Path.Combine(uploadsFolderPath, fileName);
+
             if (File.Exists(filePath))
                 File.Delete(filePath);
+
+
         }
 
     }

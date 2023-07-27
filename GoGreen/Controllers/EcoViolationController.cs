@@ -33,17 +33,21 @@ namespace GoGreen.Controllers
         // GET: api/EcoViolation
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EcoViolationResponse>>> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<EcoViolationResponse>>> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize);
+            var (datas, totalCount) = await _ecoViolationService.Index(pageIndex, pageSize, fullTextSearch);
+
+
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var result = new EcoViolationPaginationResponse<EcoViolationResponse>
             {
-                Items = (List<EcoViolationResponse>)datas,
+                Items = (List<EcoViolationResponse>)datas.ToList(),
                 PageNumber = pageIndex,
                 PageSize = pageSize,
-                TotalCount = totalCount
+                TotalCount = totalCount,
+                TotalPages = totalPages
             };
             return Ok(result);
 
@@ -72,31 +76,33 @@ namespace GoGreen.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, IFormFile imageFile)
+        public async Task<ActionResult<EcoViolationResponse>> Post([FromForm] EcoViolationRequest request, List<IFormFile?> imageFiles)
         {
 
             var data = _mapper.Map<EcoViolationRequest>(request);
 
             var createdData = await _ecoViolationService.Store(data);
 
-            if (imageFile != null)
+            if (imageFiles != null && imageFiles.Count > 0)
             {
-                var image = await _imageService.SaveImage(imageFile);
-
-                if (image != null)
+                foreach (var imageFile in imageFiles)
                 {
-                    var nImage = new EcoViolationImage
+                    var image = await _imageService.SaveImage(imageFile);
+
+                    if (image != null)
                     {
-                        EcoViolationId = createdData.Id,
-                        ImageId = image.Id
-                    };
+                        var nImage = new EcoViolationImage
+                        {
+                            EcoViolationId = createdData.Id,
+                            ImageId = image.Id
+                        };
 
-                    _context.Add(nImage);
+                        _context.Add(nImage);
 
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
 
-                    createdData.EcoViolationImages.Add(nImage); 
-
+                        createdData.EcoViolationImages.Add(nImage);
+                    }
                 }
             }
 
@@ -104,9 +110,9 @@ namespace GoGreen.Controllers
 
         }
 
-        // PUT: api/EcoViolation/5
+
         [HttpPut("{id}")]
-        public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationRequest request)
+        public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationMunicipalityRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -115,11 +121,32 @@ namespace GoGreen.Controllers
                 return BadRequest("The user ID claim is missing");
             }
 
+            var type = await _context.EcoViolationStatuses.FindAsync(request.EcoViolationStatus.Id);
+
+            if (type == null)
+            {
+                return BadRequest("Eco Violation Status not found");
+            }
+
+            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            var data = await _context.EcoViolations
+                        .Where(a => a.MunicipalityId == user.MunicipalityId)
+                        .Where(a => a.Id == id)
+                        .FirstOrDefaultAsync();
+
+            if (data == null)
+            {
+                return BadRequest("The user has no permission for this action");
+            }
+
             var updatedData = await _ecoViolationService.Update(id, request);
 
 
             return _mapper.Map<EcoViolationResponse>(updatedData);
         }
+
 
         // DELETE: api/EcoViolation/5
         [HttpDelete("{id}")]

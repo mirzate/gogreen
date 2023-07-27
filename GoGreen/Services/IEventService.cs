@@ -11,7 +11,7 @@ namespace GoGreen.Services
     public interface IEventService
     {
 
-        Task<(IEnumerable<EventResponse> Events, int TotalCount)> GetAllAsync(int pageIndex, int pageSize);
+        Task<(IEnumerable<EventResponse> Events, int TotalCount)> GetAllAsync(int pageIndex, int pageSize, string? fullTextSearch);
         Task<EventResponse> GetById(int id);
         Task<Event> Create(EventRequest request);
         Task<EventResponse> Update(int id, EventRequest request);

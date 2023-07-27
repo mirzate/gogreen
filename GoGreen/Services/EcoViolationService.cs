@@ -24,19 +24,46 @@ namespace GoGreen.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10)
+        public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
-            var query = _context.EcoViolations;
+     
+            var query = _context.EcoViolations.AsQueryable();
+
+
+            if (!string.IsNullOrEmpty(fullTextSearch))
+            {
+                query = query.Where(e => e.Title.Contains(fullTextSearch) || e.Description.Contains(fullTextSearch));
+            }
+
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+                query = query.Where(e => e.MunicipalityId == user.MunicipalityId);
+            }
 
             var totalCount = await query.CountAsync();
 
-            var datas = await query.Skip((pageIndex - 1) * pageSize)
+            var datas = await query
+                        .OrderByDescending(e => e.Id)
+                        .Skip((pageIndex - 1) * pageSize)
                         .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
+                        .Include(e => e.Municipality)
+                        .Include(e => e.EcoViolationStatus)
                         .Take(pageSize)
                         .ToListAsync();
 
-            var dataResponses = _mapper.Map<IEnumerable<EcoViolationResponse>>(datas);
+            //var dataResponses = _mapper.Map<IEnumerable<EcoViolationResponse>>(datas);
+
+            var dataResponses = datas.Select(e =>
+            {
+                var dataResponses = _mapper.Map<EcoViolationResponse>(e);
+                dataResponses.FirstImage = _mapper.Map<ImageResponse>(e.EcoViolationImages.FirstOrDefault()?.Image);
+                return dataResponses;
+            });
 
             return (dataResponses, totalCount);
 
@@ -48,6 +75,7 @@ namespace GoGreen.Services
                 .Include(a => a.EcoViolationStatus)
                 .Include(e => e.EcoViolationImages)
                             .ThenInclude(ei => ei.Image)
+                .Include(e => e.Municipality)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (data == null)
@@ -63,15 +91,22 @@ namespace GoGreen.Services
             
             var data = _mapper.Map<EcoViolation>(request);
 
-            //data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+            var openStatus = await _context.EcoViolationStatuses
+                                        .FirstOrDefaultAsync(s => s.Name == "Open");
+
+            if (openStatus != null)
+            {
+
+                data.EcoViolationStatusId = openStatus.Id;
+            }
+
             _context.EcoViolations.Add(data);
             await _context.SaveChangesAsync();
             var dataCreated = _mapper.Map<EcoViolation>(data);
             return dataCreated;
         }
 
-        public async Task<EcoViolationResponse> Update(int id, EcoViolationRequest request)
+        public async Task<EcoViolationResponse> Update(int id, EcoViolationMunicipalityRequest request)
         {
             
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -83,6 +118,7 @@ namespace GoGreen.Services
 
 
             var existingData = await _context.EcoViolations
+                .Include(a => a.EcoViolationStatus)
             .Where(e => e.Id == id)
             .SingleOrDefaultAsync();
 
@@ -93,9 +129,13 @@ namespace GoGreen.Services
             }
 
             // Update only the properties provided in the request
-            if (request.Contact != null)
+            if (request.Response != null)
             {
-                existingData.Contact = request.Contact;
+                existingData.Response = request.Response;
+            }
+            if (request.EcoViolationStatus != null)
+            {
+                existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
             }
 
 
@@ -108,6 +148,7 @@ namespace GoGreen.Services
 
             return updatedData;
         }
+
 
         public async Task<bool> Delete(int id)
         {

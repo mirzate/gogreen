@@ -1,10 +1,16 @@
-import 'package:gogreen/widgets/master_screen.dart';
+import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:gogreen/models/event.dart' as EventModel;
+import 'package:carousel_slider/carousel_slider.dart';
 
 class EventDetailScreen extends StatefulWidget {
-  const EventDetailScreen({super.key});
+  
+  final EventModel.Event event;
+
+  EventDetailScreen({required this.event});
+
 
   @override
   State<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -13,13 +19,50 @@ class EventDetailScreen extends StatefulWidget {
 class _EventDetailScreenState extends State<EventDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    return MasterScreenWidget(
-      title: "Event Details",
-      child: Container(
-        child: Column(
-          children: const [
-            Text("Details"),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Event Detail'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: SingleChildScrollView(
+        child: Expanded(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10,),
+                  if (widget.event.images != null && widget.event.images!.isNotEmpty)
+                    CarouselSlider(
+                          options: CarouselOptions(
+                            height: 200, // Set the height of the carousel
+                            enableInfiniteScroll: true, // Allow infinite scrolling
+                            autoPlay: true, // Enable auto-play
+                            autoPlayInterval: Duration(seconds: 3), // Set auto-play interval
+                            autoPlayAnimationDuration: Duration(milliseconds: 800), // Set animation duration
+                            pauseAutoPlayOnTouch: true, // Pause auto-play on touch
+                          ),
+                          items: widget.event.images?.map((image) {
+                            return Image.network(image.filePath.toString() ?? "https://upload.wikimedia.org/wikipedia/commons/f/fc/Gogreen.png"); // Replace with your image property name
+                          }).toList() ?? [],
+                    ),
+                  Text(widget.event.title.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18
+                      )
+                  ),
+                  Text('Description: ${widget.event.description}'),
+                  Text('Date From: ${widget.event.dateFrom}'),
+                  Text('Date To: ${widget.event.dateTo}'),
+                  Text('Event Type: ${widget.event.eventType?.name}'),
+                  Text('Municipality: ${widget.event.municipality?.title}'),
+                  // Add more Text or other widgets to display additional event data
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
