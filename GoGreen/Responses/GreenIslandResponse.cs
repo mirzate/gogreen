@@ -13,7 +13,7 @@ namespace GoGreen.Responses
         public bool Active { get; set; }
         public List<ImageResponse> Images { get; set; }
         public ImageResponse FirstImage { get; set; }
-
+        public int ViewCount { get; set; }
     }
 
 }
