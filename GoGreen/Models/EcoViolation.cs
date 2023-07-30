@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using GoGreen.Services;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoGreen.Models
 {
-    public class EcoViolation
+    public class EcoViolation : IViewCountable
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -24,6 +25,8 @@ namespace GoGreen.Models
         public Municipality Municipality { get; set; }
 
         public ICollection<EcoViolationImage> EcoViolationImages { get; set; }
+
+        public int? ViewCount { get; set; } = 0;
 
     }
 

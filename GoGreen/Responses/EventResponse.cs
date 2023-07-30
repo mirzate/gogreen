@@ -19,6 +19,7 @@ namespace GoGreen.Responses
 
         public ImageResponse FirstImage { get; set; }
 
+        public int ViewCount { get; set; }
     }
 
 

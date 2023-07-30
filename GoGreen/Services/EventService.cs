@@ -42,7 +42,8 @@ namespace GoGreen.Services
             if (httpContext.User.Identity.IsAuthenticated)
             {
                 var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                query = query.Where(e => e.UserId == userId);
+                var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+                query = query.Where(e => e.MunicipalityId == user.MunicipalityId);
             }
 
             var events = await query
@@ -84,7 +85,10 @@ namespace GoGreen.Services
             {
                 return null;
             }
-
+            /*
+            data.ViewCount = 1;
+            await _context.SaveChangesAsync();
+            */
             var eventResponse = _mapper.Map<EventResponse>(data);
             return eventResponse;
         }
@@ -93,10 +97,14 @@ namespace GoGreen.Services
         {
             
             var data = _mapper.Map<Event>(eventRequest);
+            
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.User.FirstOrDefaultAsync(a => a.Id == userId);
 
-            data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            data.MunicipalityId = 2;
+            data.MunicipalityId = (int)user.MunicipalityId;
+            data.UserId = userId;
             _context.Events.Add(data);
+
             await _context.SaveChangesAsync();
             var createdEvent = _mapper.Map<Event>(data);
             return createdEvent;

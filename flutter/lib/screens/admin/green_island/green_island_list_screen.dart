@@ -215,6 +215,14 @@ class _ManageGreenIslandListScreenState
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Municipality',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Active',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
@@ -243,6 +251,8 @@ class _ManageGreenIslandListScreenState
                             cells: [
                               DataCell(Text(e.id?.toString() ?? "")),
                               DataCell(Text(e.title?.toString() ?? "")),
+                              DataCell(
+                                  Text(e.municipality?.title.toString() ?? "")),
                               DataCell(Text(e.active?.toString() ?? "")),
                               DataCell(IconButton(
                                 icon: Icon(Icons.edit),

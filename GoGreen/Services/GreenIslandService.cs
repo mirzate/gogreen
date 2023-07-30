@@ -41,7 +41,9 @@ namespace GoGreen.Services
             if (httpContext.User.Identity.IsAuthenticated)
             {
                 var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                query = query.Where(e => e.UserId == userId);
+                var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+                query = query.Where(e => e.MunicipalityId == user.MunicipalityId);
+                //query = query.Where(e => e.UserId == userId);
             }
 
 
@@ -88,9 +90,12 @@ namespace GoGreen.Services
             
             var data = _mapper.Map<GreenIsland>(request);
 
-            data.UserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.User.FirstOrDefaultAsync(a => a.Id == userId);
 
-            data.MunicipalityId = 2;
+            data.MunicipalityId = (int)user.MunicipalityId;
+            data.UserId = userId;
 
             _context.GreenIslands.Add(data);
             await _context.SaveChangesAsync();

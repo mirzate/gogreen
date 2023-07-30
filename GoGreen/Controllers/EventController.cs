@@ -23,12 +23,14 @@ namespace GoGreen.Controllers
         private readonly IEventService _eventService;
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
-        public EventController(ApplicationDbContext context, IEventService eventService, IMapper mapper, IImageService imageService)
+        private readonly UserBasedCollaborativeFiltering _collaborativeFiltering;
+        public EventController(ApplicationDbContext context, IEventService eventService, IMapper mapper, IImageService imageService, UserBasedCollaborativeFiltering collaborativeFiltering)
         {
             _context = context;
             _eventService = eventService;
             _mapper = mapper;
             _imageService=imageService;
+            _collaborativeFiltering = collaborativeFiltering;
         }
 
         // GET: api/Event
@@ -250,6 +252,15 @@ namespace GoGreen.Controllers
 
 
             return NoContent();
+        }
+        [AllowAnonymous]
+        [HttpPost("Create-Recommendation")]
+        public IActionResult GetRecommendations(string userId)
+        {
+            var recommendations = _collaborativeFiltering.GetRecommendedEventsForUserAsync(userId);
+
+            // Return the recommendations to the client
+            return Ok(recommendations);
         }
 
 

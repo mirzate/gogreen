@@ -1,9 +1,10 @@
 ﻿using Azure;
+using GoGreen.Services;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoGreen.Models
 {
-    public class Event
+    public class Event: IViewCountable
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -26,6 +27,8 @@ namespace GoGreen.Models
         public bool Active { get; set; }
 
         public ICollection<EventImage> EventImages { get; set; }
+
+        public int? ViewCount { get; set; } = 0;
 
     }
 
