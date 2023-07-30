@@ -123,7 +123,7 @@ class RegisterPage extends StatelessWidget {
 
                             Authorization.username = username;
                             Authorization.password = password;
-                            var token = await registerButtonPressed();
+                            var token = await registerButtonPressed(context);
                             Authorization.token = token as String?;
 
                             // Set token in TokenProvider to have option to access via provider to. (var token = tokenProvider.token;)
@@ -165,7 +165,7 @@ class RegisterPage extends StatelessWidget {
                                       AlertDialog(
                                         title: Text("Register Failed!"),
                                         content: Text(
-                                            "Wrong username or password..."),
+                                            "User with email or username already exists."),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
@@ -192,12 +192,13 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Future<String?> registerButtonPressed() async {
+  Future<String?> registerButtonPressed(BuildContext context) async {
     final username = _usernameController.text ?? "";
     final email = _emailController.text ?? "";
     final password = _passwordController.text ?? "";
 
-    final token = await loginProvider.register(username, email, password);
+    final token =
+        await loginProvider.register(context, username, email, password);
 
     if (token != null) {
       return token;

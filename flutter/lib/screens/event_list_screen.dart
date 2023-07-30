@@ -108,6 +108,9 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   Expanded _buildListView() {
+    double maxWidth = 400; // Set your desired maximum width for mobile devices
+    double minWidth = 300;
+
     return Expanded(
       child: ListView.builder(
         itemCount: eventResults?.result.length ?? 0,
@@ -115,47 +118,50 @@ class _EventListScreenState extends State<EventListScreen> {
           Event event = eventResults!.result[index];
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
-            child: Container(
-              color: Colors.grey[300], // Set the background color to grey
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => EventDetailScreen(event: event),
+            child: Center(
+              // Wrap the Container with Center to keep it centered
+              child: Container(
+                constraints: BoxConstraints(
+                    maxWidth: maxWidth,
+                    minWidth: minWidth), // Set the maximum width constraint
+                color: Colors.grey[300],
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EventDetailScreen(event: event),
+                      ),
+                    );
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.green[50]!),
+                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      EdgeInsets.all(16),
                     ),
-                  );
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      Colors.green[50]!), // Change to dark yellow color
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                    EdgeInsets.all(16), // Add padding to the button content
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                   ),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          8), // Add rounded corners to the button
-                    ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '${event.title}',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      SizedBox(height: 8),
+                      Image.network(
+                        event.firstImage?.filePath ??
+                            'https://example.com/placeholder.jpg',
+                        fit: BoxFit.cover,
+                        width: 80,
+                        height: 80,
+                      ),
+                      // Add other widgets for additional data display
+                    ],
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      '${event.title}',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    SizedBox(
-                        height:
-                            8), // Add space between the title and the image.
-                    Image.network(
-                      event.firstImage?.filePath ??
-                          'https://example.com/placeholder.jpg',
-                      fit: BoxFit.cover,
-                      width: 80,
-                      height: 80,
-                    ),
-                    // Add other widgets for additional data display
-                  ],
                 ),
               ),
             ),

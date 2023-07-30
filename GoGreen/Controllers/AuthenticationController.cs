@@ -44,10 +44,15 @@ namespace GoGreen.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var response = new { access_token = await _authenticationService.Register(request) };
-
-
-            return Ok(response);
+            try
+            {
+                var accessToken = await _authenticationService.Register(request);
+                return Ok(new { access_token = accessToken });
+            }
+            catch (ArgumentException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
         
     }

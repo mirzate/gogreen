@@ -30,6 +30,8 @@ namespace GoGreen.Data
         public DbSet<GreenIslandImage> GreenIslandImages { get; set; }
         public DbSet<EcoViolationImage> EcoViolationImages { get; set; }
         public DbSet<EventSubscribe> EventSubscribes { get; set; }
+        public DbSet<UserEventRecommendation> UserEventRecommendations { get; set; }
+
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -81,6 +83,13 @@ namespace GoGreen.Data
                 .HasForeignKey(ei => ei.ImageId);
 
             modelBuilder.Entity<EventSubscribe>()
+                .HasOne(es => es.Event)
+                .WithMany()
+                .HasForeignKey(es => es.EventId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<UserEventRecommendation>()
                 .HasOne(es => es.Event)
                 .WithMany()
                 .HasForeignKey(es => es.EventId)
