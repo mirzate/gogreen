@@ -41,7 +41,9 @@ namespace GoGreen.Services
             if (httpContext.User.Identity.IsAuthenticated)
             {
                 var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                query = query.Where(e => e.UserId == userId);
+                var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+                query = query.Where(e => e.MunicipalityId == user.MunicipalityId);
+                //query = query.Where(e => e.UserId == userId);
             }
 
 

@@ -124,8 +124,8 @@ class LoginPage extends StatelessWidget {
                                   builder: (BuildContext context) =>
                                       AlertDialog(
                                         title: Text("Login Failed!"),
-                                        content: Text(
-                                            "Wrong username or password..."),
+                                        content:
+                                            Text("Wrong username or password."),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>

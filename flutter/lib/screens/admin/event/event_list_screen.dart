@@ -65,7 +65,7 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
 
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
-      title: "Manage Green Islands",
+      title: "Manage Events",
       child: Scaffold(
         // Wrap the entire content with Scaffold
         body: Container(
@@ -215,6 +215,14 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
               DataColumn(
                 label: const Expanded(
                   child: const Text(
+                    'Municipality',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: const Expanded(
+                  child: const Text(
                     'Active',
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
@@ -265,6 +273,8 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
                               DataCell(Text(e.title?.toString() ?? "")),
                               DataCell(
                                   Text(e.eventType?.name?.toString() ?? "")),
+                              DataCell(
+                                  Text(e.municipality?.title.toString() ?? "")),
                               DataCell(Text(e.active?.toString() ?? "")),
                               DataCell(Container(
                                   width: 80,
