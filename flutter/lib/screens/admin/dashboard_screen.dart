@@ -5,19 +5,33 @@ import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import '../../providers/login_provider.dart';
+import '../../../models/user.dart';
 
 class DashboardScreen extends StatefulWidget {
   DashboardScreen();
-
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late LoginProvider _loginProvider;
+  User user = User();
+  Key navbarKey = UniqueKey();
+
+  @override
+  void initState() {
+    _loginProvider = LoginProvider();
+    super.initState();
+    fetchUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return NavbarScreenWidget(
-      title: "Municipality Dashboards",
+      key: navbarKey,
+      title:
+          "Municipality Dashboards | ${user?.municipality?.title ?? ''} | ${user.email ?? ''}",
       child: Scaffold(
         // Wrap the entire content with Scaffold
         body: Container(
@@ -29,6 +43,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  Future<void> fetchUser() async {
+    try {
+      var data = await _loginProvider.getUser();
+      setState(() {
+        user = data!;
+        navbarKey = UniqueKey();
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Widget _content() {
     return SingleChildScrollView(
       child: Container(
@@ -37,6 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Divider(),
               Card(
                 child: Padding(
                   padding: EdgeInsets.all(8),

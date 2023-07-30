@@ -87,6 +87,7 @@ namespace GoGreen
             services.AddScoped<IGreenIslandService, GreenIslandService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<CustomExceptionHandler>();
+            services.AddScoped<UserBasedCollaborativeFiltering>();
 
             // Background Service updating every 60 sec ViewCount generating data for recommender
             services.AddHostedService<ViewCountUpdateJob<Event>>();

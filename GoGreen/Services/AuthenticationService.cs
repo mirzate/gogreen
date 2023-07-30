@@ -6,6 +6,9 @@ using GoGreen.Requests;
 using GoGreen.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using GoGreen.Data;
+using Microsoft.EntityFrameworkCore;
+using Bogus;
 
 namespace GoGreen.Services
 {
@@ -14,13 +17,16 @@ namespace GoGreen.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context;
 
-        public AuthenticationService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        public AuthenticationService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _context = context;
         }
+
 
         public async Task<string> Register(RegisterRequest request)
         {
@@ -30,12 +36,17 @@ namespace GoGreen.Services
             {
                 throw new ArgumentException($"User with email {request.Email} or username {request.UserName} already exists.");
             }
+            
+            Random random = new Random();
+            int randomIndex = random.Next(0, _context.Municipalities.Count());
+            var municipality = _context.Municipalities.Skip(randomIndex).FirstOrDefault();
 
             User user = new()
             {
                 Email = request.Email,
                 UserName = request.UserName,
-                SecurityStamp = Guid.NewGuid().ToString()
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Municipality = municipality
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
