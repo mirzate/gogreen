@@ -7,7 +7,9 @@ api_keys.properties
 .env
 appsettings.Production.json
 
-*generated*
+flutter/linux/flutter/
+flutter/macos/flutter/
+flutter/windows/flutter/
 
 
 # User-specific files
