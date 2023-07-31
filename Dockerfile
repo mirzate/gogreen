@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y iputils-ping telnet
 
 COPY ["GoGreen/GoGreen.csproj", "GoGreen/"]
 COPY ["RabbitMQService/RabbitMQ.Service.csproj", "RabbitMQService/"]
-#COPY ["GoGreen.Services/GoGreen.Services.csproj", "GoGreen.Services/"]
+COPY ["Communication.Service/Communication.Service.csproj", "Communication.Service/"]
 RUN dotnet restore "GoGreen/GoGreen.csproj"
 COPY . .
 WORKDIR "/src/GoGreen"

@@ -15,6 +15,7 @@ class OtherProvider with ChangeNotifier {
   String _endpointEventType = "EventType";
   String _endpointMunicipality = "Municipality";
   String _endpointEcoViolationStatus = "EcoViolationStatus";
+  String _endpointsubscribe = "MessageToRabbitMQ/subscribe/status_change_queue";
 
   OtherProvider() {
     //GET
@@ -22,6 +23,20 @@ class OtherProvider with ChangeNotifier {
 
     _baseURL = const String.fromEnvironment("baseURL",
         defaultValue: "http://localhost:8080/api/");
+  }
+
+  Future<bool> subscribeToMessage() async {
+    var url = "$_baseURL$_endpointEcoViolationStatus";
+    var uri = Uri.parse(url);
+    var headers = getAndCreateHeaders(Authorization?.token ?? "");
+    var response = await http.get(uri, headers: headers);
+
+    if (!!validateResponse(response)) {
+      print("Succesfully subscribed to Message");
+      return true;
+    } else {
+      throw Exception("Oops, something bad happened!");
+    }
   }
 
   Future<List<mEcoViolation.EcoViolationStatus>> getEcoViolationStatus(
