@@ -44,11 +44,20 @@ class _EcoViolationEditScreenState extends State<EcoViolationEditScreen> {
         TextEditingController(text: widget.ecoViolation.response);
     _otherProvider = context.read<OtherProvider>();
     fetchEcoViolationStatus();
+    subscribeToMessage();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+  }
+
+  Future<void> subscribeToMessage() async {
+    try {
+      _otherProvider.subscribeToMessage();
+    } catch (error) {
+      print("Error to subscribeToMessage: ${error}");
+    }
   }
 
   Future<void> fetchEcoViolationStatus() async {
