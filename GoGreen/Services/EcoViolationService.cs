@@ -143,12 +143,12 @@ namespace GoGreen.Services
             if (request.EcoViolationStatus != null)
             {
                 existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
-                _rabbitMQService.PublishStatusChangeEvent(request.EcoViolationStatus.Name, existingData.Id);
+                _rabbitMQService.PublishStatusChangeEvent(existingData.Id, existingData.Title, request.Response, request.EcoViolationStatus.Name, existingData.Contact);
                 
-                var emailService = new EmilService(_config);
+                //var emailService = new EmailService(_config);
 
                 // Send an email
-                await emailService.SendEmailAsync("mirza.telalovic@gmail.com", "Test Email", "This is a test email from Mailgun.");
+               // await emailService.SendEmailAsync("mirza.telalovic@gmail.com", "Test Email", "This is a test email from Mailgun.");
 
 
             }

@@ -83,7 +83,7 @@ namespace GoGreen
            
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
-            services.AddScoped<EmilService>();
+            services.AddScoped<EmailService>();
             
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEcoViolationService, EcoViolationService>();
@@ -92,10 +92,10 @@ namespace GoGreen
             services.AddScoped<CustomExceptionHandler>();
             services.AddScoped<UserBasedCollaborativeFiltering>();
 
-            // Background Service updating every 60 sec ViewCount generating data for recommender
-            //services.AddHostedService<ViewCountUpdateJob<Event>>();
-            //services.AddHostedService<ViewCountUpdateJob<EcoViolation>>();
-            //services.AddHostedService<ViewCountUpdateJob<GreenIsland>>();
+            // Background Service updating every 30-60 sec ViewCount generating data for recommender
+            services.AddHostedService<ViewCountUpdateJob<Event>>();
+            services.AddHostedService<ViewCountUpdateJob<EcoViolation>>();
+            services.AddHostedService<ViewCountUpdateJob<GreenIsland>>();
     
 
             services.AddAuthentication(options =>

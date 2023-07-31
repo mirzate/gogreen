@@ -1,7 +1,11 @@
-﻿using GoGreen.Data;
+﻿using Communication.Service;
+using GoGreen.Data;
+using GoGreen.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NJsonSchema;
 using RabbitMQ.Service;
+using System.Text.Json;
 
 namespace GoGreen.Controllers
 {
@@ -14,12 +18,13 @@ namespace GoGreen.Controllers
 
         private readonly ApplicationDbContext _dbContext;
         private readonly RabbitMQService _rabbitMQService;
+        private readonly EmailService _emailService;
 
-
-        public MessageToRabbitMQ(ApplicationDbContext dbContext, RabbitMQService rabbitMQService)
+        public MessageToRabbitMQ(ApplicationDbContext dbContext, RabbitMQService rabbitMQService, EmailService emailService)
         {
             _dbContext = dbContext;
             _rabbitMQService = rabbitMQService;
+            _emailService=emailService;
         }
 
         [AllowAnonymous]
@@ -78,45 +83,50 @@ namespace GoGreen.Controllers
         public IActionResult PostMessageAsync(string message = "My new message", string queueName = "my_queue")
         {
 
-            // Call the PublishMessage method as needed
-            //var message = "Hello, RabbitMQ!";
-            //var queueName = "my_queue";
-
-            //string receivedMessage = null;
             List<string> receivedMessage;
 
             _rabbitMQService.PublishMessage(message, queueName);
 
-
-
-            /*
-            // Subscribe to messages and set the received message in the callback
-            _rabbitMQService.SubscribeToMessages(queueName, message =>
-            {
-                receivedMessage = message;
-                Console.WriteLine($"Received message: {receivedMessage}");
-            });
-            */
-
-            // Consume a message from RabbitMQ
-            //receivedMessage = _rabbitMQService.ConsumeMessage(queueName);
-            //var receivedMessages = _rabbitMQService.ReadAllMessagesFromQueue(queueName);
-
             return Ok("Posted");
-            /*
-            _rabbitMQService.Dispose();
 
-            if (receivedMessages.Count > 0)
-            {
-                return Ok(receivedMessages);
-            }
-            else
-            {
-                return NotFound("No messages found in the queue.");
-            }
-            */
         }
+        [AllowAnonymous]
+        [HttpPost("subscribe/{queueName}")]
+        public IActionResult SubscribeToQueue(string queueName = "status_change_queue")
+        {
+            try
+            {
+                // Define the callback function to handle received messages
+                void HandleMessage(string message)
+                {
+                    /*
+                     * {"EcoViolationId":113,"Title":"Breka smece","Response":"Sredit cemo to","Status":"In Progress","Contact":"mirza.telalovic@gmail.com"}
+                     **/
+                    var ecoViolationMessage = JsonSerializer.Deserialize<EcoViolationMessage>(message);
 
+                    string email = ecoViolationMessage.Contact;
+                    string title = ecoViolationMessage.Title;
+                    string status = ecoViolationMessage.Status;
+
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        string subject = "Message Received from GoGreen (ecoViolation) via RabbitMQ | " + title + " | " + status;
+                        _emailService.SendEmailAsync(email, subject, message);
+                    }
+                }
+
+                // Subscribe to messages and set the received message in the callback
+                _rabbitMQService.SubscribeToMessages(queueName, HandleMessage);
+
+                return Ok("Subscribed to RabbitMQ channel successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Handle any exception that may occur during message subscription
+                // You can log the error or take any other appropriate action
+                return StatusCode(500, "An error occurred while subscribing to RabbitMQ channel.");
+            }
+        }
 
 
     }

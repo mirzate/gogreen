@@ -7,12 +7,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Communication.Service
 {
-    public class EmilService
+    public class EmailService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public EmilService(IConfiguration config)
+        public EmailService(IConfiguration config)
         {
             _config  = config;
 

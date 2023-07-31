@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Threading.Channels;
 
+
 namespace RabbitMQ.Service
 {
     public class RabbitMQService
@@ -113,10 +114,12 @@ namespace RabbitMQ.Service
             return receivedMessages;
         }
 
-        public void PublishStatusChangeEvent(string status, int ecoViolationId)
+
+
+        public void PublishStatusChangeEvent(int EcoViolationId, string Title, string Response, string Status, string? Contact)
         {
             // Create a message payload with the status and ecoViolationId
-            var messagePayload = new { Status = status, EcoViolationId = ecoViolationId };
+            var messagePayload = new { EcoViolationId = EcoViolationId, Title = Title, Response = Response, Status = Status, Contact = Contact };
             var message = JsonConvert.SerializeObject(messagePayload);
 
             // Publish the message to the RabbitMQ queue
