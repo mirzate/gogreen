@@ -8,6 +8,7 @@ using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Service;
 
 namespace GoGreen.Services
 {
@@ -16,12 +17,13 @@ namespace GoGreen.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly RabbitMQService _rabbitMQService;
+        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, RabbitMQService rabbitMQService)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _rabbitMQService = rabbitMQService;
         }
 
         public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
@@ -136,6 +138,7 @@ namespace GoGreen.Services
             if (request.EcoViolationStatus != null)
             {
                 existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
+                _rabbitMQService.PublishStatusChangeEvent(request.EcoViolationStatus.Name, existingData.Id);
             }
 
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -37,12 +38,12 @@ namespace RabbitMQ.Service
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: defaultQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
         }
 
         // Add methods for publishing and consuming messages, handling queues, etc.
         public void PublishMessage(string message, string queueName)
         {
+            //_channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var body = Encoding.UTF8.GetBytes(message);
             _channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
         }
@@ -74,16 +75,51 @@ namespace RabbitMQ.Service
 
         public string ConsumeMessage(string queueName)
         {
+            //_channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var result = _channel.BasicGet(queueName, autoAck: true);
 
             if (result != null)
             {
                 var body = result.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
+
+                // Manually acknowledge the message after processing
+                //_channel.BasicAck(result.DeliveryTag, false);
+
                 return message;
             }
 
             return null;
+        }
+
+        public List<string> ReadAllMessagesFromQueue(string queueName)
+        {
+            var receivedMessages = new List<string>();
+
+            while (true)
+            {
+                var message = ConsumeMessage(queueName);
+               //Console.WriteLine($"Received message: {message}");
+                if (message == null)
+                {
+                    break; // Queue is empty, break the loop
+                }
+
+                receivedMessages.Add(message);
+
+            }
+
+            return receivedMessages;
+        }
+
+        public void PublishStatusChangeEvent(string status, int ecoViolationId)
+        {
+            // Create a message payload with the status and ecoViolationId
+            var messagePayload = new { Status = status, EcoViolationId = ecoViolationId };
+            var message = JsonConvert.SerializeObject(messagePayload);
+
+            // Publish the message to the RabbitMQ queue
+            PublishMessage(message, "status_change_queue");
         }
 
     }
