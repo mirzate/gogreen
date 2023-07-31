@@ -24,6 +24,11 @@ namespace GoGreen.Data
 
             var municipalities = dbContext.Municipalities.ToList();
 
+            var municipalitySarajevo = municipalities.FirstOrDefault(m => m.Title == "Sarajevo");
+            var municipalityTuzla = municipalities.FirstOrDefault(m => m.Title == "Tuzla");
+            var municipalityMostar = municipalities.FirstOrDefault(m => m.Title == "Mostar");
+
+
             var users = new List<User>
             {
                 new User
@@ -54,7 +59,19 @@ namespace GoGreen.Data
                 {
                     UserName = "sarajevo",
                     Email = "sarajevo@example.com",
-                    MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id
+                    MunicipalityId = municipalitySarajevo.Id
+                },
+                new User
+                {
+                    UserName = "tuzla",
+                    Email = "tuzla@example.com",
+                    MunicipalityId = municipalityTuzla.Id
+                },
+                new User
+                {
+                    UserName = "mostar",
+                    Email = "mostar@example.com",
+                    MunicipalityId = municipalityMostar.Id
                 },
 
             };
