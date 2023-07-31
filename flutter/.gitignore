@@ -9,7 +9,10 @@
 .history
 .svn/
 migrate_working_dir/
+
 api_keys.properties
+.env
+appsettings.Production.json
 
 # IntelliJ related
 *.iml

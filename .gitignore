@@ -3,8 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+api_keys.properties
 .env
 appsettings.Production.json
+
 
 # User-specific files
 *.rsuser
