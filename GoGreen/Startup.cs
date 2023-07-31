@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RabbitMQ.Service;
+using Communication.Service;
 using System.Threading.Channels;
 using Microsoft.Extensions.Options;
 using GoGreen.Mappings;
@@ -82,6 +83,8 @@ namespace GoGreen
            
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
+            services.AddScoped<EmilService>();
+            
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEcoViolationService, EcoViolationService>();
             services.AddScoped<IGreenIslandService, GreenIslandService>();
@@ -90,9 +93,9 @@ namespace GoGreen
             services.AddScoped<UserBasedCollaborativeFiltering>();
 
             // Background Service updating every 60 sec ViewCount generating data for recommender
-            services.AddHostedService<ViewCountUpdateJob<Event>>();
-            services.AddHostedService<ViewCountUpdateJob<EcoViolation>>();
-            services.AddHostedService<ViewCountUpdateJob<GreenIsland>>();
+            //services.AddHostedService<ViewCountUpdateJob<Event>>();
+            //services.AddHostedService<ViewCountUpdateJob<EcoViolation>>();
+            //services.AddHostedService<ViewCountUpdateJob<GreenIsland>>();
     
 
             services.AddAuthentication(options =>

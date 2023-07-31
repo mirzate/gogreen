@@ -9,6 +9,7 @@ using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Service;
+using Communication.Service;
 
 namespace GoGreen.Services
 {
@@ -18,12 +19,16 @@ namespace GoGreen.Services
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RabbitMQService _rabbitMQService;
-        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, RabbitMQService rabbitMQService)
+        private readonly IConfiguration _config;
+
+
+        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, RabbitMQService rabbitMQService, IConfiguration config)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _rabbitMQService = rabbitMQService;
+            _config=config;
         }
 
         public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
@@ -139,6 +144,13 @@ namespace GoGreen.Services
             {
                 existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
                 _rabbitMQService.PublishStatusChangeEvent(request.EcoViolationStatus.Name, existingData.Id);
+                
+                var emailService = new EmilService(_config);
+
+                // Send an email
+                await emailService.SendEmailAsync("mirza.telalovic@gmail.com", "Test Email", "This is a test email from Mailgun.");
+
+
             }
 
 

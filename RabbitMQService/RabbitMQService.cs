@@ -46,6 +46,7 @@ namespace RabbitMQ.Service
             //_channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var body = Encoding.UTF8.GetBytes(message);
             _channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
+            Console.WriteLine("Message published!");
         }
 
         // Dispose the connection and channel when the service is no longer needed

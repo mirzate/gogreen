@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\RabbitMQService\RabbitMQ.Service.csproj" />
+		<ProjectReference Include="..\Communication.Service\Communication.Service.csproj" />
 	</ItemGroup>
 	
 </Project>
