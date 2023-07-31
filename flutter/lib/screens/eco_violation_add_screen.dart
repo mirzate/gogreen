@@ -135,7 +135,18 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                                         _saveChanges(); // <-- Call the function using ()
                                       }
                                     },
-                                    child: Text('Add'),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons
+                                            .save_as_outlined), // Add icon to the button
+                                        SizedBox(
+                                            width:
+                                                8), // Add some spacing between icon and text
+                                        Text(
+                                            'Add Eco-Violation'), // Add text to the button
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -198,11 +209,20 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                             ),
                           SizedBox(height: 16),
                           TextFormField(
-                            controller: _contactController,
-                            decoration: InputDecoration(
-                                labelText: 'Contact (optional)'),
-                            maxLines: 3,
-                          ),
+                              controller: _contactController,
+                              decoration: InputDecoration(
+                                  labelText: 'Contact Email (optional)'),
+                              maxLines: 3,
+                              validator: (value) {
+                                if (value != null) {
+                                  const emailRegex =
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                                  if (!RegExp(emailRegex).hasMatch(value)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                }
+                                return null; // Return null if the validation is successful
+                              }),
                         ])),
                     SizedBox(height: 16),
                     // Add more Text or other widgets to display additional EcoViolation data
@@ -214,7 +234,7 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                           'Select Image *',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            fontSize: 16,
+                            fontSize: 14,
                             color: Colors.grey[600],
                           ),
                         ),
@@ -262,6 +282,11 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                         ElevatedButton(
                           onPressed: _pickImage,
                           child: Text('Pick Image'),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              Theme.of(context).primaryColor,
+                            ),
+                          ),
                         ),
                       ],
                     )

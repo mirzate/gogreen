@@ -14,7 +14,7 @@ public class ViewCountUpdateJob<T> : BackgroundService where T : class, IViewCou
     private readonly IServiceProvider _services;
     private readonly int _updateIntervalSeconds;
 
-    public ViewCountUpdateJob(IServiceProvider services, int updateIntervalSeconds = 10)
+    public ViewCountUpdateJob(IServiceProvider services, int updateIntervalSeconds = 30)
     {
         _services = services;
         _updateIntervalSeconds = updateIntervalSeconds;

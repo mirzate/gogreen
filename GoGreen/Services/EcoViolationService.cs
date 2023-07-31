@@ -8,6 +8,8 @@ using AutoMapper;
 using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Service;
+using Communication.Service;
 
 namespace GoGreen.Services
 {
@@ -16,12 +18,17 @@ namespace GoGreen.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly RabbitMQService _rabbitMQService;
+        private readonly IConfiguration _config;
 
-        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+
+        public EcoViolationService(ApplicationDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, RabbitMQService rabbitMQService, IConfiguration config)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _rabbitMQService = rabbitMQService;
+            _config=config;
         }
 
         public async Task<(IEnumerable<EcoViolationResponse> ecoViolations, int TotalCount)> Index(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
@@ -136,6 +143,14 @@ namespace GoGreen.Services
             if (request.EcoViolationStatus != null)
             {
                 existingData.EcoViolationStatusId = request.EcoViolationStatus.Id;
+                _rabbitMQService.PublishStatusChangeEvent(existingData.Id, existingData.Title, request.Response, request.EcoViolationStatus.Name, existingData.Contact);
+                
+                //var emailService = new EmailService(_config);
+
+                // Send an email
+               // await emailService.SendEmailAsync("mirza.telalovic@gmail.com", "Test Email", "This is a test email from Mailgun.");
+
+
             }
 
 
