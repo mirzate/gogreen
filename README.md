@@ -10,28 +10,35 @@ Start TODO:
 
 Note! XXX - Zamjeniti sa kljucem
 
-1. Kreirati .env file pored fajla docker-compose.yaml i u njega ubaciti sljedece vrijednosti:
+### 1. Kreirati .env file pored fajla docker-compose.yaml i u njega ubaciti sljedece vrijednosti:
 
 AzureStorage__ConnectionString=DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net
+Mailgun__apiKey=XXX
+Mailgun__domain=XXX
 
-// Kako bi docker composer mogao setup values za Image Service koji koristi Cloud Storage.
 
-2. Ukoliko se app pokrece lokalno, kreirati u GoGreen folderu file "appsettings.Production.json" i u njega ubaciti sljedece vrijednosti:
+### 2. Ukoliko se app pokrece lokalno, kreirati u GoGreen folderu file "appsettings.Production.json" i u njega ubaciti sljedece vrijednosti:
 
   "AzureStorage": {
     "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
+  },
+  "Mailgun": {
+    "apiKey": "XXX",
+    "domain": "XXX"
   }
 
-// Kako bi docker composer kao Production mogao da setup values za Image Service koji koristi Cloud Storage.
 
-3. Ako se app pokrece u Development modu lokalno na windowsu, na Win System Var setup varijablu sa imenom "AzureStorage__ConnectionString" i values "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
+### 3. Ako se app pokrece u Development modu lokalno na windowsu, na Windowsu u Environment Variables / System variables kreirati:
 
-// Kako bi Image Service mogao da ucita Cloud key za storage.
+Varijablu sa imenom "AzureStorage__ConnectionString" i values "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
+Varijablu sa imenom "Mailgun__apiKey" i values "XXX"
+Varijablu sa imenom "Mailgun__domain" i values "XXX"
 
 
 END TODO:
 
 --------------------------------------------
+
 
 Help cmd>
 
@@ -52,8 +59,6 @@ dotnet ef migrations remove 20230604154459_UpdateEcoViolationModel-02
 # Rollback to last migration
 dotnet ef database update <PreviousMigrationName>
 dotnet ef database update 20230604153803_UpdateEcoViolationModel-Add-Municipality
-
-
 
 
 docker build -t gg-01-gogreen-api:latest .
