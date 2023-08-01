@@ -54,7 +54,7 @@ class _EcoViolationEditScreenState extends State<EcoViolationEditScreen> {
 
   Future<void> subscribeToMessage() async {
     try {
-      _otherProvider.subscribeToMessage();
+      _otherProvider.subscribeToMessage("status_change_queue");
     } catch (error) {
       print("Error to subscribeToMessage: ${error}");
     }
