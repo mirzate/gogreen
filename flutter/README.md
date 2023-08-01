@@ -1,34 +1,36 @@
 # gogreen
 
-A new Flutter project.
+## Seeded users data (username/pass) for testing>
 
-## Getting Started
+desktop / test
+sarajevo / test
+tuzla / test
+mostar / test
 
-This project is a starting point for a Flutter application.
+### RUN APP
 
-A few resources to get you started if this is your first Flutter project:
+KEYS !!!
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Kreirati: api_keys.properties file na root-u projekta i u njega unjeti values za google maps: 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+GOOGLE_MAPS_API_KEY=XXX
+
+# Desktop App - in case that is backend local
+flutter run -d windows --dart-define=baseURL=https://localhost:7125/api/
+
+# Desktop App - in case that is backend on Docker
+flutter run -d windows --dart-define=baseURL=http://localhost:8080/api/
+
+## Mob App
+flutter run --dart-define=baseURL=http://10.0.2.2:8080/api/
 
 
-###
+### Maintenance APP
 
 flutter clean
-
-## https://docs.flutter.dev/data-and-backend/json
-## Serializing JSON using code generation libraries
 
 flutter pub run build_runner build --delete-conflicting-outputs
 
 flutter pub run build_runner watch --delete-conflicting-outputs
 
-flutter run -d windows --dart-define=baseURL=https://localhost:7125/api/
-flutter run -d windows --dart-define=baseURL=https://localhost:8080/api/
 
-## Mob
-flutter run --dart-define=baseURL=http://10.0.2.2:8080/api/
