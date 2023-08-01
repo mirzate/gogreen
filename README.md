@@ -4,7 +4,15 @@ FIT
 ##http://localhost:8080/swagger/index.html
 ##http://localhost:8080/api/Event
 
------------- TODO -------------------------
+
+## Seeded users data (username/pass) for testing>
+
+desktop / test
+sarajevo / test
+tuzla / test
+mostar / test
+
+## ------------ TODO -------------------------
 
 Start TODO:
 
@@ -37,7 +45,7 @@ Varijablu sa imenom "Mailgun__domain" i values "XXX"
 
 END TODO:
 
---------------------------------------------
+### --------------------------------------------
 
 
 Help cmd>

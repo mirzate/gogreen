@@ -1,5 +1,11 @@
 # gogreen
 
+## Seeded users data (username/pass) for testing>
+
+desktop / test
+sarajevo / test
+tuzla / test
+mostar / test
 
 ### RUN APP
 
