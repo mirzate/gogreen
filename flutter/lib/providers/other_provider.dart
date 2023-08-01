@@ -15,7 +15,7 @@ class OtherProvider with ChangeNotifier {
   String _endpointEventType = "EventType";
   String _endpointMunicipality = "Municipality";
   String _endpointEcoViolationStatus = "EcoViolationStatus";
-  String _endpointsubscribe = "MessageToRabbitMQ/subscribe/status_change_queue";
+  String _messageToRabbitMQ = "MessageToRabbitMQ/subscribe";
 
   OtherProvider() {
     //GET
@@ -25,16 +25,26 @@ class OtherProvider with ChangeNotifier {
         defaultValue: "http://localhost:8080/api/");
   }
 
-  Future<bool> subscribeToMessage() async {
-    var url = "$_baseURL$_endpointEcoViolationStatus";
-    var uri = Uri.parse(url);
+  Future<void> subscribeToMessage(String queueName) async {
+    print("test");
+    var url1 = "$_baseURL$_messageToRabbitMQ/?queueName=$queueName";
+    var uri1 = Uri.parse(url1);
+    print(uri1);
     var headers = getAndCreateHeaders(Authorization?.token ?? "");
-    var response = await http.get(uri, headers: headers);
 
-    if (!!validateResponse(response)) {
-      print("Succesfully subscribed to Message");
-      return true;
-    } else {
+    try {
+      var response = await http.post(uri1, headers: headers);
+
+      if (response.statusCode == 200) {
+        // Update was successful
+        print("Succesfully subscribed to Message");
+      } else {
+        // Handle the error if update was unsuccessful
+        print("Not succesfully subscribed to Message: ${response.statusCode}");
+      }
+    } catch (error) {
+      // Handle any exceptions that occur during the API call
+      print("Error was occur");
       throw Exception("Oops, something bad happened!");
     }
   }

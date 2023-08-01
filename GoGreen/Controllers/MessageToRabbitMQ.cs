@@ -91,7 +91,7 @@ namespace GoGreen.Controllers
 
         }
         [AllowAnonymous]
-        [HttpPost("subscribe/{queueName}")]
+        [HttpPost("subscribe")]
         public IActionResult SubscribeToQueue(string queueName = "status_change_queue")
         {
             try
