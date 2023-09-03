@@ -16,7 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RabbitMQ.Service;
-using Communication.Service;
+//using Communication.Service;
 using System.Threading.Channels;
 using Microsoft.Extensions.Options;
 using GoGreen.Mappings;
@@ -29,6 +29,7 @@ using GoGreen.Controllers;
 using System;
 using Microsoft.Extensions.Hosting;
 using GoGreen.Data.Seeders;
+using System.Configuration;
 
 namespace GoGreen
 {
@@ -46,7 +47,7 @@ namespace GoGreen
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.Communication.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
             .Build();
 
@@ -83,7 +84,7 @@ namespace GoGreen
            
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<RabbitMQService>();
-            services.AddScoped<EmailService>();
+            //services.AddScoped<EmailService>();
             
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEcoViolationService, EcoViolationService>();
@@ -213,7 +214,6 @@ namespace GoGreen
                                .AllowAnyHeader();
                     });
             });
-
 
 
         }

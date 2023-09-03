@@ -9,7 +9,7 @@ using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Service;
-using Communication.Service;
+//using Communication.Service;
 
 namespace GoGreen.Services
 {

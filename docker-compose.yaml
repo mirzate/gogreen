@@ -57,6 +57,27 @@ services:
     networks:
       - gogreen-vlan
 
+  communication-service:
+    container_name: communication-service
+    build:
+      context: .   # Set the correct path to your Communication.Service project
+      dockerfile: Dockerfile-Communication.Service
+    env_file:
+      - .env  # If needed, provide an environment file for Communication.Service
+    environment:
+      - RabbitMQConfig__HostName=gogreen-rabbitmq
+      - RabbitMQConfig__Port=5672
+      - RabbitMQConfig__UserName=admin
+      - RabbitMQConfig__Password=password
+      - RabbitMQConfig__defaultQueue=my_queue
+      - Mailgun__apiKey=${Mailgun__apiKey}
+      - Mailgun__domain=${Mailgun__domain}
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - gogreen-vlan
+    depends_on:
+      - gogreen-rabbitmq
+
 networks:
   gogreen-vlan:
     driver: bridge      

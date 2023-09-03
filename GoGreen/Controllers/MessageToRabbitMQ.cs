@@ -1,4 +1,4 @@
-﻿using Communication.Service;
+﻿//using Communication.Service;
 using GoGreen.Data;
 using GoGreen.Requests;
 using Microsoft.AspNetCore.Authorization;
@@ -18,13 +18,13 @@ namespace GoGreen.Controllers
 
         private readonly ApplicationDbContext _dbContext;
         private readonly RabbitMQService _rabbitMQService;
-        private readonly EmailService _emailService;
+       // private readonly EmailService _emailService;
 
-        public MessageToRabbitMQ(ApplicationDbContext dbContext, RabbitMQService rabbitMQService, EmailService emailService)
+        public MessageToRabbitMQ(ApplicationDbContext dbContext, RabbitMQService rabbitMQService /*,EmailService emailService*/)
         {
             _dbContext = dbContext;
             _rabbitMQService = rabbitMQService;
-            _emailService=emailService;
+           // _emailService=emailService;
         }
 
         [AllowAnonymous]
@@ -94,38 +94,40 @@ namespace GoGreen.Controllers
         [HttpPost("subscribe")]
         public IActionResult SubscribeToQueue(string queueName = "status_change_queue")
         {
-            try
-            {
-                // Define the callback function to handle received messages
-                void HandleMessage(string message)
-                {
-                    /*
-                     * {"EcoViolationId":113,"Title":"Breka smece","Response":"Sredit cemo to","Status":"In Progress","Contact":"mirza.telalovic@gmail.com"}
-                     **/
-                    var ecoViolationMessage = JsonSerializer.Deserialize<EcoViolationMessage>(message);
+            return Ok("? Subscribed to RabbitMQ channel successfully.");
+            /*
+                 try
+                 {
+                     // Define the callback function to handle received messages
+                     void HandleMessage(string message)
+                     {
 
-                    string email = ecoViolationMessage.Contact;
-                    string title = ecoViolationMessage.Title;
-                    string status = ecoViolationMessage.Status;
+                         var ecoViolationMessage = JsonSerializer.Deserialize<EcoViolationMessage>(message);
 
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        string subject = "Message Received from GoGreen (ecoViolation) via RabbitMQ | " + title + " | " + status;
-                        _emailService.SendEmailAsync(email, subject, message);
-                    }
-                }
+                         string email = ecoViolationMessage.Contact;
+                         string title = ecoViolationMessage.Title;
+                         string status = ecoViolationMessage.Status;
 
-                // Subscribe to messages and set the received message in the callback
-                _rabbitMQService.SubscribeToMessages(queueName, HandleMessage);
+                         if (!string.IsNullOrEmpty(email))
+                         {
+                             string subject = "Message Received from GoGreen (ecoViolation) via RabbitMQ | " + title + " | " + status;
+                             _emailService.SendEmailAsync(email, subject, message);
+                         }
+                     }
 
-                return Ok("Subscribed to RabbitMQ channel successfully.");
-            }
-            catch (Exception ex)
-            {
-                // Handle any exception that may occur during message subscription
-                // You can log the error or take any other appropriate action
-                return StatusCode(500, "An error occurred while subscribing to RabbitMQ channel.");
-            }
+                     // Subscribe to messages and set the received message in the callback
+                     _rabbitMQService.SubscribeToMessages(queueName, HandleMessage);
+
+                     return Ok("Subscribed to RabbitMQ channel successfully.");
+                 }
+                 catch (Exception ex)
+                 {
+                     // Handle any exception that may occur during message subscription
+                     // You can log the error or take any other appropriate action
+                     return StatusCode(500, "An error occurred while subscribing to RabbitMQ channel.");
+                 }
+            */
+
         }
 
 
