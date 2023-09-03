@@ -1,6 +1,10 @@
+import 'dart:ffi';
+
 import 'package:gogreen/screens/admin/violation/eco_violation_list_screen.dart';
 import 'package:gogreen/screens/admin/event/event_list_screen.dart';
 import 'package:gogreen/screens/admin/green_island/green_island_list_screen.dart';
+import 'package:gogreen/screens/super_admin/user/user_list_screen.dart';
+import 'package:gogreen/utils/util.dart';
 import 'package:gogreen/widgets/navbar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -149,10 +153,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
+              if (checkRole("super-admin"))
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                      height: 50,
+                      width: 150,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              // Add your onPressed logic here
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ManageUserListScreen(),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.people), // Add your desired icon
+                            label: Text(
+                                'Manage Users'), // Add your desired label or text
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+bool checkRole(String targetRole) {
+  List? userRoles = Authorization.roles;
+
+  if (userRoles?.contains(targetRole) ?? false) {
+    return true;
+  } else {
+    return false;
   }
 }

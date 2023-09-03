@@ -4,7 +4,10 @@ using GoGreen.Data;
 using GoGreen.Services;
 using Microsoft.AspNetCore.Authorization;
 using GoGreen.Requests;
-
+using System.Security.Claims;
+using GoGreen.Models;
+using Azure.Core;
+using Microsoft.IdentityModel.Tokens;
 
 namespace GoGreen.Controllers
 {
@@ -32,9 +35,31 @@ namespace GoGreen.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+
             var response = new { access_token = await _authenticationService.Login(request) };
 
+            /*
+            var access_token = await _authenticationService.Login(request);
+
+            var user = HttpContext.User;
+            var isAdminClaim = user.FindFirst("IsAdmin");
+            var isApprovedClaim = user.FindFirst("IsApproved");
+
+            var response = new LoginInfo
+            {
+                access_token = access_token,
+                isAdmin = isAdminClaim != null && bool.TryParse(isAdminClaim.Value, out var isAdminValue) && isAdminValue,
+                isApproved = isApprovedClaim != null && bool.TryParse(isApprovedClaim.Value, out var isApprovedValue) && isApprovedValue
+            };
+            */
             return Ok(response);
+
+        }
+        public class LoginInfo
+        {
+            public string access_token { get; set; }
+            public bool isAdmin { get; set; }
+            public bool? isApproved { get; set; }
         }
 
         [AllowAnonymous]

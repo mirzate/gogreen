@@ -33,6 +33,13 @@ namespace GoGreen.Data
             {
                 new User
                 {
+                    UserName = "admin",
+                    Email = "admin@example.com",
+                    MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id,
+                    isAdmin = true
+                },
+                new User
+                {
                     UserName = "string",
                     Email = "string@example.com",
                     MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id
@@ -79,6 +86,11 @@ namespace GoGreen.Data
             foreach (var user in users)
             {
                 await userManager.CreateAsync(user, "test");
+
+                if(user.UserName == "admin")
+                {
+                    await userManager.AddToRoleAsync(user, "super-admin");
+                }
             }
      
         }

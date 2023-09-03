@@ -40,7 +40,7 @@ class EventProvider with ChangeNotifier {
 
     if (!!validateResponse(response)) {
       var data = jsonDecode(response.body);
-
+      //print("Event data: $data");
       var result = SearchResult<Event>();
       result.totalCount = data['totalCount'];
       result.pageIndex = data['pageNumber'];
