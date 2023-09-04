@@ -36,7 +36,6 @@ namespace GoGreen.Data
                     UserName = "admin",
                     Email = "admin@example.com",
                     MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id,
-                    isAdmin = true
                 },
                 new User
                 {
@@ -86,13 +85,26 @@ namespace GoGreen.Data
             foreach (var user in users)
             {
                 await userManager.CreateAsync(user, "test");
-
-                if(user.UserName == "admin")
-                {
-                    await userManager.AddToRoleAsync(user, "super-admin");
-                }
+               
             }
-     
+
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleExists = await roleManager.RoleExistsAsync("super-admin");
+
+            if (!roleExists)
+            {
+                await roleManager.CreateAsync(new IdentityRole("super-admin"));
+            }
+
+            var userManagerI = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userI = await userManagerI.FindByEmailAsync("admin@example.com");
+
+            if (userI != null)
+            {
+                await userManagerI.AddToRoleAsync(userI, "super-admin");
+            }
+
+
         }
 
 

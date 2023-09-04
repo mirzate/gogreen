@@ -11,7 +11,6 @@ import '../../../providers/other_provider.dart';
 import '../../../providers/user_provider.dart';
 import 'package:flutter/material.dart' as Flutter;
 import '../../../providers/token_provider.dart';
-import 'user_edit_screen.dart';
 
 class ManageUserListScreen extends StatefulWidget {
   const ManageUserListScreen({super.key});
