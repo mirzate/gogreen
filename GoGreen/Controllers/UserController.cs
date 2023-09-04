@@ -72,7 +72,9 @@ namespace GoGreen.Controllers
 
             if (!string.IsNullOrWhiteSpace(fullTextSearch))
             {
-                query = query.Where(u => u.Email.Contains(fullTextSearch));
+                query = query.Where(u => u.Email.Contains(fullTextSearch) ||
+                    u.Id.Contains(fullTextSearch) ||
+                    u.Municipality.Title.Contains(fullTextSearch));
             }
 
             var totalCount = await query.CountAsync();
