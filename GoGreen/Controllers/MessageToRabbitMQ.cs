@@ -27,7 +27,7 @@ namespace GoGreen.Controllers
            // _emailService=emailService;
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "super-admin")]
         [HttpGet("/ReadAllMessagesFromQueue")]
         public IActionResult GetAllMessagesFromQueue(string queueName = "my_queue")
         {
@@ -47,8 +47,8 @@ namespace GoGreen.Controllers
 
 
         // get: api/Message
-        [AllowAnonymous]
-        [HttpGet("/EcoViolation")]
+        [Authorize(Roles = "super-admin")]
+        [HttpGet("/ReadAllMessagesFromQueue/EcoViolation")]
         public IActionResult getEcoViolationMessages()
         {
 
@@ -78,7 +78,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/Message
-        [AllowAnonymous]
+        [Authorize(Roles = "super-admin")]
         [HttpPost]
         public IActionResult PostMessageAsync(string message = "My new message", string queueName = "my_queue")
         {
@@ -90,11 +90,12 @@ namespace GoGreen.Controllers
             return Ok("Posted");
 
         }
-        [AllowAnonymous]
+        [Authorize(Roles = "super-admin")]
         [HttpPost("subscribe")]
         public IActionResult SubscribeToQueue(string queueName = "status_change_queue")
         {
             return Ok("? Subscribed to RabbitMQ channel successfully.");
+            // KOmunikacija sa MQ prebacena direktno sa Communication.Servica
             /*
                  try
                  {

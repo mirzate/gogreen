@@ -110,7 +110,7 @@ namespace GoGreen.Controllers
 
         }
 
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationMunicipalityRequest request)
         {
@@ -149,6 +149,7 @@ namespace GoGreen.Controllers
 
 
         // DELETE: api/EcoViolation/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

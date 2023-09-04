@@ -61,14 +61,24 @@ namespace GoGreen.Controllers
         }
         [Authorize(Roles = "super-admin")]
         [HttpGet("/api/users")]
-        public async Task<ActionResult<IEnumerable<UserResponse>>> GetUsers(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
+        public async Task<ActionResult<IEnumerable<UserResponse>>> GetUsers(int pageIndex = 1, int pageSize = 20, string? fullTextSearch = "")
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var users = await _dbContext.Users
+            var query = _dbContext.Users
                 .Include(e => e.Municipality)
-                .Where(a => a.Id != userId)
+                .Where(a => a.Id != userId);
+
+            if (!string.IsNullOrWhiteSpace(fullTextSearch))
+            {
+                query = query.Where(u => u.Email.Contains(fullTextSearch));
+            }
+
+            var totalCount = await query.CountAsync();
+            var users = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var userResponses = _mapper.Map<IEnumerable<UserResponse>>(users);
@@ -76,10 +86,10 @@ namespace GoGreen.Controllers
             var result = new UserPaginationResponse<UserResponse>
             {
                 Items = (List<UserResponse>)userResponses,
-                PageNumber = 0,
-                PageSize = 0,
-                TotalCount = 0,
-                TotalPages = 0
+                PageNumber = pageIndex,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
             };
             return Ok(result);
 

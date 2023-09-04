@@ -70,7 +70,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/GreenIsland
-        
+        [Authorize]
         [HttpPost]
         //[Consumes("multipart/form-data")]
         public async Task<ActionResult<GreenIslandResponse>> Post([FromBody] GreenIslandRequest request)
@@ -115,6 +115,7 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/GreenIsland/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<GreenIslandResponse>> Put(int id, [FromBody] GreenIslandRequest request)
         {
@@ -139,6 +140,7 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/GreenIsland/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -153,6 +155,7 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPut("{greenIslandId}/Image")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<GreenIslandResponse>> AddImage(int greenIslandId, IFormFile imageFile)
@@ -204,6 +207,7 @@ namespace GoGreen.Controllers
 
 
         // DELETE: api/GreenIsland/5/Image/2
+        [Authorize]
         [HttpDelete("{greenIslandId}/Image/{imageId}")]
         public async Task<IActionResult> DeleteEventImage(int greenIslandId, int imageId)
         {

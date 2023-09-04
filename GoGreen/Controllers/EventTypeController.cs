@@ -7,6 +7,7 @@ using System.Net;
 using Azure.Core;
 using GoGreen.Services;
 using GoGreen.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GoGreen.Controllers
 {
@@ -22,6 +23,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/EventType
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventType>>> GetEventTypes()
         {
@@ -29,6 +31,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/EventType/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<EventType>> GetEventType(int id)
         {
@@ -44,6 +47,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/EventType
+        [Authorize(Roles = "super-admin")]
         [HttpPost]
         public async Task<ActionResult<EventType>> PostEventType([FromBody] EventTypeRequest request)
         {
@@ -60,6 +64,7 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/EventType/5
+        [Authorize(Roles = "super-admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEventType(int id, [FromBody] EventTypeRequest request)
         {
@@ -101,6 +106,7 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/EventType/5
+        [Authorize(Roles = "super-admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEventType(int id)
         {

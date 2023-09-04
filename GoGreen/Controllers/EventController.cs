@@ -41,7 +41,6 @@ namespace GoGreen.Controllers
         public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            //throw new NotImplementedException("This code is not implemented, test...");
             var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize, fullTextSearch);
 
             //return Ok(events);
@@ -79,6 +78,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/Event
+        [AllowAnonymous]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile? imageFile)
@@ -134,6 +134,7 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/Event/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<EventResponse>> PutEvent(int id, [FromBody] EventRequest request)
         {
@@ -151,6 +152,7 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/Event/5
+        [Authorize(Roles = "super-admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
@@ -165,6 +167,7 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPut("{eventId}/Image")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<EventResponse>> AddEventImage(int eventId, IFormFile imageFile)
@@ -216,6 +219,7 @@ namespace GoGreen.Controllers
 
 
         // DELETE: api/Event/5/Image/2
+        [Authorize]
         [HttpDelete("{eventId}/Image/{imageId}")]
         public async Task<IActionResult> DeleteEventImage(int eventId, int imageId )
         {
@@ -253,7 +257,8 @@ namespace GoGreen.Controllers
 
             return NoContent();
         }
-        [AllowAnonymous]
+
+        [Authorize(Roles = "super-admin")]
         [HttpPost("Create-Recommendation")]
         public IActionResult GetRecommendations(string userId)
         {

@@ -4,11 +4,13 @@ using GoGreen.Models;
 using GoGreen.Data;
 using GoGreen.Requests;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GoGreen.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MunicipalityController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -19,6 +21,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/Municipality
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Municipality>>> GetMunicipalities()
         {
@@ -26,6 +29,7 @@ namespace GoGreen.Controllers
         }
 
         // GET: api/Municipality/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Municipality>> GetMunicipality(int id)
         {
@@ -41,6 +45,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/Municipality
+        [Authorize(Roles = "super-admin")]
         [HttpPost]
         public async Task<ActionResult<Municipality>> PostMunicipality([FromBody] MunicipalityRequest request)
         {
@@ -59,6 +64,7 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/Municipality/5
+        [Authorize(Roles = "super-admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMunicipality(int id, Municipality municipality)
         {
@@ -89,6 +95,7 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/Municipality/5
+        [Authorize(Roles = "super-admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMunicipality(int id)
         {
