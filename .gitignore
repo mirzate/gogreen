@@ -6,6 +6,7 @@
 api_keys.properties
 .env
 appsettings.Production.json
+appsettings.Comunication.Production.json
 
 flutter/linux/flutter/
 flutter/macos/flutter/

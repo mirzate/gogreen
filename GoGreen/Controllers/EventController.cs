@@ -41,7 +41,6 @@ namespace GoGreen.Controllers
         public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents(int pageIndex = 1, int pageSize = 10, string? fullTextSearch = "")
         {
 
-            //throw new NotImplementedException("This code is not implemented, test...");
             var (events, totalCount) = await _eventService.GetAllAsync(pageIndex, pageSize, fullTextSearch);
 
             //return Ok(events);
@@ -79,16 +78,11 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/Event
+        [Authorize]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<EventResponse>> PostEvent([FromForm] EventRequest request, IFormFile? imageFile)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("The user ID claim is missing");
-            }
 
             var type = await _context.EventTypes.FindAsync(request.TypeId);
 
@@ -134,14 +128,14 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/Event/5
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<EventResponse>> PutEvent(int id, [FromBody] EventRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(id))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var updatedEvent = await _eventService.Update(id, request);
@@ -151,9 +145,15 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/Event/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
+            
+            if (!await CheckPermisionAsync(id))
+            {
+                return BadRequest("The user has no permission for this action");
+            }
 
             var isDeleted = await _eventService.Delete(id);
 
@@ -165,20 +165,19 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPut("{eventId}/Image")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<EventResponse>> AddEventImage(int eventId, IFormFile imageFile)
 
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(eventId))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var @event = await _context.Events
-                .Where(e => e.Id == eventId && e.UserId == userId)
+                .Where(e => e.Id == eventId)
                 .Include(a => a.EventImages)
                     .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync();
@@ -216,19 +215,18 @@ namespace GoGreen.Controllers
 
 
         // DELETE: api/Event/5/Image/2
+        [Authorize]
         [HttpDelete("{eventId}/Image/{imageId}")]
         public async Task<IActionResult> DeleteEventImage(int eventId, int imageId )
         {
-            
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(eventId))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var @event = await _context.Events
-                .Where(e => e.Id == eventId && e.UserId == userId)
+                .Where(e => e.Id == eventId)
                 .Include(e => e.EventImages)
                     .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync();
@@ -253,7 +251,8 @@ namespace GoGreen.Controllers
 
             return NoContent();
         }
-        [AllowAnonymous]
+
+        [Authorize(Roles = "super-admin")]
         [HttpPost("Create-Recommendation")]
         public IActionResult GetRecommendations(string userId)
         {
@@ -263,6 +262,30 @@ namespace GoGreen.Controllers
             return Ok(recommendations);
         }
 
+        private async Task<bool> CheckPermisionAsync(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+
+            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+            var data = await _context.Events
+                        .Where(a => a.MunicipalityId == user.MunicipalityId)
+                        .Where(a => a.Id == id)
+                        .FirstOrDefaultAsync();
+
+            if (data == null)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
 
     }
 }

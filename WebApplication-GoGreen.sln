@@ -12,12 +12,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		docker-compose.yaml = docker-compose.yaml
 		Dockerfile = Dockerfile
+		Dockerfile-Communication.Service = Dockerfile-Communication.Service
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Service", "RabbitMQService\RabbitMQ.Service.csproj", "{F4575084-3EE9-4AC4-BBE1-FD63C11D0180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.Service", "Communication.Service\Communication.Service.csproj", "{BA7DFFFD-778E-4BB8-BB8A-9BC34A242B03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Communication.Service", "Communication.Service\Communication.Service.csproj", "{BA7DFFFD-778E-4BB8-BB8A-9BC34A242B03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

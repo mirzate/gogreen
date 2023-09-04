@@ -5,6 +5,7 @@ import 'package:gogreen/providers/login_provider.dart';
 import 'package:gogreen/providers/green_island_provider.dart';
 import 'package:gogreen/providers/other_provider.dart';
 import 'package:gogreen/providers/token_provider.dart';
+import 'package:gogreen/providers/user_provider.dart';
 import 'package:gogreen/screens/admin/dashboard_screen.dart';
 import 'package:gogreen/utils/util.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ void main() {
     ChangeNotifierProvider(create: (_) => EcoViolationProvider()),
     ChangeNotifierProvider(create: (_) => GreenIslandProvider()),
     ChangeNotifierProvider(create: (_) => OtherProvider()),
+    ChangeNotifierProvider(create: (_) => UserProvider()),
   ], child: const GoGreenApp()));
 }
 

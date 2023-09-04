@@ -40,7 +40,7 @@ class EventProvider with ChangeNotifier {
 
     if (!!validateResponse(response)) {
       var data = jsonDecode(response.body);
-
+      //print("Event data: $data");
       var result = SearchResult<Event>();
       result.totalCount = data['totalCount'];
       result.pageIndex = data['pageNumber'];
@@ -72,7 +72,8 @@ class EventProvider with ChangeNotifier {
 
     final body = json.encode(eModel.toJson());
     var headers = getAndCreateHeaders();
-
+    print(url);
+    print(body);
     try {
       final response = await http.put(
         Uri.parse(url),

@@ -94,6 +94,8 @@ class LoginProvider with ChangeNotifier {
         user.id = jsonResponse['id'];
         user.email = jsonResponse['email'];
         user.municipality = Municipality.fromJson(jsonResponse['municipality']);
+        user.roles = jsonResponse['roles'];
+        Authorization.roles = jsonResponse['roles'];
         return user;
       }
     } catch (e) {

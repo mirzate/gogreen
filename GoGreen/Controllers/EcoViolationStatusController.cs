@@ -5,6 +5,7 @@ using GoGreen.Data;
 using GoGreen.Requests;
 using System.Net;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GoGreen.Controllers
 {
@@ -42,6 +43,7 @@ namespace GoGreen.Controllers
         }
 
         // POST: api/EcoViolationStatus
+        [Authorize(Roles = "super-admin")]
         [HttpPost]
         public async Task<ActionResult<EcoViolationStatus>> Store([FromBody] EcoViolationStatusRequest request)
         {
@@ -58,6 +60,7 @@ namespace GoGreen.Controllers
         }
 
         // PUT: api/EcoViolationStatus/5
+        [Authorize(Roles = "super-admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] EcoViolationStatusRequest request)
         {
@@ -90,6 +93,7 @@ namespace GoGreen.Controllers
         }
 
         // DELETE: api/EcoViolationStatus/5
+        [Authorize(Roles = "super-admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

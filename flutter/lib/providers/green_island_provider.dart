@@ -183,7 +183,7 @@ class GreenIslandProvider with ChangeNotifier {
 
     var url = "$_baseURL$_endpoint/${greenIsland.id}/Image";
     var headers = getAndCreateHeaders(contentType: "multipart/form-data");
-
+    print(url);
     var request = http.MultipartRequest('PUT', Uri.parse(url));
     request.headers.addAll(headers);
     request.fields['greenIslandId'] = greenIsland.id.toString();

@@ -48,6 +48,8 @@ class _ManageEventListScreenState extends State<ManageEventListScreen> {
       setState(() {
         result = data;
       });
+      //print("Event result: $result");
+      //print("Event result?.result: ${result?.result}");
     } catch (error) {
       showDialog(
           context: context,
