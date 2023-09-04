@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
+using RabbitMQ.Client.Exceptions;
+using Polly;
 
 namespace Communication.Service
 {
     public class MessageListenerService
     {
         private readonly IConfiguration _config;
-        private readonly IModel _channel;
+        private IModel _channel;
         private readonly EmailService _emailService;
 
         public MessageListenerService(IConfiguration config, EmailService emailService)
@@ -26,32 +28,50 @@ namespace Communication.Service
             var defaultQueue = "status_change_queue";
             Console.WriteLine($"RabbitMQConfig-Hostname: {_config["RabbitMQConfig:HostName"]}");
 
-            var factory = new ConnectionFactory()
+            var retryPolicy = Policy
+                            .Handle<BrokerUnreachableException>() // Customize with other exceptions if needed
+                            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+                            //.WaitAndRetry(100, retryAttempt => TimeSpan.FromSeconds(2));
+            // Use the retry policy to establish a connection to RabbitMQ
+            retryPolicy.Execute(() =>
             {
-                HostName = _config["RabbitMQConfig:HostName"],
-                Port = int.Parse(_config["RabbitMQConfig:Port"]),
-                UserName = _config["RabbitMQConfig:UserName"],
-                Password = _config["RabbitMQConfig:Password"],
-            };
+                try
+                {
 
-            var connection = factory.CreateConnection();
-            _channel = connection.CreateModel();
+                    var factory = new ConnectionFactory()
+                    {
+                        HostName = _config["RabbitMQConfig:HostName"],
+                        Port = int.Parse(_config["RabbitMQConfig:Port"]),
+                        UserName = _config["RabbitMQConfig:UserName"],
+                        Password = _config["RabbitMQConfig:Password"],
+                    };
 
-            _channel.QueueDeclare(queue: defaultQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                    var connection = factory.CreateConnection();
+                    _channel = connection.CreateModel();
 
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += async (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
+                    _channel.QueueDeclare(queue: defaultQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-                // Process the received message and send the email
-                await ProcessAndSendEmail(message);
-            };
+                    var consumer = new EventingBasicConsumer(_channel);
+                    consumer.Received += async (model, ea) =>
+                    {
+                        var body = ea.Body.ToArray();
+                        var message = Encoding.UTF8.GetString(body);
 
-            _channel.BasicConsume(queue: defaultQueue, autoAck: true, consumer: consumer);
+                        // Process the received message and send the email
+                        await ProcessAndSendEmail(message);
+                    };
 
-            
+                    _channel.BasicConsume(queue: defaultQueue, autoAck: true, consumer: consumer);
+                    
+                    Console.WriteLine($"RabbitMQ connection successful");
+
+                }
+                catch (BrokerUnreachableException ex)
+                {
+                    Console.WriteLine($"RabbitMQ connection failed: {ex.Message} - Communication will be re-established >>> ...");
+                    throw; // Re-throw the exception to trigger the retry
+                }
+            });
         }
 
         public class EcoViolationMessage
@@ -61,6 +81,7 @@ namespace Communication.Service
             public string Status { get; set; }
             public string Contact { get; set; }
         }
+
 
         private async Task ProcessAndSendEmail(string message)
         {
