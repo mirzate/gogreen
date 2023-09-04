@@ -90,8 +90,11 @@ namespace GoGreen.Services
             
             var data = _mapper.Map<GreenIsland>(request);
 
-            
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var user = await _context.User.FirstOrDefaultAsync(a => a.Id == userId);
 
             data.MunicipalityId = (int)user.MunicipalityId;
@@ -106,7 +109,9 @@ namespace GoGreen.Services
         public async Task<GreenIslandResponse> Update(int id, GreenIslandRequest request)
         {
             
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -145,16 +150,20 @@ namespace GoGreen.Services
 
         public async Task<bool> Delete(int id)
         {
-            
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            /*
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return false;
             }
-            
+            */
+
             var dataToDelete = await _context.GreenIslands
-            .Where(e => e.Id == id && e.UserId == userId)
+            .Where(e => e.Id == id)
             .SingleOrDefaultAsync();
 
             if (dataToDelete == null)

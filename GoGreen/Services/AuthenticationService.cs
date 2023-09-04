@@ -74,17 +74,26 @@ namespace GoGreen.Services
                 throw new ArgumentException($"Unable to authenticate user {request.UserName}");
             }
 
-            var authClaims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Email, user.Email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        };
+            if (!user.isApproved.GetValueOrDefault(true))
+            {
+                throw new ArgumentException($"User {request.UserName} is not approved.");
+            }
 
+            var roles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Email, user.Email),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            foreach (var role in roles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
             var token = GetToken(authClaims);
 
-           return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)

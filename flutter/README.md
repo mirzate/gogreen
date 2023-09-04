@@ -2,7 +2,9 @@
 
 ## Seeded users data (username/pass) for testing>
 
-desktop / test
+admin / test    (pripada super-admin roli)
+desktop / test  (type: uposlenik opstine)
+
 sarajevo / test
 tuzla / test
 mostar / test

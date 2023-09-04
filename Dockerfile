@@ -15,16 +15,19 @@ WORKDIR /src
 RUN apt-get update && apt-get install -y iputils-ping
 RUN apt-get update && apt-get install -y iputils-ping telnet
 
+
 COPY ["GoGreen/GoGreen.csproj", "GoGreen/"]
 COPY ["RabbitMQService/RabbitMQ.Service.csproj", "RabbitMQService/"]
-COPY ["Communication.Service/Communication.Service.csproj", "Communication.Service/"]
+#COPY ["Communication.Service/Communication.Service.csproj", "Communication.Service/"]
 RUN dotnet restore "GoGreen/GoGreen.csproj"
 COPY . .
 WORKDIR "/src/GoGreen"
 RUN dotnet build "GoGreen.csproj" -c Release -o /app/build
 
+
 FROM build AS publish
 RUN dotnet publish "GoGreen.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
 
 FROM base AS final
 WORKDIR /app

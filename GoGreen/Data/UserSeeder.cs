@@ -33,6 +33,12 @@ namespace GoGreen.Data
             {
                 new User
                 {
+                    UserName = "admin",
+                    Email = "admin@example.com",
+                    MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id,
+                },
+                new User
+                {
                     UserName = "string",
                     Email = "string@example.com",
                     MunicipalityId = municipalities[faker.Random.Int(0, municipalities.Count - 1)].Id
@@ -79,8 +85,10 @@ namespace GoGreen.Data
             foreach (var user in users)
             {
                 await userManager.CreateAsync(user, "test");
+               
             }
-     
+
+
         }
 
 

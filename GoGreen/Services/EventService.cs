@@ -9,6 +9,7 @@ using System.Security.Claims;
 using GoGreen.Responses;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
+using Microsoft.AspNetCore.Http;
 
 namespace GoGreen.Services
 {
@@ -97,8 +98,10 @@ namespace GoGreen.Services
         {
             
             var data = _mapper.Map<Event>(eventRequest);
-            
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var user = await _context.User.FirstOrDefaultAsync(a => a.Id == userId);
 
             data.MunicipalityId = (int)user.MunicipalityId;
@@ -113,15 +116,20 @@ namespace GoGreen.Services
         public async Task<EventResponse> Update(int id, EventRequest request)
         {
 
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            /*
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
 
             if (string.IsNullOrEmpty(userId))
             {
                 return null;
             }
+            */
+
 
             var existingEvent = await _context.Events
-            .Where(e => e.Id == id && e.UserId == userId)
+            .Where(e => e.Id == id)
             .SingleOrDefaultAsync();
 
             if (existingEvent == null)
@@ -129,35 +137,18 @@ namespace GoGreen.Services
                 return null;
             }
 
-            // Update only the properties provided in the request
-            if (request.Title != null)
-            {
                 existingEvent.Title = request.Title;
-            }
 
-            if (request.Description != null)
-            {
                 existingEvent.Description = request.Description;
-            }
-
-            if (request.DateFrom != null)
-            {
+   
                 existingEvent.DateFrom = request.DateFrom;
-            }
-            if (request.DateTo != null)
-            {
+            
                 existingEvent.DateTo = request.DateTo;
-            }
-            if (request.Active != null)
-            {
+     
                 existingEvent.Active = request.Active;
-            }
-            if (request.TypeId != null)
-            {
+      
                 existingEvent.TypeId = request.TypeId;
-            }
-            // Update o
-            // Update other properties as needed
+
 
             _context.Events.Update(existingEvent);
             await _context.SaveChangesAsync();
@@ -170,21 +161,16 @@ namespace GoGreen.Services
         public async Task<bool> Delete(int id)
         {
 
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return false;
-            }
-
             var eventToDelete = await _context.Events
-            .Where(e => e.Id == id && e.UserId == userId)
+            .Where(e => e.Id == id)
             .SingleOrDefaultAsync();
 
             if (eventToDelete == null)
             {
                 return false; // Event not found
             }
+
+            await _context.EventSubscribes.Where(e => e.EventId == id).ExecuteDeleteAsync();
 
             _context.Events.Remove(eventToDelete);
 

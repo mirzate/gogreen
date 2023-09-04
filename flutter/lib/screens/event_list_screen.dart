@@ -154,7 +154,7 @@ class _EventListScreenState extends State<EventListScreen> {
                       SizedBox(height: 8),
                       Image.network(
                         event.firstImage?.filePath ??
-                            'https://example.com/placeholder.jpg',
+                            'https://rs2storagegogreen.blob.core.windows.net/rs2containergogreen/gogreen.jpeg',
                         fit: BoxFit.cover,
                         width: 80,
                         height: 80,

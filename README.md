@@ -7,6 +7,7 @@ FIT
 
 ## Seeded users data (username/pass) for testing>
 
+admin / test    (super-admin)
 desktop / test
 sarajevo / test
 tuzla / test
@@ -25,7 +26,7 @@ Mailgun__apiKey=XXX
 Mailgun__domain=XXX
 
 
-### 2. Ukoliko se app pokrece lokalno, kreirati u GoGreen folderu file "appsettings.Production.json" i u njega ubaciti sljedece vrijednosti:
+### 2. Ukoliko se app pokrece lokalno, kreirati u GoGreen i Communication.Service folderu file "appsettings.Production.json" i u njega ubaciti sljedece vrijednosti:
 
   "AzureStorage": {
     "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=rs2storagegogreen;AccountKey=XXX;EndpointSuffix=core.windows.net"
