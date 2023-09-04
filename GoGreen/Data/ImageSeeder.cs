@@ -72,7 +72,7 @@ namespace GoGreen.Data.Seeders
         }
         public static string GetRandomImageUrl()
         {
-            return "https://images.unsplash.com/photo-1687939307771-4440181ca6c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY4ODQ4ODQxMQ&ixlib=rb-4.0.3&q=80&w=1080";
+            return "https://rs2storagegogreen.blob.core.windows.net/rs2containergogreen/gogreen.jpeg";
         }
     }
 

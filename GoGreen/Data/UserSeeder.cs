@@ -88,22 +88,6 @@ namespace GoGreen.Data
                
             }
 
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var roleExists = await roleManager.RoleExistsAsync("super-admin");
-
-            if (!roleExists)
-            {
-                await roleManager.CreateAsync(new IdentityRole("super-admin"));
-            }
-
-            var userManagerI = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var userI = await userManagerI.FindByEmailAsync("admin@example.com");
-
-            if (userI != null)
-            {
-                await userManagerI.AddToRoleAsync(userI, "super-admin");
-            }
-
 
         }
 

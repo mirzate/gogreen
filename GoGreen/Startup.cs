@@ -188,12 +188,15 @@ namespace GoGreen
                     await MunicipalitySeeder.SeedMunicipalities(dbContext);
 
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
                     await UserSeeder.SeedUsers(userManager, serviceProvider);
+                    await RoleSeeder.SeedRoles(roleManager, userManager, serviceProvider);
 
                     //var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-                   //dataSeeder.SeedData().Wait();
+                    //dataSeeder.SeedData().Wait();
 
-                   
+
                     await EventTypeSeeder.SeedEventTypes(dbContext);
                     await EcoViolationStatusSeeder.SeedEcoViolationStatuses(serviceProvider);
                     await EventSeeder.SeedEvents(serviceProvider);
@@ -215,6 +218,10 @@ namespace GoGreen
                     });
             });
 
+            services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+            });
 
         }
 

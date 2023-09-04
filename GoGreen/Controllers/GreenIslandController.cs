@@ -77,13 +77,6 @@ namespace GoGreen.Controllers
         {
             //, IFormFile imageFile
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("The user ID claim is missing");
-            }
-
             var data = _mapper.Map<GreenIslandRequest>(request);
 
             var createdData = await _greenIslandService.Store(data);
@@ -119,18 +112,10 @@ namespace GoGreen.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<GreenIslandResponse>> Put(int id, [FromBody] GreenIslandRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(id))
             {
-                return BadRequest("The user ID claim is missing");
-            }
-            var MunicipalityId = 2; //TODO
-            var municipality = await _context.Municipalities.FindAsync(MunicipalityId);
-
-            if (municipality == null)
-            {
-                return BadRequest($"The Municipality with ID {MunicipalityId} does not exist");
+                return BadRequest("The user has no permission for this action");
             }
 
             var updatedData = await _greenIslandService.Update(id, request);
@@ -144,6 +129,11 @@ namespace GoGreen.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+
+            if (!await CheckPermisionAsync(id))
+            {
+                return BadRequest("The user has no permission for this action");
+            }
 
             var isDeleted = await _greenIslandService.Delete(id);
 
@@ -161,15 +151,14 @@ namespace GoGreen.Controllers
         public async Task<ActionResult<GreenIslandResponse>> AddImage(int greenIslandId, IFormFile imageFile)
 
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(greenIslandId))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var data = await _context.GreenIslands
-                .Where(e => e.Id == greenIslandId && e.UserId == userId)
+                .Where(e => e.Id == greenIslandId)
                 .Include(a => a.GreenIslandImages)
                     .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync();
@@ -212,15 +201,13 @@ namespace GoGreen.Controllers
         public async Task<IActionResult> DeleteEventImage(int greenIslandId, int imageId)
         {
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(greenIslandId))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var data = await _context.GreenIslands
-                .Where(e => e.Id == greenIslandId && e.UserId == userId)
+                .Where(e => e.Id == greenIslandId)
                 .Include(e => e.GreenIslandImages)
                     .ThenInclude(ei => ei.Image)
                 .FirstOrDefaultAsync();
@@ -246,5 +233,29 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
+        private async Task<bool> CheckPermisionAsync(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+
+            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+            var data = await _context.GreenIslands
+                        .Where(a => a.MunicipalityId == user.MunicipalityId)
+                        .Where(a => a.Id == id)
+                        .FirstOrDefaultAsync();
+
+            if (data == null)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
     }
 }

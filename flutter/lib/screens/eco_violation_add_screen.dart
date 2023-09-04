@@ -214,10 +214,10 @@ class _EcoViolationAddScreenState extends State<EcoViolationAddScreen> {
                                   labelText: 'Contact Email (optional)'),
                               maxLines: 3,
                               validator: (value) {
-                                if (value != null) {
+                                if (value != "") {
                                   const emailRegex =
                                       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-                                  if (!RegExp(emailRegex).hasMatch(value)) {
+                                  if (!RegExp(emailRegex).hasMatch(value!)) {
                                     return 'Please enter a valid email address';
                                   }
                                 }

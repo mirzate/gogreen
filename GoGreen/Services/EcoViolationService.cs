@@ -115,8 +115,10 @@ namespace GoGreen.Services
 
         public async Task<EcoViolationResponse> Update(int id, EcoViolationMunicipalityRequest request)
         {
-            
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {

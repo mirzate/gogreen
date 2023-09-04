@@ -24,12 +24,14 @@ namespace GoGreen.Data
 
             // Retrieve a list of municipalities
             var municipalities = dbContext.Municipalities.ToList();
+            var ecoViolationStatuses = dbContext.EcoViolationStatuses.ToList();
 
             var ecoViolations = new List<EcoViolation>();
 
             for (int i = 0; i < 100; i++)
             {
                 var municipality = municipalities[faker.Random.Int(0, municipalities.Count - 1)];
+                var ecoViolationStatuse = ecoViolationStatuses[faker.Random.Int(0, ecoViolationStatuses.Count - 1)];
 
                 var ecoViolationRequest = new EcoViolationRequest
                 {
@@ -44,7 +46,8 @@ namespace GoGreen.Data
                     Title = ecoViolationRequest.Title,
                     Description = ecoViolationRequest.Description,
                     MunicipalityId = ecoViolationRequest.MunicipalityId,
-                    Contact = ecoViolationRequest.Contact
+                    Contact = ecoViolationRequest.Contact,
+                    EcoViolationStatusId = ecoViolationStatuse.Id
                 };
 
                 ecoViolations.Add(ecoViolation);

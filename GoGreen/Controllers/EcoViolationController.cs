@@ -114,11 +114,10 @@ namespace GoGreen.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<EcoViolationResponse>> Put(int id, [FromBody] EcoViolationMunicipalityRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
+            if (!await CheckPermisionAsync(id))
             {
-                return BadRequest("The user ID claim is missing");
+                return BadRequest("The user has no permission for this action");
             }
 
             var type = await _context.EcoViolationStatuses.FindAsync(request.EcoViolationStatus.Id);
@@ -128,18 +127,6 @@ namespace GoGreen.Controllers
                 return BadRequest("Eco Violation Status not found");
             }
 
-            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
-
-
-            var data = await _context.EcoViolations
-                        .Where(a => a.MunicipalityId == user.MunicipalityId)
-                        .Where(a => a.Id == id)
-                        .FirstOrDefaultAsync();
-
-            if (data == null)
-            {
-                return BadRequest("The user has no permission for this action");
-            }
 
             var updatedData = await _ecoViolationService.Update(id, request);
 
@@ -154,6 +141,11 @@ namespace GoGreen.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
+            if (!await CheckPermisionAsync(id))
+            {
+                return BadRequest("The user has no permission for this action");
+            }
+
             var isDeleted = await _ecoViolationService.Delete(id);
 
             if (!isDeleted)
@@ -164,7 +156,30 @@ namespace GoGreen.Controllers
             return NoContent();
         }
 
+        private async Task<bool> CheckPermisionAsync(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+
+            var user = await _context.User.Include(e => e.Municipality).FirstOrDefaultAsync(u => u.Id == userId);
+            var data = await _context.EcoViolations
+                        .Where(a => a.MunicipalityId == user.MunicipalityId)
+                        .Where(a => a.Id == id)
+                        .FirstOrDefaultAsync();
+
+            if (data == null)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
 
     }
 }
